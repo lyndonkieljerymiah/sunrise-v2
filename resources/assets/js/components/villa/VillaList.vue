@@ -1,0 +1,122 @@
+<template>
+    <div id="app">
+        <div class="row">
+            <div class="col-md-6">
+                <searchbox @trigger="search"></searchbox>
+            </div>
+            <div class="col-md-2 col-md-offset-4">
+                <button class="btn btn-info" @click="addNew()">Add</button>
+            </div>
+        </div>
+        <hr/>
+        <div class="row">
+            <div class="col-md-9">
+                <gridview
+                    :data="gridData"
+                    :columns="gridColumns"
+                    :actions="actions"
+                    @action="doAction"
+                    @sorted="sorted">
+                </gridview>
+            </div>
+            <div class="col-md-3">
+                <div class="list-group">
+                    <a href="#" class="list-group-item">
+                        <i class="fa fa-home"></i> Vacant
+                        <span class="badge">{{statusVacant}}</span>
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <i class="fa fa-home"></i> Occupied
+                        <span class="badge">{{statusOccupied}}</span>
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <i class="fa fa-home"></i> Maintenance
+                        <span class="badge">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import SearchBox from '../SearchBox.vue';
+
+    import GridView from '../GridView.vue';
+
+    export default {
+        name: 'app',
+        components: {
+            'searchbox' : SearchBox,
+            'gridview'  : GridView
+        },
+        props: {
+            url: {required: true}
+        },
+        methods: {
+            search(field) {
+
+            },
+            doAction(a,id) {
+                 if(a.key == 'edit') {
+                    var redirectToEdit = this.url + "/" + id;
+                    AjaxRequest.route(redirectToEdit);
+                }
+            },
+            addNew() {
+                AjaxRequest.route(this.url);
+            },
+            sorted(sortKey) {
+                    this.filterKey = sortKey;
+            }
+        },
+        data()  {
+            return {
+                gridData:[],
+                filterKey: "",
+                gridColumns: [
+                    {name: 'villa_no', column: 'Villa No', style: 'width:10%',class:'text-center'},
+                    {name: 'location', column: 'Location'},
+                    {name: 'electricity_no', column: 'Electricity No'},
+                    {name: 'water_no', column: 'Water No'},
+                    {name: 'qtel_no', column: 'QTel No'},
+                    {name: 'villa_class', column: 'Class'},
+                    {name: 'rate_per_month', column: 'Rate/Month', class:'text-right'},
+                    {name: 'status', column: 'Full Status', class:'text-center',style: 'width:10%'},
+                    {name: 'action', column: '',static:true, class: 'text-center'}],
+                actions: [
+                    {key:'edit', name:'Edit'},
+                    {key:'remove',name:'Remove'}
+                ],
+                statusCounts: []
+
+            }
+        },
+        mounted() {
+            var $this= this;
+            AjaxRequest.get('villa','list')
+            .then(response => {
+                $this.gridData = response.data.data;
+                $this.statusCounts = response.data.counts;
+            });
+        },
+        computed: {
+            statusVacant() {
+                var status = 0;
+                this.statusCounts.forEach(item => {
+                    status = (item['status'] !== undefined && item['status'] === 'vacant') ? item.count : 0;
+                });
+
+                return status;
+            },
+            statusOccupied() {
+                var status = 0;
+                this.statusCounts.forEach(item => {
+                    status = (item['status'] !== undefined && item['status'] === 'occupied') ? item.count : 0;
+                });
+
+                return status;
+            }
+        }
+    }
+</script>
