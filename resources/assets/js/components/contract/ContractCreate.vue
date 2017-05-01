@@ -13,7 +13,7 @@
         <div class="col-md-4">
           <div class="form-group">
             <div class='input-group date' id='datetimepicker3'>
-              <input type='text' class="form-control" placeholder="YYYY-MM-DD(START DATE)" name="period_start">
+              <input type='date' class="form-control" placeholder="YYYY-MM-DD(START DATE)" name="period_start">
               <span class="input-group-addon">
                 <span class="glyphicon glyphicon-calendar"></span>
               </span>
@@ -25,7 +25,7 @@
         <div class="col-md-4">
           <div class="form-group">
             <div class='input-group date' id='datetimepicker3'>
-              <input type='text' class="form-control" placeholder="YYYY-MM-DD(END DATE)" name="period_end">
+              <input type='date' class="form-control" placeholder="YYYY-MM-DD(END DATE)" name="period_end">
               <span class="input-group-addon">
                 <span class="glyphicon glyphicon-calendar"></span>
               </span>

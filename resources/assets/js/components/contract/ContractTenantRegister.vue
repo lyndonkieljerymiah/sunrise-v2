@@ -35,7 +35,7 @@
                 <label class="col-md-12" >Validity Date. *</label>
                 <div class="form-group">
                   <div class='input-group date' id='datetimepicker1'>
-                    <input type='text' class="form-control" />
+                    <input type='date' class="form-control" />
                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
                   </span>
                 </div>
@@ -46,7 +46,7 @@
                 <label  class="col-md-12">Birth Date *</label>
                 <div class="form-group">
                   <div class='input-group date' id='datetimepicker1'>
-                    <input type='text' class="form-control" name="bday" />
+                    <input type='date' class="form-control" name="bday" />
                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
                   </span>
                 </div>
@@ -101,7 +101,7 @@
                 <label v-else="tenant.type == 'individual'" class="col-md-12" >Registration Date *</label>
                 <div class="form-group">
                   <div class='input-group date' id='datetimepicker1'>
-                    <input type='text' class="form-control" name="regdate" />
+                    <input type='date' class="form-control" name="regdate" />
                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
                   </span>
                 </div>

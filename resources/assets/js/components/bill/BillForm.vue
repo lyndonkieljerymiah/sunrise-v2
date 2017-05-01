@@ -136,10 +136,9 @@
                     that.bill = r.data.bill;
 
                     //format date
-                    that.bill.instance.effectivity_date = moment(that.bill.instance.effectivity_date).format('L');
-                    that.bill.instance.period_start = moment(that.bill.instance.period_start).format('L');
-                    that.bill.instance.period_end = moment(that.bill.instance.period_end).format('L');
-
+                     that.bill.instance.effectivity_date = moment(that.bill.instance.effectivity_date).format('yyyy-MM-d');
+                     that.bill.instance.period_start = moment(that.bill.instance.period_start).format();
+                     that.bill.instance.period_end = moment(that.bill.instance.period_end).format();
 
                     that.paymentInit();
                 })

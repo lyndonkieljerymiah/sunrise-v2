@@ -19,26 +19,6 @@ class Contract extends BaseModel
 
     protected $custSelectionKeys = ["status","contract_type"];
     
-    protected function getFullContractTypeAttribute() {
-        
-         //lazy loading
-        if(sizeof($this->custSelectionValues) == 0) {
-
-            $this->explodeSelection();
-
-        }
-
-        return $this->attributes["full_contract_type"] = isset($this->custSelectionValues["contract_type"]) ? $this->custSelectionValues["contract_type"] : ""; 
-    }
-
-    protected function getFullStatusAttribute() {
-        //lazy loading
-        if(sizeof($this->custSelectionValues) == 0) {
-            $this->explodeSelection();
-        }
-
-        return $this->attributes["full_status"] = isset($this->custSelectionValues["contract_status"]) ? $this->custSelectionValues["contract_status"] : ""; $value;
-    }
 
     public function contractTermination() {
         
@@ -46,8 +26,11 @@ class Contract extends BaseModel
 
     }
 
-    public function createNewModel() {
+    public static function createInstance() {
         $newModel = new Contract();
+        $newModel->contract_type = "legalized";
+        $newModel->toDefaultPeriod(Carbon::now()->toDateTimeString(),$defaultMonths);
+
     }
     
     public function lists($status = "") {
@@ -91,7 +74,7 @@ class Contract extends BaseModel
 
         $this->period_start = $startPeriod;
 
-        $this->period_end = Carbon::now()->addMonths($default);
+        $this->period_end = Carbon::now()->addMonths($default)->toDateTimeString();
 
     }
 

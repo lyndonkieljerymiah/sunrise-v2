@@ -28802,9 +28802,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             that.bill = r.data.bill;
 
             //format date
-            that.bill.instance.effectivity_date = moment(that.bill.instance.effectivity_date).format('L');
-            that.bill.instance.period_start = moment(that.bill.instance.period_start).format('L');
-            that.bill.instance.period_end = moment(that.bill.instance.period_end).format('L');
+            that.bill.instance.effectivity_date = moment(that.bill.instance.effectivity_date).format('yyyy-MM-d');
+            that.bill.instance.period_start = moment(that.bill.instance.period_start).format();
+            that.bill.instance.period_end = moment(that.bill.instance.period_end).format();
 
             that.paymentInit();
         }).catch(function (e) {
@@ -28844,6 +28844,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -51319,7 +51325,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('input', {
     staticClass: "form-control",
     attrs: {
-      "type": "text",
+      "type": "date",
       "placeholder": "YYYY-MM-DD(START DATE)",
       "name": "period_start"
     }
@@ -51341,7 +51347,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('input', {
     staticClass: "form-control",
     attrs: {
-      "type": "text",
+      "type": "date",
       "placeholder": "YYYY-MM-DD(END DATE)",
       "name": "period_end"
     }
@@ -51954,7 +51960,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }],
     staticClass: "form-control",
     attrs: {
-      "type": "text",
+      "type": "date",
       "name": "effectivity_date",
       "id": "effectivity_date"
     },
@@ -52089,6 +52095,37 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "input": function($event) {
         if ($event.target.composing) { return; }
         _vm.instance.period_end = $event.target.value
+      }
+    }
+  })])]), _vm._v(" "), _c('div', {
+    staticClass: "form-group"
+  }, [_c('label', {
+    staticClass: "col-md-3",
+    attrs: {
+      "for": "amount"
+    }
+  }, [_vm._v("Amount")]), _vm._v(" "), _c('div', {
+    staticClass: "col-md-9"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.instance.amount),
+      expression: "instance.amount"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      "type": "text",
+      "name": "amount",
+      "id": "amount"
+    },
+    domProps: {
+      "value": (_vm.instance.amount)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.instance.amount = $event.target.value
       }
     }
   })])])])
@@ -52320,7 +52357,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('input', {
     staticClass: "form-control",
     attrs: {
-      "type": "text",
+      "type": "date",
       "name": "bday"
     }
   }), _vm._v(" "), _c('span', {
@@ -52400,7 +52437,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('input', {
     staticClass: "form-control",
     attrs: {
-      "type": "text"
+      "type": "date"
     }
   }), _vm._v(" "), _c('span', {
     staticClass: "input-group-addon"
@@ -52442,7 +52479,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('input', {
     staticClass: "form-control",
     attrs: {
-      "type": "text",
+      "type": "date",
       "name": "regdate"
     }
   }), _vm._v(" "), _c('span', {

@@ -22,7 +22,7 @@
         <div class="form-group">
             <label for="effectivity_date" class="col-md-3">Date of Effectivity</label>
             <div class="col-md-9">
-                <input type="text" class="form-control" name="effectivity_date"
+                <input type="date" class="form-control" name="effectivity_date"
                         v-model="instance.effectivity_date" id="effectivity_date">
             </div>
         </div>
@@ -49,6 +49,12 @@
             <label for="period_end" class="col-md-3">Period End</label>
             <div class="col-md-9">
                 <input type="text" class="form-control" name="period_end" v-model="instance.period_end" id="period_end">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="amount" class="col-md-3">Amount</label>
+            <div class="col-md-9">
+                <input type="text" class="form-control" name="amount" v-model="instance.amount" id="amount">
             </div>
         </div>
 
