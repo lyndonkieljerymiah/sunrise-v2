@@ -22,7 +22,7 @@
         <div class="form-group">
             <label for="effectivity_date" class="col-md-3">Date of Effectivity</label>
             <div class="col-md-9">
-                <input type="date" class="form-control" name="effectivity_date"
+                <input type="text" class="form-control" name="effectivity_date"
                         v-model="instance.effectivity_date" id="effectivity_date">
             </div>
         </div>

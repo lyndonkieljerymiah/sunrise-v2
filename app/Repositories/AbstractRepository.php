@@ -52,7 +52,7 @@ abstract class AbstractRepository {
     } 
 
     public function createNew() {
-        return $this->model->createNewModel();
+        return $this->model->createInstance();
     }
   
     public function get($orderBy = 'id') {

@@ -10,7 +10,7 @@ class BillRepository extends AbstractRepository {
 
     public function createNewBill($contractId) {
 
-        return \App\ContractBill::createInstance($contractId);
+        return $this->model->createInstance($contractId);
     }
 
     public function saveBill() {

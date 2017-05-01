@@ -12,7 +12,7 @@ class Tenant extends BaseModel
         return $this->hasOne(TenantAddress::class);
     }
 
-    public function createNewModel() {
+    public static function createInstance() {
         $tenant = new Tenant();
         
         $tenant->type = "individual";
@@ -22,7 +22,7 @@ class Tenant extends BaseModel
         $tenant->tel_no = "";
         $tenant->mobile_no = "";
         $tenant->fax_no = "";
-        $tenant->reg_date = "";
+        $tenant->reg_date = \Carbon\Carbon::now()->toDateTimeString();
         $tenant->gender = "Male";
         $tenant->reg_id = "";
         $tenant->reg_name = "";

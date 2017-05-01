@@ -28530,6 +28530,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: "modal",
@@ -28541,6 +28542,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
         show: function show() {
             alert("hello world");
+        },
+        dismiss: function dismiss(result) {
+            $("#modalComponent").modal('hide');
+            this.$emit("dismiss", result);
         }
     },
     mounted: function mounted() {
@@ -28762,6 +28767,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
+var billModel = __webpack_require__(215);
+
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: 'billForm',
     props: {
@@ -28780,13 +28787,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     villa: {}
                 }
             },
-            bill: {
-                payments: [],
-                instance: {}
-            },
+            bill: billModel.default.createInstance(),
             instance: {},
             lookups: [],
-            gridColumn: [{ name: 'effectivity_date', column: 'Date' }, { name: 'payment_no', column: 'Payment No' }, { name: 'bank', column: 'Bank' }, { name: 'payment_mode', column: 'Payment Mode' }, { name: 'payment_type', column: 'Payment Type' }],
+            gridColumn: [{ name: 'effectivity_date', column: 'Date', style: 'width:10%', class: 'text-center' }, { name: 'payment_no', column: 'Payment No' }, { name: 'bank', column: 'Bank' }, { name: 'payment_mode', column: 'Payment Mode' }, { name: 'payment_type', column: 'Payment Type' }, { name: 'amount', column: 'Amount' }],
             error: ErrorValidations.newInstance()
         };
     },
@@ -28796,16 +28800,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         var that = this;
 
         AjaxRequest.get('bill', 'create', this.contractId).then(function (r) {
-
             that.contract = r.data.contract;
             that.lookups = r.data.lookups;
-            that.bill = r.data.bill;
-
-            //format date
-            that.bill.instance.effectivity_date = moment(that.bill.instance.effectivity_date).format('yyyy-MM-d');
-            that.bill.instance.period_start = moment(that.bill.instance.period_start).format();
-            that.bill.instance.period_end = moment(that.bill.instance.period_end).format();
-
+            that.bill.bind(r.data.bill);
             that.paymentInit();
         }).catch(function (e) {
             _this.error.register(e.data);
@@ -28818,22 +28815,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         villa: function villa() {
             return this.contract.associates.villa;
-        },
-        paymentTerms: function paymentTerms() {
-            if (this.lookups.payment_term !== undefined) return this.lookups.payment_term;
-        },
-        paymentModes: function paymentModes() {
-            if (this.lookups.payment_mode !== undefined) return this.lookups.payment_mode;
         }
     },
     methods: {
         showModal: function showModal() {
             //make copy of instance
-            //this.instance =  window.objectClone(this.bill.instance);
+            this.paymentInit();
             VueEvent.$emit('onModalActive');
         },
         paymentInit: function paymentInit() {
-            this.instance = window.objectClone(this.bill.instance);
+            this.bill.createInstance();
+        },
+        onDismissal: function onDismissal(result) {
+            if (result) this.bill.insert();
         }
     }
 });
@@ -29091,6 +29085,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -29099,8 +29094,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   data: function data() {
     return {
       lookups: {}
-
     };
+  },
+
+  methods: {
+    mounted: function mounted() {
+      var $this = this;
+      AjaxRequest.get('contract', 'create').then(function (r) {
+        $this.lookups = r.data.lookups;
+      });
+    }
   }
 });
 
@@ -51168,10 +51171,13 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "size": "",
       "dialog-title": "Payment Entry"
+    },
+    on: {
+      "dismiss": _vm.onDismissal
     }
   }, [_c('payment-modal', {
     attrs: {
-      "instance": _vm.instance,
+      "instance": _vm.bill.cloneOfInstance,
       "payment-terms": _vm.lookups.payment_term,
       "payment-modes": _vm.lookups.payment_mode
     }
@@ -51960,7 +51966,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }],
     staticClass: "form-control",
     attrs: {
-      "type": "date",
+      "type": "text",
       "name": "effectivity_date",
       "id": "effectivity_date"
     },
@@ -52163,7 +52169,29 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "modal-title"
   }, [_vm._v(_vm._s(_vm.dialogTitle))])]), _vm._v(" "), _c('div', {
     staticClass: "modal-body"
-  }, [_vm._t("default")], 2), _vm._v(" "), _vm._m(1)])])])
+  }, [_vm._t("default")], 2), _vm._v(" "), _c('div', {
+    staticClass: "modal-footer"
+  }, [_c('button', {
+    staticClass: "btn btn-default",
+    attrs: {
+      "type": "button"
+    },
+    on: {
+      "click": function($event) {
+        _vm.dismiss(false)
+      }
+    }
+  }, [_vm._v("Close")]), _vm._v(" "), _c('button', {
+    staticClass: "btn btn-primary",
+    attrs: {
+      "type": "button"
+    },
+    on: {
+      "click": function($event) {
+        _vm.dismiss(true)
+      }
+    }
+  }, [_vm._v("Save changes")])])])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('button', {
     staticClass: "close",
@@ -52177,21 +52205,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "aria-hidden": "true"
     }
   }, [_vm._v("×")])])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "modal-footer"
-  }, [_c('button', {
-    staticClass: "btn btn-default",
-    attrs: {
-      "type": "button",
-      "data-dismiss": "modal"
-    }
-  }, [_vm._v("Close")]), _vm._v(" "), _c('button', {
-    staticClass: "btn btn-primary",
-    attrs: {
-      "type": "button"
-    }
-  }, [_vm._v("Save changes")])])
 }]}
 module.exports.render._withStripped = true
 if (false) {
@@ -64607,6 +64620,59 @@ module.exports = Vue$3;
 __webpack_require__(136);
 module.exports = __webpack_require__(137);
 
+
+/***/ }),
+/* 212 */,
+/* 213 */,
+/* 214 */,
+/* 215 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var BillModel = function () {
+    function BillModel() {
+        _classCallCheck(this, BillModel);
+
+        this.payments = [];
+        this.contract_id = 0;
+        this._preserveInstance = {};
+        this.cloneOfInstance = {};
+    }
+
+    _createClass(BillModel, [{
+        key: 'bind',
+        value: function bind(model) {
+            this.contract_id = model.contract_id;
+            this._preserveInstance = model.instance;
+            this._preserveInstance.effectivity_date = moment(model.instance.effectivity_date).format('l');
+            this._preserveInstance.period_start = moment(model.instance.period_start).format('l');
+            this._preserveInstance.period_end = moment(model.instance.period_end).format('l');
+        }
+    }, {
+        key: 'createInstance',
+        value: function createInstance() {
+            this.cloneOfInstance = objectClone(this._preserveInstance);
+        }
+    }, {
+        key: 'insert',
+        value: function insert() {
+            this.payments.push(this.cloneOfInstance);
+        }
+    }]);
+
+    return BillModel;
+}();
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    createInstance: function createInstance() {
+        return new BillModel();
+    }
+});
 
 /***/ })
 /******/ ]);

@@ -13,12 +13,12 @@ class Contract extends BaseModel
     const CANCELLED = 'cancelled';
 
     //
-    protected $appends = ["full_contract_type","full_status"];
+    
 
     protected $table = "contracts";
 
     protected $custSelectionKeys = ["status","contract_type"];
-    
+   
 
     public function contractTermination() {
         
@@ -26,11 +26,15 @@ class Contract extends BaseModel
 
     }
 
-    public static function createInstance() {
+    public static function createInstance($defaultMonths) {
+        
         $newModel = new Contract();
+
         $newModel->contract_type = "legalized";
+
         $newModel->toDefaultPeriod(Carbon::now()->toDateTimeString(),$defaultMonths);
 
+        return $newModel;
     }
     
     public function lists($status = "") {
@@ -67,8 +71,6 @@ class Contract extends BaseModel
 
         return $this;
     }
-   
-   
    
     public function toDefaultPeriod($startPeriod,$default) {
 

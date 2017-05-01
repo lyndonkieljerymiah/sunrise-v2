@@ -34,6 +34,7 @@
         </div>
 
 
+
         <div class="col-md-4">
           <input name="contract_no" type="text" class="form-control " placeholder="CONTRACT NUMBER *">
         </div>
@@ -86,7 +87,14 @@ export default {
   data()  {
     return {
     lookups:{},
-
+   }
+ },
+ methods: {
+   mounted() {
+      var $this = this;
+      AjaxRequest.get('contract', 'create').then(function (r){
+      $this.lookups=r.data.lookups;
+       });
    }
  }
 }

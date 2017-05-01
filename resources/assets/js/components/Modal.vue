@@ -10,12 +10,13 @@
                     <slot></slot>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+
+                    <button type="button" class="btn btn-default"  @click="dismiss(false)">Close</button>
+                    <button type="button" class="btn btn-primary" @click="dismiss(true)">Save changes</button>
                 </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+            </div>
+        </div>
+    </div>
 
 </template>
 
@@ -30,6 +31,10 @@
         methods: {
             show() {
                 alert("hello world");
+            },
+            dismiss(result) {
+                 $("#modalComponent").modal('hide');
+                this.$emit("dismiss",result);
             }
         },
         mounted() {

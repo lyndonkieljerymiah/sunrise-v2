@@ -67,9 +67,9 @@
                 <div class="panel panel-info">
                     <div class="panel-body">
                         <button class="btn btn-info" @click="showModal">Add New</button>
-                        <modal size="" dialog-title="Payment Entry">
+                        <modal size="" dialog-title="Payment Entry" @dismiss="onDismissal">
                             <payment-modal
-                                    :instance="instance"
+                                    :instance="bill.cloneOfInstance"
                                     :payment-terms="lookups.payment_term"
                                     :payment-modes="lookups.payment_mode">
                             </payment-modal>
@@ -87,10 +87,15 @@
 
 <script>
 
+    
+
+
     import GridView from '../GridView.vue';
     import Modal from '../Modal.vue';
     import PaymentModal from './PaymentModal.vue';
 
+    let billModel = require('./BillModel.js');
+    
     export default {
         name: 'billForm',
         props: {
@@ -109,37 +114,28 @@
                         villa: {}
                     }
                 },
-                bill: {
-                    payments: [],
-                    instance: {}
-                },
+                bill: billModel.default.createInstance(),
                 instance: {},
                 lookups: [],
                 gridColumn: [
-                    {name: 'effectivity_date', column: 'Date'},
+                    {name: 'effectivity_date', column: 'Date', style:'width:10%',class:'text-center'},
                     {name: 'payment_no', column: 'Payment No'},
                     {name: 'bank', column: 'Bank'},
                     {name: 'payment_mode', column: 'Payment Mode'},
-                    {name: 'payment_type', column: 'Payment Type'}
+                    {name: 'payment_type', column: 'Payment Type'},
+                    {name: 'amount', column: 'Amount'}
                 ],
                 error: ErrorValidations.newInstance()
             }
         },
         created() {
-            var that = this;
-
+            let that = this;
+            
             AjaxRequest.get('bill', 'create', this.contractId)
                 .then(r => {
-
                     that.contract = r.data.contract;
                     that.lookups = r.data.lookups;
-                    that.bill = r.data.bill;
-
-                    //format date
-                     that.bill.instance.effectivity_date = moment(that.bill.instance.effectivity_date).format('yyyy-MM-d');
-                     that.bill.instance.period_start = moment(that.bill.instance.period_start).format();
-                     that.bill.instance.period_end = moment(that.bill.instance.period_end).format();
-
+                    that.bill.bind(r.data.bill);
                     that.paymentInit();
                 })
                 .catch(e => {
@@ -152,25 +148,20 @@
             },
             villa() {
                 return this.contract.associates.villa;
-            },
-            paymentTerms() {
-                if(this.lookups.payment_term !== undefined)
-                    return this.lookups.payment_term;
-            },
-            paymentModes() {
-                if(this.lookups.payment_mode !== undefined)
-                    return this.lookups.payment_mode;
-            },
+            }
         },
         methods: {
             showModal() {
                 //make copy of instance
-                //this.instance =  window.objectClone(this.bill.instance);
+                this.paymentInit();
                 VueEvent.$emit('onModalActive');
             },
             paymentInit() {
-                this.instance = window.objectClone(this.bill.instance);
-
+               this.bill.createInstance();
+            },
+            onDismissal(result) {
+                if(result) 
+                    this.bill.insert();
             }
 
         }

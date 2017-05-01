@@ -16,19 +16,7 @@ class ContractRepository extends AbstractRepository {
         return new \App\Contract();
     }
   
-    public function createNewContract($villaNo,$ratePerMonth,$defaultMonths = 12) {
-        
-        $this->model->contract_no = "C".$villaNo."-".Carbon::now()->year."-".$this->createNewId();
-        
-        $this->model->contract_type = "legalized";
-        
-        $this->model->toDefaultPeriod(Carbon::now(),$defaultMonths);
-        
-        $this->model->toComputeAmount($ratePerMonth);
-        
-        return $this;
-
-    }
+   
 
     public function saveContract($model) {
 
@@ -98,11 +86,7 @@ class ContractRepository extends AbstractRepository {
 
     public function create($defaultMonths) {
 
-        $this->model->contract_type = "legalized";
-
-        $this->model->toDefaultPeriod(Carbon::now(),$defaultMonths);
-
-        return $this->model;
+        return \App\Contract::createInstance($defaultMonths);
 
     }
 

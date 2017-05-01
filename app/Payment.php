@@ -27,7 +27,9 @@ class Payment extends BaseModel
             "payment_no"            =>  "",
             "bank"                  =>  "",
             "amount"                =>  "0.00",
-            "remarks"               =>  ""]);
+            "remarks"               =>  "",
+            "status"                =>  "received",
+            "full_status"           =>  "Received"]);
 
         $p->initPeriod();
 
