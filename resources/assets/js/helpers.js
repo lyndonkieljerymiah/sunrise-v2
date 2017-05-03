@@ -51,7 +51,7 @@ class AxiosRequest {
     }
 
     route(url) {
-        
+        var img = window.imagePath;
         window.location.href = url;
         
         return this;

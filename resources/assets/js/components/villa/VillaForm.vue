@@ -6,6 +6,8 @@
             <div class="col-md-8">
                 <div class="panel panel-default">
                     <div class="panel-body">
+
+
                         <div class="form-group">
                             <label for="location" class="col-md-2 text-right">Location:</label>
                             <div class="col-md-10">
@@ -57,8 +59,9 @@
                             <div class="col-md-4">
                                 <input name="capacity" type="number" class="form-control" v-model="model.capacity">
                                 <strong class="text-danger text-small" v-text="errors.get('capacity')"></strong>
-                            </div>
+                              </div>
                         </div>
+
                         <div class="form-group">
                             <label for="rate_per_month" class="col-md-2 text-right">Rate per Month:</label>
                             <div class="col-md-4">
@@ -144,9 +147,7 @@
             onSave() {
 
                 var $this = this;
-
                 var formData = new FormData();
-
                 //append to formdata
                 Object.keys(this.model).forEach(key => {
                     if(key == 'villa_galleries') {
@@ -169,7 +170,7 @@
 
                 AjaxRequest
                     .postMultiForm('villa',this.operationType,formData)
-                    .done(response => {bbox.alert('Successfully save');})
+                    .done(response => {toastr.success(response.data.message);})
                     .fail(response => {
                         if(response.status === 422) {
                             $this.errors.register(response.responseJSON);

@@ -5,6 +5,7 @@ namespace App\Listeners;
 use \App\Events\Contract\OnCreating;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Validation\Validator;
 
 class CreateTenant
 {
@@ -30,11 +31,22 @@ class CreateTenant
     {
         $models = $event->getArguments('tenant');
 
-        $this->repository->attach($models);
+        $validator = Validator::make($model,[
+            'type'          =>  'required',
+            'full_name'     =>  'required',
+            'email_address' =>  'required|email',
+            'instance_address.address_1'    =>  'required',
+            'city'  =>  'required',
+            'postal_code'   =>  'required'
+        ]);
 
-        $tenant = $this->repository->lastRecord();
+        $validator->after(function($validator) {
 
-        $event->setOutput("tenant",$tenant->id);
+        });
+
+        $tenant = $this->repository->attach($models)->instance();
+
+        $event->setOutput("tenant",$tenant);
         
     }
 }

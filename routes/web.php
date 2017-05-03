@@ -4,7 +4,9 @@
 use App\Villa;
 
 
-
+/*
+ * Authentication
+ * */
 Auth::routes();
 
 
@@ -13,27 +15,12 @@ Auth::routes();
 Dashboard
 **********************************/
 Route::get('/', function() {
-
     return view('dashboard.index');
 })->middleware('auth');
 
 
 /**********************
-*    Villa API
-    - API
-
-    GET - api/villa/list/{status?} - get api via status - [list,statuscount]
-
-    GET - api/villa/vacant - get vacant villa - active-list
-
-    GET - api/villa/{id} - get villa - villa-row
-
-    POST - apiStore  - store villa - result
-
-    PATCH - apiUpdate - update villa - result
-
-    DELETE - apiDelete - mark delete - result
-
+*    Villa API End Point
 ***********************/
 Route::get('api/villa/list/{status?}',"VillaController@index");
 
@@ -52,7 +39,7 @@ Route::post("api/villa/store","VillaController@store");
 Route::delete("api/villa/destroy/","VillaController@destroy");
 
 Route::post("api/villa/update","VillaController@update");
-
+/***************************************/
 
 
 Route::get('villa',function() {
@@ -61,36 +48,29 @@ Route::get('villa',function() {
 
 });
 
-
 Route::get('villa/register/{id?}',function($id = 0) {
 
-    return view("villa.create",["id" => $id]);
+    return view("villa.create",compact($id));
 
 });
 
 
 
-/************Contracts API**************
-
-    GET - contract - get the list of the contract -
-
-    GET - contract/apiCreate    - create new contract
-
-    POST - contract/apiStore    - store contract
-
-    GET - contract/apiRenew     - renew contract
-
-    POST - contract/apiRenew    - save renewal
-
-    GET - contract/apiTerminate - terminate contract
-
-    POST - contract/apiTerminate - save terminate
-
-    DELETE - contract/apiDelete
-
-    //notification
-
+/************************
+ *    Contract API End Point
 **************************************/
+
+Route::get("api/contract/list/{status?}","ContractController@index");
+
+Route::get("api/contract/create/","ContractController@create");
+
+Route::post("api/contract/store","ContractController@store");
+
+Route::get("api/contract/renew/{id}","ContractController@renew");
+
+Route::get("api/contract/recalculate/{villaId}","ContractController@recalculate");
+/*****************************************/
+
 Route::get("contract",function() {
     return view("contract.contract");
 });
@@ -101,23 +81,17 @@ Route::get("contract/create/",function() {
 });
 
 
-Route::get("api/contract/list/{status?}","ContractController@index");
 
-Route::get("api/contract/create/","ContractController@create");
+/*************************
+ *BILL API End Point
+**********************************/
 
-Route::post("api/contract/store","ContractController@store");
-
-Route::get("api/contract/renew/{id}","ContractController@renew");
-
-
-
-
-/************BILL API**************
-
-**************************************/
 Route::get('api/bill/create/{contractId}','ContractBillController@create');
 
+Route::post('api/bill/store','ContractBillController@store');
 
-Route::get("bill/register/{contractId}",function($contractId) {
+
+
+Route::get("bill/create/{contractId}",function($contractId) {
     return view("bill.entry",['contractId' => $contractId]);
 });

@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\SelectionRepository;
-use Illuminate\Http\Request;
+use App\Events\Contract\OnInitialize;
+use App\Http\Requests\BillForm;
+use App\Services\Result;
+
 
 class ContractBillController extends Controller
 {
-    
     private $contracts;
     private $bills;
     private $selections;
-
 
     public function __construct(
         \App\Repositories\ContractRepository $contracts,
@@ -27,12 +27,23 @@ class ContractBillController extends Controller
     public function create($contractId) {
 
         //get the contract 
-        $contract = $this->contracts->findById($contractId)->getAssociates();
+        $contract = $this->contracts->findById($contractId)->withAssociates()->first();
+
         $bill = $this->bills->createNewBill($contractId);
-        $lookups = $this->selections->getSelections(array("payment_mode","payment_term"));
+        $bill->instance->amount = $contract->payable_per_month;
+        //set bill payment to rate per month
+
+        $lookups = $this->selections->getSelections(array("payment_mode","payment_term","payment_status"));
 
         //get villa
         return compact("bill","contract","lookups");
+    }
+
+    public function store(BillForm $request) {
+
+        $this->bills->saveBill($request->filterInput());
+
+        return Result::ok('Successfully Save');
     }
 
     public function edit($id) {

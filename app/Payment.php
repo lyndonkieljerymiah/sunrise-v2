@@ -7,7 +7,33 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends BaseModel
 {
+    protected $appends = ['full_status','full_payment_type','full_payment_mode'];
+
     //
+    public function __construct(array $attributes = [])
+    {
+
+        parent::__construct($attributes);
+
+        $this->created_at = Carbon::now();
+        $this->updated_at = Carbon::now();
+    }
+
+
+    protected function getFullStatusAttribute() {
+
+        return $this->attributes['full_status'] = Selection::convertCode($this->status);
+    }
+
+    protected function getFullPaymentTypeAttribute()
+    {
+        return $this->attributes['full_payment_type'] = Selection::convertCode($this->payment_type);
+    }
+
+    protected function getFullPaymentModeAttribute()
+    {
+        return $this->attributes['full_payment_mode'] = Selection::convertCode($this->payment_mode);
+    }
 
 
     public function initPeriod($defaultMonth = 12) {
@@ -26,12 +52,10 @@ class Payment extends BaseModel
             "payment_mode"          =>  "payment",
             "payment_no"            =>  "",
             "bank"                  =>  "",
+            "reference_no"          =>  "",
             "amount"                =>  "0.00",
             "remarks"               =>  "",
-            "status"                =>  "received",
-            "full_status"           =>  "Received"]);
-
-        $p->initPeriod();
+            "status"                =>  "received"]);
 
         return $p;
 

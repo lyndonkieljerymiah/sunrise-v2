@@ -3,6 +3,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class BaseModel extends Model {
@@ -47,10 +48,32 @@ class BaseModel extends Model {
     public function toMap($fields = array()) {
         if(sizeof($fields) > 0) {
             foreach ($fields as $key => $value) {
-                $this->setField($key,$value);
+                //do not include custom attribute
+                if(!in_array($key,$this->appends)) {
+                    $this->setField($key,$value);
+                }
             }
         }
+
         return $this;
+    }
+
+    public function toSave($isUserInclude = false) {
+
+        //update save
+        $this->created_at = Carbon::now();
+        $this->updated_at = Carbon::now();
+        if($isUserInclude) {
+            $this->user_id = 1;
+        }
+        return $this->save();
+
+    }
+
+    public function toUpdate($isUserInclude = false) {
+        $this->updated_at = Carbon::now();
+        return $this->save();
+
     }
 
 }

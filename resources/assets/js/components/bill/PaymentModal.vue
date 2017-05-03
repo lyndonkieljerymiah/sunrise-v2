@@ -1,10 +1,11 @@
 <template>
     <form class="form-horizontal">
+
         <div class="form-group">
             <label for="payment_type" class="col-md-3">Payment Type</label>
             <div class="col-md-9">
                 <select id="payment_type" name="payment_type" v-model="instance.payment_type"
-                        class="form-control">
+                        class="form-control" @change="onChangePaymentType">
                     <option v-for="lookup in paymentTerms" v-bind:value="lookup.code">{{lookup.name}}</option>
                 </select>
             </div>
@@ -19,49 +20,47 @@
                 </select>
             </div>
         </div>
+        
         <div class="form-group">
             <label for="effectivity_date" class="col-md-3">Date of Effectivity</label>
             <div class="col-md-9">
                 <input type="text" class="form-control" name="effectivity_date"
-                        v-model="instance.effectivity_date" id="effectivity_date">
+                        v-model="instance.effectivity_date" id="effectivity_date" required>
             </div>
         </div>
-
+     
         <div class="form-group">
-            <label for="bank" class="col-md-3">Bank</label>
+            <label for="bank"  class="col-md-3">Bank</label>
             <div class="col-md-9">
-                <input type="text" class="form-control" name="bank" v-model="instance.bank" id="bank">
+                <input type="text" :disabled="paymentModeCash" class="form-control" name="bank" v-model="instance.bank" id="bank" required>
             </div>
         </div>
         <div class="form-group">
             <label for="payment_no" class="col-md-3">Payment No</label>
             <div class="col-md-9">
-                <input type="text" class="form-control" name="payment_no" v-model="instance.payment_no" id="payment_no">
+                <input type="text" :disabled="paymentModeCash" class="form-control" name="payment_no" v-model="instance.payment_no" id="payment_no" required>
             </div>
         </div>
         <div class="form-group">
             <label for="period_start" class="col-md-3">Period Start</label>
             <div class="col-md-9">
-                <input type="text" class="form-control" name="period_start" v-model="instance.period_start" id="period_start">
+                <input type="text" class="form-control" name="period_start" v-model="instance.period_start" id="period_start" required>
             </div>
         </div>
         <div class="form-group">
             <label for="period_end" class="col-md-3">Period End</label>
             <div class="col-md-9">
-                <input type="text" class="form-control" name="period_end" v-model="instance.period_end" id="period_end">
+                <input type="text" class="form-control" name="period_end" v-model="instance.period_end" id="period_end" required>
             </div>
         </div>
         <div class="form-group">
             <label for="amount" class="col-md-3">Amount</label>
             <div class="col-md-9">
-                <input type="text" class="form-control" name="amount" v-model="instance.amount" id="amount">
+                <input type="text" class="form-control" name="amount" v-model="instance.amount" id="amount" required>
             </div>
         </div>
-
-
     </form>
 </template>
-
 
 <script>
     export default {
@@ -69,39 +68,27 @@
             instance: {},
             paymentModes: {required:true},
             paymentTerms: {required:true}
-        },
-        data() {
-          return {
 
-          }
         },
-        show() {
-            window.VueEvent.$on("ActivatePaymentDialog",() => {
-                bbox.dialog({
-                    size: that.size,
-                    title: "Payment Entry",
-                    message: $('#paymentFormDialog').clone(),
-                    buttons: {
-                        confirm: {
-                            label: 'Yes',
-                            className: 'btn-success'
-                        },
-                        cancel: {
-                            label: 'No',
-                            className: 'btn-danger'
-                        }
-                    },
-                    callback(result) {
-                        this.$emit(result);
-                    }
-                });
-            });
+
+        methods: {
+            onChangePaymentType() {
+                if(this.instance.payment_type == "cash") {
+                    this.instance.payment_no = "Cash";
+                    this.instance.bank = "Cash";
+                }
+                else {
+                    this.instance.payment_no = "";
+                    this.instance.bank = "";
+                }
+            }
+        },
+        computed: {
+            paymentModeCash: function() {
+                return this.instance.payment_type === "cash" ? true : false;
+            }
         }
     }
 </script>
 
-<style>
-    .is-dialog {
-        style:none;
-    }
-</style>
+

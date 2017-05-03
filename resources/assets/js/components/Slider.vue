@@ -2,7 +2,7 @@
    <div>
     <div class="slider-wrapper">
       <div  class="sliders clearfix" v-for="slide in slides" ref='sliders'>
-        <img :src="slide.image_name"/>
+        <img :src="fullImagePath(slide.image_name)"/>
       </div>
       <ul class="slider-nav">
         <li v-for="(bullet,index) in slides"><span class="circle" @click="onSlide(index)" ref="bullets"></span></li>
@@ -60,8 +60,14 @@
                 });
                 
                 this.currentSlideNo = i;
+            },
+            fullImagePath(img) {
+                return window.Laravel.imagePath + "/" + img;
             }
         },
+        computed: {
+
+        }
       
     }
 </script>

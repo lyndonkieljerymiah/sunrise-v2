@@ -27,7 +27,7 @@ class GetVilla
 
         $villa = $this->repository->single($villaId);
 
-        $event->setOutput('villa',$villa->villa_no);
+        $event->setOutput('villa',$villa);
 
     }
 }

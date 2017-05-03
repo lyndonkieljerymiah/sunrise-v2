@@ -9,7 +9,6 @@
                         {{ csrf_field() }}
                         <div class="form-group{{ $errors->has('full_name') ? ' has-error' : '' }}">
                             <label for="full_name" class="col-md-2 control-label">Full Name</label>
-
                             <div class="col-md-6">
                                 <input id="full_name" type="text" class="form-control" name="full_name" value="{{ old('full_name') }}" required autofocus>
 
@@ -31,6 +30,7 @@
                                         <strong>{{ $errors->first('username') }}</strong>
                                     </span>
                                 @endif
+
                             </div>
                         </div>
 

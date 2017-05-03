@@ -32,6 +32,14 @@ class ContractRepository extends AbstractRepository {
 
     }
 
+    public function withAssociates() {
+
+        $this->model = $this->model->with('villa')->with('tenant');
+
+        return $this;
+    }
+
+
     public function renew($models) {
         
         $contract = $this->single($models['id']);
@@ -49,7 +57,9 @@ class ContractRepository extends AbstractRepository {
             }
 
             $newContractNo = implode('-',$splits);
+
             $contract->completed();
+
             $contract->save();
             
             //set contract no
@@ -65,6 +75,16 @@ class ContractRepository extends AbstractRepository {
         }  
     }
 
+    public function getContracts($status = "") {
+
+        return $this->model->lists($status);
+    }
+
+    public function create($defaultMonths) {
+        return \App\Contract::createInstance($defaultMonths);
+
+    }
+
     public function cancelled($models) {
 
         $contract = $this->single($models['id']);
@@ -73,21 +93,11 @@ class ContractRepository extends AbstractRepository {
 
             $contract->cancel();
 
+            $contract->toUpdate();
+
         }
 
         return true;
-    }
-
-    public function getContracts($status = "") {
-
-        return $this->model->lists($status);
-
-    }
-
-    public function create($defaultMonths) {
-
-        return \App\Contract::createInstance($defaultMonths);
-
     }
 
     public function terminate($models = array()) {
@@ -95,8 +105,11 @@ class ContractRepository extends AbstractRepository {
         $contract = $this->single($models['id']);
         
         if($contract->hasStatusOf(Contract::ACTIVE)) {
+
             $this->contract->terminate();
-            $this->contract->save();
+
+            $this->contract->toUpdate();
+
         }
         
         return true;

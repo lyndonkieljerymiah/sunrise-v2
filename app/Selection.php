@@ -38,6 +38,12 @@ class Selection extends BaseModel
 
         $values = Selection::wherein('code',$keys)->get();
         return $values;
-        
+    }
+
+    public static function convertCode($code) {
+
+        $code = str_replace("_"," ",$code);
+        return ucwords($code);
+
     }
 }

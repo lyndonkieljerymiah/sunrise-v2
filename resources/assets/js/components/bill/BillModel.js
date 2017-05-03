@@ -19,9 +19,48 @@ class BillModel {
         this.cloneOfInstance = objectClone(this._preserveInstance);
     }
 
-    insert() {
+    insert(fn) {
+        //check first if the instance change its type
+        fn(this.cloneOfInstance);
         this.payments.push(this.cloneOfInstance);
+        this.reindexing();
     }
+
+    reindexing() {
+        //create index
+        for(var i = 0; i < this.payments.length; i++) {
+            this.payments[i].id = i;
+        }
+    }
+
+    removePayment(id) {
+        this.payments.splice(id,1);
+        this.reindexing();
+    }
+
+    totalAmount() {
+        var sum = 0;
+        for(var i=0;i < this.payments.length; i++) {
+            sum +=  parseInt(this.payments[i].amount);
+        }
+        return sum;
+    }
+
+    saveChanges() {
+        var data = {
+            contract_id: this.contract_id,
+            payments: this.payments};
+
+        AjaxRequest.post('bill','store',data)
+            .then(r => {
+                //success saving
+            })
+            .catch(e => this.errors = e.data);
+    }
+
+
+
+    
 }
 
 

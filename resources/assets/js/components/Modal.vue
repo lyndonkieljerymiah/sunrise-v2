@@ -10,14 +10,12 @@
                     <slot></slot>
                 </div>
                 <div class="modal-footer">
-
                     <button type="button" class="btn btn-default"  @click="dismiss(false)">Close</button>
                     <button type="button" class="btn btn-primary" @click="dismiss(true)">Save changes</button>
                 </div>
             </div>
         </div>
     </div>
-
 </template>
 
 <script>
@@ -29,17 +27,14 @@
             modalType: 'custom'
         },
         methods: {
-            show() {
-                alert("hello world");
-            },
             dismiss(result) {
-                 $("#modalComponent").modal('hide');
+                $("#modalComponent").modal('hide');
                 this.$emit("dismiss",result);
             }
         },
         mounted() {
-            var that = this;
             VueEvent.$on('onModalActive',() => {
+               //show
                $("#modalComponent").modal({show:true});
             })
         }

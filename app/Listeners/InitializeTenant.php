@@ -18,7 +18,7 @@ class InitializeTenant
    
     public function handle(OnInitialize $event)
     {
-        $tenant = $this->repository->createNew();
+        $tenant = $this->repository->createInstance();
         
         $event->dispatch('tenant', $tenant);
     }

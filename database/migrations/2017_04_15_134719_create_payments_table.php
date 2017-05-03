@@ -17,7 +17,7 @@ class CreatePaymentsTable extends Migration
 
             $table->increments('id');
             
-            $table->integer('bill_id')->unique()->unsigned();
+            $table->integer('bill_id')->index();
 
             $table->date('effectivity_date');
 
@@ -39,11 +39,11 @@ class CreatePaymentsTable extends Migration
 
             $table->string('reference_no');
 
-            $table->integer('user_id')->unique();
+            $table->string('status',20)->index();
 
-            $table->boolean('mark_deleted');
+            $table->integer('user_id')->index();
 
-
+            $table->boolean('is_active');
 
             $table->timestamps();
 

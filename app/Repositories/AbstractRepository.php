@@ -45,13 +45,8 @@ abstract class AbstractRepository {
         return $this;
     }
 
-    public function getAssociates() {
+    public function createInstance() {
 
-        return $this->model->getAssociates();
-
-    } 
-
-    public function createNew() {
         return $this->model->createInstance();
     }
   
@@ -64,7 +59,14 @@ abstract class AbstractRepository {
         return $records;
     }
 
-  
+    public function first() {
+
+        $records = $this->model->where('is_active',1)->first();
+
+        $this->model = $this->definedModel();
+
+        return $records;
+    }
 
     public function single($id) {
 
@@ -84,7 +86,6 @@ abstract class AbstractRepository {
         return $model;
     }
 
-   
     public function lastRecord() {
 
         return $this->model->orderBy('id','desc')->first();
@@ -94,20 +95,26 @@ abstract class AbstractRepository {
 
 
     //command operation*******************************************
-    public function clearChain() {
+    protected function clearChain() {
 
         $this->model = $this->definedModel();
 
         return $this;
     }
 
-    public function attach($model,$state = "auto",$exclude = array()) {
+    /**
+     * @param $model
+     * @param string $state
+     * @param array $exclude
+     * @return $this
+     */
+    public function attach($model, $state = "auto", $exclude = array()) {
 
         $this->emptyModel = $model;
 
         if($state == "auto") {
 
-            if(!isset($this->emptyModel['id']) || $this->emptyModel['id'] == 0) {
+            if(!isset($model['id']) || $model['id'] == 0) {
                 $state = "create";
             }
             else {
@@ -119,66 +126,35 @@ abstract class AbstractRepository {
         try {
 
             if($state == "create") {
-                
-                $this->beforeCreate();
 
-                $this->emptyModel['created_at'] = Carbon::now();
+                $this->beforeCreate($model);
 
-                $this->emptyModel['updated_at'] = Carbon::now();
-
-                $this->model->create($this->emptyModel);
+                $this->model->toMap($model)->toSave();
 
                 $this->afterCreate();
 
             }
             else if($state == "modify") {
 
-                $this->model = $this->single($this->emptyModel['id']);
+                $this->model = $this->single($model['id']);
 
-                foreach($this->emptyModel as $key => $value) {
-
-                    $this->model->setField($key,$value);
-
-                }
+                $this->model->toMap($model)->toUpdate();
             }
-
-            $this->model = $this->model;
-            
 
         }
         catch(Exception $e) {
-
+            abort(500,$e->getMessage());
         }
 
         return $this;
     }
-
-   
 
     public function softDeleted() {
         
         $this->model->is_active = 0;
-        
-        return $this;
-    }
+        $this->model->toUpdate();
 
-     public function saveChanges() {
-        try {
-
-            $this->model->updated_at = Carbon::now();
-           
-            $this->model->save();
-
-            return true;
-
-        }
-
-        catch(Exception $e) {
-
-            throw new Exception($e->getMessage());
-        }
-
-        return false;
+        return true;
     }
 
     public function createNewId() {

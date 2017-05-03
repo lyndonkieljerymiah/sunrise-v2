@@ -88,15 +88,14 @@ class VillaRepository extends AbstractRepository {
 
             unset($viewInputs['galleries']);
             unset($viewInputs['villa_galleries']);
-            
-            $villaModel = $this->definedModel();
+
             if($mode == "modify") {
-               $villaModel = $villaModel->find($viewInputs['id']);
-               $villaModel->toMap($viewInputs)->save();
+               $villaModel = $this->model->find($viewInputs['id']);
+               $villaModel->toMap($viewInputs)->toSave();
             }
             else {
                 $viewInputs['status'] = 'vacant';
-                $villaModel->toMap($viewInputs)->save();
+                $villaModel->toMap($viewInputs)->toUpdate();
             }
 
             //save collection

@@ -18,7 +18,12 @@
                       </div>
                     </div>
                       <br/>
-                    <gridview :data="items" :columns="gridColumns"></gridview>
+                    <gridview
+                    :data="items"
+                    :columns="gridColumns"
+                    :actions="actions"
+                    @action="doAction">
+                  </gridview>
               </div>
           </div>
         </div>
@@ -36,6 +41,17 @@ export default {
 
     name: "app",
     props: ['url'],
+    methods: {
+        doAction(a,id) {
+             if(a.key == 'edit') {
+                var redirectToEdit = this.url + "/" + id;
+                AjaxRequest.route(redirectToEdit);
+            }
+        },
+        addNew() {
+            AjaxRequest.route(this.url);
+        }
+    },
     data: function () {
       return {
         items:[],
@@ -52,9 +68,16 @@ export default {
           {name: 'full_name', column: 'Tenant Id'},
           {name: 'villa_no', column: 'Villa No'},
           {name: 'status', column: 'Status'},
-        ]
+          {name: 'action', column: '',static:true, class: 'text-center'}],
+          actions: [
+              {key:'approved', name:'Approved'},
+              {key:'cancelled', name:'Cancelled'},
+              {key:'remove',name:'Remove'}
+          ],
+          statusCounts: []
       }
     },
+
     created() {
           var self = this;
           AjaxRequest.get("contract", "list")

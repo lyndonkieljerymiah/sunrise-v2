@@ -17,25 +17,65 @@ class Contract extends BaseModel
 
     protected $table = "contracts";
 
-    protected $custSelectionKeys = ["status","contract_type"];
-   
+    protected $appends = ['full_status','full_contract_type','payable_per_month'];
+
+    protected function getFullStatusAttribute() {
+
+        return $this->attributes['full_status'] = Selection::convertCode($this->status);
+
+    }
+
+    protected function getFullContractTypeAttribute() {
+
+        return $this->attributes['contract_type'] = Selection::convertCode($this->contract_type);
+    }
+
+    protected function getPayablePerMonthAttribute() {
+
+        if($this->amount > 0) {
+            $totalDays = Carbon::parse($this->period_start)->diffInDays(Carbon::parse($this->period_end));
+
+            $totalAmountPerDays = $this->amount / intval($totalDays / 30);
+
+            return $this->attributes['payable_per_month'] = $totalAmountPerDays;
+        }
+        return 0;
+    }
 
     public function contractTermination() {
         
         return $this->hasMany(ContractTermination::class);
-
     }
+
+    public function villa() {
+        return $this->hasOne(Villa::class,"id","villa_id");
+    }
+
+    public function tenant() {
+        return $this->hasOne(Tenant::class,"id","tenant_id");
+    }
+
 
     public static function createInstance($defaultMonths) {
         
-        $newModel = new Contract();
+        $contract = new Contract();
+        
+        $contract->contract_type = "legalized";
 
-        $newModel->contract_type = "legalized";
+        $contract->tenant_id = 0;
 
-        $newModel->toDefaultPeriod(Carbon::now()->toDateTimeString(),$defaultMonths);
+        $contract->villa_id = 0;
 
-        return $newModel;
+        $contract->toDefaultPeriod(Carbon::now()->toDateTimeString(),$defaultMonths);
+
+        $contract->register_tenant = Tenant::createInstance();
+
+        $contract->villa_list = Villa::with('villaGalleries')->where('status','vacant')->get();
+
+        return $contract;
     }
+
+
     
     public function lists($status = "") {
 
@@ -57,19 +97,12 @@ class Contract extends BaseModel
 
     }
 
-    public function getAssociates() {
+    public function withAssociates() {
         
-        $tenantId = $this->tenant_id;
-        $villaId = $this->villa_id;
-
-        $associates = [
-            'tenant'    =>  \DB::table('tenants')->where('id',$tenantId)->first(),
-            'villa'     =>  \DB::table('villas')->where('id',$villaId)->first()
-        ];
-        
-        $this->associates = $associates;
+        $this->with('villa')->with('tenant');
 
         return $this;
+
     }
    
     public function toDefaultPeriod($startPeriod,$default) {
@@ -82,9 +115,9 @@ class Contract extends BaseModel
 
     public function toComputeAmount($rate) {
         
-        $totalPeriod = $this->period_start->diffInDays($this->period_end);
+        $totalPeriod = Carbon::parse($this->period_start)->diffInDays(Carbon::parse($this->period_end));
 
-        $totalMonth = intval(ceil($totalPeriod / 30));
+        $totalMonth = intval($totalPeriod / 30);
 
         $this->amount = $rate * $totalMonth;
 

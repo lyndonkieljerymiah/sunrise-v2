@@ -6,11 +6,32 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class Villa extends BaseModel
-{  
-
+{
     protected $custSelectionKeys = ["villa_class","status","location"];
 
     protected $table = 'villas';
+
+
+    public static function createInstance() {
+        return new Villa();
+    }
+
+    public function __construct(array $attributes = [])
+    {
+
+        $this->location = "sv1";
+        $this->villa_no = "";
+        $this->electricity_no = "";
+        $this->water_no = "";
+        $this->qtel_no = "";
+        $this->description = "";
+        $this->capacity = "0";
+        $this->villa_class = "ff";
+        $this->rate_per_month = "0.00";
+
+        parent::__construct($attributes);
+    }
+
 
     public function villaGalleries() {
 
@@ -27,6 +48,9 @@ class Villa extends BaseModel
     }
 
     /*************************************************************/
+    public function vacantOnly() {
+        return $this->where('status','vacant');
+    }
 
     public function statusCount() {
 

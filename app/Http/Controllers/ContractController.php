@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\Contract\OnCreating;
+use App\Events\Contract\OnRecalculate;
+use App\Http\Requests\ContractRegisterForm;
 use Illuminate\Http\Request;
 
 use App\Services\Result;
@@ -38,12 +41,8 @@ class ContractController extends Controller
 
             $outputs = array();
 
-            event(new \App\Events\Contract\OnInitialize($outputs));
-
             return [
                 "data"      => $this->contracts->create(self::DEFAULT_PERIOD),
-                "villas"    => $outputs['villa'],
-                "tenant"    => $outputs['tenant'],
                 "lookups"   => $this->selections->getSelections(["contract_type","tenant_type"])
             ];
         }
@@ -53,28 +52,47 @@ class ContractController extends Controller
         }
     }
 
-    public function recalculate() {
+    public function recalculate($villaId) {
 
-        
+        //get the selected villa object to get rate per month
+        event(new OnRecalculate(["villaId" => $villaId],$expectedOutput));
+
+        if(sizeof($expectedOutput)) {
+
+            //get the rate
+            $ratePerMonth = $expectedOutput['villa']->rate_per_month;
+
+            //create contract with new rate
+            $contract = $this->contracts->create(self::DEFAULT_PERIOD);
+            $contract->toComputeAmount($ratePerMonth);
+
+            return $contract;
+        }
+
+        return Result::badRequest("No contract was created");
+
     }
 
-     public function store(ContractForm $request) {
+     public function store(ContractRegisterForm $request) {
 
         try {
+            dd($request->all());
+
             $expectedOutput = array();
-            event(new \App\Events\Contracts\OnCreating([
-                'tenant'    => $request->input('tenant'),
+
+            event(new OnCreating([
+                'tenant'    => $request->input('register_tenant'),
                 'villaId'   => $request->input('villa_id')
                 ],$expectedOutput));
             
             $contractModel = $request->input('contract');
 
-            $contractModel['tenant_id'] = $expectedOutput['tenant'];
+            $contractModel['tenant_id'] = $expectedOutput['tenant']->tenant_id;
             
-            $contractModel['villa_no']  = $expectedOutput['villa'];
+            $contractModel['villa_no']  = $expectedOutput['villa']->villa_no;
 
             $this->contracts->saveContract($contractModel);
-                
+            
             //trigger event since saving
             event(new \App\Events\Contracts\NotifyUpdate([
                     'villa' => ["villaId" => $request->input('villa_id'), "status" => "occupied"] 
@@ -82,7 +100,7 @@ class ContractController extends Controller
             
         }
         catch(Exception $e) {
-            abort("500", $e->getMessage());
+            abort(500, $e->getMessage());
         }
 
         return Result::ok("Successfully save!!!");
@@ -163,11 +181,7 @@ class ContractController extends Controller
 
     }
 
-    protected function registerTenant($inputs) {
 
-        return $this->tenant->attach($inputs)->getLastRecord();
-        
-    }
     
 
 }

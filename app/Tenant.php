@@ -8,25 +8,30 @@ class Tenant extends BaseModel
 {
     //
 
+    public function __construct(array $attributes = [])
+    {
+        $this->type = "individual";
+        $this->code = "";
+        $this->full_name = "";
+        $this->email_address = "";
+        $this->tel_no = "";
+        $this->mobile_no = "";
+        $this->fax_no = "";
+        $this->reg_date = \Carbon\Carbon::now()->toDateTimeString();
+        $this->gender = "Male";
+        $this->reg_id = "";
+        $this->reg_name = "";
+
+        parent::__construct($attributes);
+    }
+
     public function Address() {
         return $this->hasOne(TenantAddress::class);
     }
 
     public static function createInstance() {
         $tenant = new Tenant();
-        
-        $tenant->type = "individual";
-        $tenant->code = "";
-        $tenant->full_name = "";
-        $tenant->email_address = "";
-        $tenant->tel_no = "";
-        $tenant->mobile_no = "";
-        $tenant->fax_no = "";
-        $tenant->reg_date = \Carbon\Carbon::now()->toDateTimeString();
-        $tenant->gender = "Male";
-        $tenant->reg_id = "";
-        $tenant->reg_name = "";
-
+        $tenant->address_instance = TenantAddress::createInstance();
         return $tenant;
 
     }

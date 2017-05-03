@@ -296,7 +296,7 @@ class ComposerStaticInit25dd7f7866cb54e2b453ba6fb41b73a0
         'App\\Http\\Middleware\\RedirectIfAuthenticated' => __DIR__ . '/../..' . '/app/Http/Middleware/RedirectIfAuthenticated.php',
         'App\\Http\\Middleware\\TrimStrings' => __DIR__ . '/../..' . '/app/Http/Middleware/TrimStrings.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
-        'App\\Http\\Requests\\ContractForm' => __DIR__ . '/../..' . '/app/Http/Requests/ContractForm.php',
+        'App\\Http\\Requests\\ContractForm' => __DIR__ . '/../..',
         'App\\Http\\Requests\\VillaForm' => __DIR__ . '/../..' . '/app/Http/Requests/VillaForm.php',
         'App\\Listeners\\CreateTenant' => __DIR__ . '/../..' . '/app/Listeners/CreateTenant.php',
         'App\\Listeners\\GetVilla' => __DIR__ . '/../..' . '/app/Listeners/GetVilla.php',

@@ -10,9 +10,9 @@
                 <form method="POST" action="{{ route('login') }}">
                     <div class="login-fields">
                         {{ csrf_field() }}
-                        <input id="email" type="text" name="email" placeholder="Enter User" value="{{ old('email') }}" required autofocus autocomplete="off">
+                        <input id="username" type="text" name="username" placeholder="Enter User" value="{{ old('username') }}" required autofocus autocomplete="off">
                         @if ($errors->has('email'))
-                            <span class="icon"  data-toggle="tooltip" data-placement="right" title="{{$errors->first('email')}}">
+                            <span class="icon"  data-toggle="tooltip" data-placement="right" title="{{$errors->first('username')}}">
                                <i class="fa fa-warning fa-2x"></i>
                             </span>
                         @endif
