@@ -1,71 +1,148 @@
+
 class BillModel {
-        
+
     constructor() {
-        this.payments = [];
-        this.contract_id = 0;
-        this._preserveInstance = {};
+
+        this.data = {
+            payments: []
+        };
+        this.contract = {
+            tenant: {},
+            villa: {}
+        };
+
+        this.lookups = {};
         this.cloneOfInstance = {};
+        this.errors = new window.ErrorValidations.newInstance();
+
     }
 
-    bind(model) {
-        this.contract_id = model.contract_id;
-        this._preserveInstance = model.instance;
-        this._preserveInstance.effectivity_date = moment(model.instance.effectivity_date).format('l');
-        this._preserveInstance.period_start = moment(model.instance.period_start).format('l');
-        this._preserveInstance.period_end = moment(model.instance.period_end).format('l');
+    create(contractId) {
+
+        let that = this;
+
+        AjaxRequest.get('bill', 'create', contractId)
+            .then(r => {
+
+                this.data = r.data.bill;
+                this.contract = r.data.contract;
+                this.lookups = r.data.lookups;
+
+                this.data.instance.effectivity_date = moment(r.data.bill.instance.effectivity_date).format('l');
+                this.data.instance.period_start = moment(r.data.bill.instance.period_start).format('l');
+                this.data.instance.period_end = moment(r.data.bill.instance.period_end).format('l');
+
+                this.createInstance();
+            })
+            .catch(e => {
+                this.errors.register(e.data)
+            });
+    }
+
+    changePaymentType() {
+        if(this.cloneOfInstance.payment_type == "cash") {
+            this.cloneOfInstance.payment_no = "Cash";
+            this.cloneOfInstance.bank = "Cash";
+        }
+        else {
+            this.cloneOfInstance.payment_no = "";
+            this.cloneOfInstance.bank = "";
+        }
+    }
+
+    isPaymentCash() {
+        return this.cloneOfInstance.payment_type === "cash" ? true : false;
     }
 
     createInstance() {
-        this.cloneOfInstance = objectClone(this._preserveInstance);
+
+        this.cloneOfInstance = objectClone(this.data.instance);
     }
 
-    insert(fn) {
+    insert() {
         //check first if the instance change its type
-        fn(this.cloneOfInstance);
-        this.payments.push(this.cloneOfInstance);
+        this.lookups.payment_mode.forEach(item => {
+            if(item.code === this.cloneOfInstance.payment_mode) {
+                this.cloneOfInstance.full_payment_mode = item.name;
+            }
+        });
+
+        this.lookups.payment_term.forEach(item =>
+        {
+            if(item.code === this.cloneOfInstance.payment_type)
+            {
+                this.cloneOfInstance.full_payment_type = item.name;
+            }
+        });
+
+        this.data.payments.push(this.cloneOfInstance);
         this.reindexing();
     }
 
     reindexing() {
         //create index
-        for(var i = 0; i < this.payments.length; i++) {
-            this.payments[i].id = i;
+        for(var i = 0; i < this.data.payments.length; i++) {
+            this.data.payments[i].id = i;
         }
     }
 
     removePayment(id) {
-        this.payments.splice(id,1);
+        this.data.payments.splice(id,1);
         this.reindexing();
     }
 
     totalAmount() {
         var sum = 0;
-        for(var i=0;i < this.payments.length; i++) {
-            sum +=  parseInt(this.payments[i].amount);
+        for(var i=0;i < this.data.payments.length; i++) {
+            sum +=  parseInt(this.data.payments[i].amount);
         }
         return sum;
     }
 
-    saveChanges() {
-        var data = {
-            contract_id: this.contract_id,
-            payments: this.payments};
+    saveChanges(cbSuccess,cbError) {
 
-        AjaxRequest.post('bill','store',data)
+        AjaxRequest.post('bill','store',this.data)
             .then(r => {
                 //success saving
+                cbSuccess(r.data);
             })
-            .catch(e => this.errors = e.data);
+            .catch(e => {
+                this.errors = e.data;
+                cbError();
+            });
     }
-
-
-
-    
 }
 
+
+class BillReadableModel {
+
+    constructor() {
+
+        this.data = {
+            payments : []
+        }
+
+        this.contract = {
+
+        }
+    }
+
+    create(id) {
+        AjaxRequest.get('bill','show',id)
+            .then(r => {
+
+            })
+            .catch(e => {
+
+            })
+    }
+}
 
 export default {
     createInstance() {
         return new BillModel();
+    },
+    createReadbleInstance() {
+        return new BillReadableModel()
     }
 }

@@ -5,10 +5,11 @@ namespace App\Services;
 class Result {
 
 
-    public static function ok($message = '') {
+    public static function ok($message = '',$data = []) {
         return [
             'isOk'      => true,
             'message'   => $message
+            'data'      =>  $data
         ];
     }
 

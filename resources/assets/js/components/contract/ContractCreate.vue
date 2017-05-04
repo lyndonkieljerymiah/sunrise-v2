@@ -1,5 +1,6 @@
 <template>
-<form id="ConCreate" class="form-horizontal" @submit.prevent="contract.save()" @keydown="contract.errors.clear($event.target.name)">
+  <div id="ConCreate">
+
 
     <div class="panel panel-primary">
       <div class="panel-body">
@@ -77,7 +78,7 @@
 
 
 </div>
-</form>
+</div>
 </template>
 <script>
 

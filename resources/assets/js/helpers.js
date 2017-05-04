@@ -49,7 +49,6 @@ class AxiosRequest {
 
     get(controller,action) {
         var qs = "";
-
         if(arguments.length >= 3) {
             for(var i=2;i < arguments.length; i++) {
                 qs += arguments[i] + '/';
@@ -71,17 +70,20 @@ class AxiosRequest {
         return this;
     }
 
-    redirect(controller,action) {
+    redirect(controller,action,data) {
+
         var baseUrl = window.Laravel.baseUrl;
 
-        window.location.href = baseUrl + controller + "/" + action;
+        var url = baseUrl + "/" + controller + "/" + (action !== null ? action : "") + (data !== null ? "/" + data : "");
+        console.log(url);
+        window.location.href = url;
 
     }
 
     postMultiForm(controller,action,formData) {
        return $.ajax({
                 url         : '/api/'+controller+'/'+action,
-                type: 'POST',
+                type        : 'POST',
                 data        : formData,
                 headers: {'X-CSRF-TOKEN': window.Laravel.csrfToken},
                 processData : false,

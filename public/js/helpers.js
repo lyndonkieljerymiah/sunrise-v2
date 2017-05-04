@@ -142,7 +142,6 @@ var AxiosRequest = function () {
         key: 'get',
         value: function get(controller, action) {
             var qs = "";
-
             if (arguments.length >= 3) {
                 for (var i = 2; i < arguments.length; i++) {
                     qs += arguments[i] + '/';
@@ -165,10 +164,13 @@ var AxiosRequest = function () {
         }
     }, {
         key: 'redirect',
-        value: function redirect(controller, action) {
+        value: function redirect(controller, action, data) {
+
             var baseUrl = window.Laravel.baseUrl;
 
-            window.location.href = baseUrl + controller + "/" + action;
+            var url = baseUrl + "/" + controller + "/" + (action !== null ? action : "") + (data !== null ? "/" + data : "");
+            console.log(url);
+            window.location.href = url;
         }
     }, {
         key: 'postMultiForm',

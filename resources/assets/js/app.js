@@ -37,15 +37,13 @@ import VueRouter from 'vue-router';
 
 import VeeValidate from 'vee-validate';
 
-const config = {
-    errorBagName: 'verrors'
-}
+import VeeValidator from 'vee-validate';
+
+window.veeValidator = VeeValidator;
 
 Vue.use(VueRouter);
 
 Vue.use(VeeValidate);
-
-
 
 /**************************
 *

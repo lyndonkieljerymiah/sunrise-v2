@@ -24,17 +24,16 @@ class ContractRepository extends AbstractRepository {
 
 
 
-    public function saveContract($model) {
+    public function saveContract($model)
+    {
 
         $villaNo = $model['villa_no'];
 
         unset($model['villa_no']);
         
         $model['contract_no'] = "C".$villaNo."-".Carbon::now()->year."-".$this->createNewId();
-        
-        $this->attach($model,'create');
 
-        return $this;
+        return $this->attach($model,'create')->instance();
 
     }
 
@@ -48,11 +47,11 @@ class ContractRepository extends AbstractRepository {
 
     public function renew($models) {
         
-        $contract = $this->single($models['id']);
+        $oldContract = $this->single($models['id']);
 
-        if($contract->hasStatusOf(Contract::ACTIVE)) {
+        if($oldContract->hasStatusOf(Contract::ACTIVE)) {
             
-            $oldContractNo = $contract->contract_no;
+            $oldContractNo = $oldContract->contract_no;
             
             preg_match('/^([^-]+?)-([0-9]+?)-([0-9]+?)$/',$oldContractNo,$splits);
 
@@ -64,9 +63,9 @@ class ContractRepository extends AbstractRepository {
 
             $newContractNo = implode('-',$splits);
 
-            $contract->completed();
+            $oldContract->completed();
 
-            $contract->save();
+            $oldContract->save();
             
             //set contract no
             $model['contract_no'] = $newContractNo;
@@ -115,8 +114,7 @@ class ContractRepository extends AbstractRepository {
 
             $this->contract->terminate();
 
-            $this->contract->toUpdate();
-
+            $this->contract->save();
         }
         
         return true;

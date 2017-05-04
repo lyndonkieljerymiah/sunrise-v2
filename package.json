@@ -23,7 +23,7 @@
     "bower": "^1.8.0",
     "moment": "^2.18.1",
     "toastr": "^2.1.2",
-    "vee-validate": "^2.0.0-rc.3",
+    "vee-validate": "^2.0.0-beta.17",
     "vue-router": "^2.5.2"
   }
 }

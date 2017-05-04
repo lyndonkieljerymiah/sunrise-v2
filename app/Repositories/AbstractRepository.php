@@ -77,22 +77,8 @@ abstract class AbstractRepository {
         return $model;
     }
 
-    public function lastRecord() {
-
-        return $this->model->orderBy('id','desc')->first();
-
-    }
-    
-
 
     //command operation*******************************************
-    protected function clearChain() {
-
-        $this->model = $this->definedModel();
-
-        return $this;
-    }
-
     /**
      * @param $model
      * @param string $state
@@ -113,14 +99,13 @@ abstract class AbstractRepository {
             }
         }
         
-        
         try {
 
             if($state == "create") {
 
                 $this->beforeCreate($model);
 
-                $this->model->toMap($model)->toSave();
+                $this->model->toMap($model)->save();
 
                 $this->afterCreate();
 
@@ -129,11 +114,12 @@ abstract class AbstractRepository {
 
                 $this->model = $this->single($model['id']);
 
-                $this->model->toMap($model)->toUpdate();
+                $this->model->toMap($model)->save();
             }
 
         }
         catch(Exception $e) {
+
             abort(500,$e->getMessage());
         }
 

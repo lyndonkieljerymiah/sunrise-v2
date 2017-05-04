@@ -13,6 +13,7 @@ class CreateContractBillsTable extends Migration
      */
     public function up()
     {
+
         Schema::create('contract_bills', function (Blueprint $table) {
             
             $table->increments('id');
@@ -27,6 +28,8 @@ class CreateContractBillsTable extends Migration
 
             $table->string('status',20)->index();
 
+            $table->string('is_active')->index();
+
               //foreign key
             $table->foreign('contract_id')
 
@@ -36,6 +39,7 @@ class CreateContractBillsTable extends Migration
                 
                 
         });
+
     }
 
     /**

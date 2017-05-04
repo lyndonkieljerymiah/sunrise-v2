@@ -64,6 +64,7 @@ class BaseModel extends Model {
         if($isUserInclude) {
             $this->user_id = 1;
         }
+
         return $this->save();
 
     }

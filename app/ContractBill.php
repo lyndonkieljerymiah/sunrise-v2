@@ -13,28 +13,46 @@ class ContractBill extends BaseModel
 
     public function __construct(array $attributes = [])
     {
-        parent::__construct($attributes);
-
         $this->created_at = Carbon::now();
         $this->updated_at = Carbon::now();
+        $this->status = "pending";
+
+        parent::__construct($attributes);
+
     }
 
     public function Payments() {
 
-        $this->hasMany(Payment::class,'bill_id','id');
+        return $this->hasMany(Payment::class,'bill_id','id');
     }
+
+
 
     public static function createInstance($contractId) {
 
         $bill = new ContractBill();
         $bill->contract_id = $contractId;
-        $bill->status = "pending";
         $bill->instance = Payment::createInstance();
         $bill->instance->initPeriod(self::DEFAULT_PERIOD);
         $bill->payments = [];
 
         return $bill;
     }
+
+    public function activate() {
+
+        $this->status = 'active';
+
+        return $this;
+    }
+
+    public function withAssociates() {
+
+        return $this->with('Payments');
+
+    }
+
+
 
 
 

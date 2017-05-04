@@ -43,7 +43,6 @@
         </div>
     </div>
     <!-- /#wrapper -->
-
     <script src="{{asset('js/sidebar.js')}}"></script>
     <script src="{{asset('js/app.js')}}"></script>
     <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.1.3/js/bootstrap-datetimepicker.min.js"></script> -->

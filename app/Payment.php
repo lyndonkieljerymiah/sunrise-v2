@@ -12,11 +12,12 @@ class Payment extends BaseModel
     //
     public function __construct(array $attributes = [])
     {
+        $this->created_at = Carbon::now();
+        $this->updated_at = Carbon::now();
 
         parent::__construct($attributes);
 
-        $this->created_at = Carbon::now();
-        $this->updated_at = Carbon::now();
+
     }
 
 

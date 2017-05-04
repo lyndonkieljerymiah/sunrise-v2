@@ -24,11 +24,12 @@
         props: {
             dialogTitle: '',
             size: '',
-            modalType: 'custom'
+            modalType: 'custom',
+            isClose: false
         },
         methods: {
             dismiss(result) {
-                $("#modalComponent").modal('hide');
+                //$("#modalComponent").modal('hide');
                 this.$emit("dismiss",result);
             }
         },

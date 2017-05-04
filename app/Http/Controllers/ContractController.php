@@ -27,7 +27,6 @@ class ContractController extends Controller
 
         $this->selections = $selections;
 
-
     }
 
     public function index($status = "") {
@@ -60,7 +59,6 @@ class ContractController extends Controller
         event(new OnRecalculate(["villaId" => $villaId],$expectedOutput));
 
         if(sizeof($expectedOutput)) {
-
             //get the rate
             $ratePerMonth = $expectedOutput['villa']->rate_per_month;
 
@@ -77,9 +75,10 @@ class ContractController extends Controller
     }
 
      public function store(ContractRegisterForm $request) {
-
         try {
+
             $expectedOutput = array();
+
             $result = $request->filterInput();
 
             event(new OnCreating([
@@ -99,21 +98,18 @@ class ContractController extends Controller
             
             $contractModel['villa_no']  = $expectedOutput['villa']->villa_no;
 
-
-
-            $this->contracts->saveContract($contractModel);
+            $contract = $this->contracts->saveContract($contractModel);
             
             //trigger event since saving
             event(new NotifyUpdate([
                     'villa' => ["id" => $result['villa_id'], "status" => "occupied"]
                 ]));
-            
         }
         catch(Exception $e) {
             abort(500, $e->getMessage());
         }
 
-        return Result::ok("Successfully save!!!");
+        return Result::ok("Successfully save!!!",['id' => $contract->id]);
     }
 
     public function renew($id) {

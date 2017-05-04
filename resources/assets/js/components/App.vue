@@ -8,7 +8,6 @@
                 <slot></slot>
             </div>
         </div>
-        
     </div>
 </template>
 
