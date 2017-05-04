@@ -2,7 +2,20 @@
 class ErrorValidations {
 
     constructor() {
-        this.errors = {}
+        var that = this;
+        this.errors = {};
+
+        this.exceptions = {
+            errors:[],
+            add: function(name,description) {
+                that.errorExceptions
+                    .errors.push(
+                        {
+                            name:name,
+                            description:description}
+                        );
+            }
+        };
     }
 
     get(field) {
@@ -23,6 +36,7 @@ class ErrorValidations {
             delete this.errors[field][0];
         }
     }
+
 }
 
 class AxiosRequest {
@@ -55,6 +69,13 @@ class AxiosRequest {
         window.location.href = url;
         
         return this;
+    }
+
+    redirect(controller,action) {
+        var baseUrl = window.Laravel.baseUrl;
+
+        window.location.href = baseUrl + controller + "/" + action;
+
     }
 
     postMultiForm(controller,action,formData) {

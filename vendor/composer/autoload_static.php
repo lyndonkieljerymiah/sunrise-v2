@@ -15,6 +15,7 @@ class ComposerStaticInit25dd7f7866cb54e2b453ba6fb41b73a0
         'e7223560d890eab89cda23685e711e2c' => __DIR__ . '/..' . '/psy/psysh/src/Psy/functions.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
+        'f18cc91337d49233e5754e93f3ed9ec3' => __DIR__ . '/..' . '/laravelcollective/html/src/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -87,6 +88,7 @@ class ComposerStaticInit25dd7f7866cb54e2b453ba6fb41b73a0
         'C' => 
         array (
             'Cron\\' => 5,
+            'Collective\\Html\\' => 16,
             'Carbon\\' => 7,
         ),
         'A' => 
@@ -222,6 +224,10 @@ class ComposerStaticInit25dd7f7866cb54e2b453ba6fb41b73a0
         array (
             0 => __DIR__ . '/..' . '/mtdowling/cron-expression/src/Cron',
         ),
+        'Collective\\Html\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/laravelcollective/html/src',
+        ),
         'Carbon\\' => 
         array (
             0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
@@ -280,6 +286,7 @@ class ComposerStaticInit25dd7f7866cb54e2b453ba6fb41b73a0
         'App\\Events\\Contract\\NotifyUpdate' => __DIR__ . '/../..' . '/app/Events/Contract/NotifyUpdate.php',
         'App\\Events\\Contract\\OnCreating' => __DIR__ . '/../..' . '/app/Events/Contract/OnCreating.php',
         'App\\Events\\Contract\\OnInitialize' => __DIR__ . '/../..' . '/app/Events/Contract/OnInitialize.php',
+        'App\\Events\\Contract\\OnRecalculate' => __DIR__ . '/../..' . '/app/Events/Contract/OnRecalculate.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Http\\Controllers\\Auth\\ForgotPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ForgotPasswordController.php',
         'App\\Http\\Controllers\\Auth\\LoginController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/LoginController.php',
@@ -296,10 +303,13 @@ class ComposerStaticInit25dd7f7866cb54e2b453ba6fb41b73a0
         'App\\Http\\Middleware\\RedirectIfAuthenticated' => __DIR__ . '/../..' . '/app/Http/Middleware/RedirectIfAuthenticated.php',
         'App\\Http\\Middleware\\TrimStrings' => __DIR__ . '/../..' . '/app/Http/Middleware/TrimStrings.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
-        'App\\Http\\Requests\\ContractForm' => __DIR__ . '/../..',
+        'App\\Http\\Requests\\BillForm' => __DIR__ . '/../..' . '/app/Http/Requests/BillForm.php',
+        'App\\Http\\Requests\\ContractRegisterForm' => __DIR__ . '/../..' . '/app/Http/Requests/ContractRegisterForm.php',
+        'App\\Http\\Requests\\PaymentForm' => __DIR__ . '/../..' . '/app/Http/Requests/PaymentForm.php',
         'App\\Http\\Requests\\VillaForm' => __DIR__ . '/../..' . '/app/Http/Requests/VillaForm.php',
         'App\\Listeners\\CreateTenant' => __DIR__ . '/../..' . '/app/Listeners/CreateTenant.php',
         'App\\Listeners\\GetVilla' => __DIR__ . '/../..' . '/app/Listeners/GetVilla.php',
+        'App\\Listeners\\GetVillaOnRecalculate' => __DIR__ . '/../..' . '/app/Listeners/GetVillaOnRecalculate.php',
         'App\\Listeners\\InitializeTenant' => __DIR__ . '/../..' . '/app/Listeners/InitializeTenant.php',
         'App\\Listeners\\InitializeVilla' => __DIR__ . '/../..' . '/app/Listeners/InitializeVilla.php',
         'App\\Listeners\\UpdateVillaStatus' => __DIR__ . '/../..' . '/app/Listeners/UpdateVillaStatus.php',
@@ -328,8 +338,14 @@ class ComposerStaticInit25dd7f7866cb54e2b453ba6fb41b73a0
         'Carbon\\Carbon' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Carbon.php',
         'Carbon\\CarbonInterval' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/CarbonInterval.php',
         'Carbon\\Exceptions\\InvalidDateException' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Exceptions/InvalidDateException.php',
+        'Collective\\Html\\Componentable' => __DIR__ . '/..' . '/laravelcollective/html/src/Componentable.php',
+        'Collective\\Html\\Eloquent\\FormAccessible' => __DIR__ . '/..' . '/laravelcollective/html/src/Eloquent/FormAccessible.php',
+        'Collective\\Html\\FormBuilder' => __DIR__ . '/..' . '/laravelcollective/html/src/FormBuilder.php',
+        'Collective\\Html\\FormFacade' => __DIR__ . '/..' . '/laravelcollective/html/src/FormFacade.php',
+        'Collective\\Html\\HtmlBuilder' => __DIR__ . '/..' . '/laravelcollective/html/src/HtmlBuilder.php',
+        'Collective\\Html\\HtmlFacade' => __DIR__ . '/..' . '/laravelcollective/html/src/HtmlFacade.php',
+        'Collective\\Html\\HtmlServiceProvider' => __DIR__ . '/..' . '/laravelcollective/html/src/HtmlServiceProvider.php',
         'ContractSeeder' => __DIR__ . '/../..' . '/database/seeds/ContractSeeder.php',
-        'ContractsAppSeeder' => __DIR__ . '/../..' . '/database/seeds/DatabaseSeeder.php',
         'CreateContractBillsTable' => __DIR__ . '/../..' . '/database/migrations/2017_04_15_134653_create_contract_bills_table.php',
         'CreateContractTerminationsTable' => __DIR__ . '/../..' . '/database/migrations/2017_04_15_134404_create_contract_terminations_table.php',
         'CreateContractsTable' => __DIR__ . '/../..' . '/database/migrations/2017_04_13_171000_create_contracts_table.php',
@@ -2680,7 +2696,6 @@ class ComposerStaticInit25dd7f7866cb54e2b453ba6fb41b73a0
         'SebastianBergmann\\ResourceOperations\\ResourceOperations' => __DIR__ . '/..' . '/sebastian/resource-operations/src/ResourceOperations.php',
         'SebastianBergmann\\Version' => __DIR__ . '/..' . '/sebastian/version/src/Version.php',
         'SelectionSeeder' => __DIR__ . '/../..' . '/database/seeds/SelectionSeeder.php',
-        'SunriseAppSeeder' => __DIR__ . '/../..' . '/database/seeds/DatabaseSeeder.php',
         'Symfony\\Component\\Console\\Application' => __DIR__ . '/..' . '/symfony/console/Application.php',
         'Symfony\\Component\\Console\\Command\\Command' => __DIR__ . '/..' . '/symfony/console/Command/Command.php',
         'Symfony\\Component\\Console\\Command\\HelpCommand' => __DIR__ . '/..' . '/symfony/console/Command/HelpCommand.php',
@@ -3208,7 +3223,7 @@ class ComposerStaticInit25dd7f7866cb54e2b453ba6fb41b73a0
         'TijsVerkoyen\\CssToInlineStyles\\Css\\Property\\Property' => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src/Css/Property/Property.php',
         'TijsVerkoyen\\CssToInlineStyles\\Css\\Rule\\Processor' => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src/Css/Rule/Processor.php',
         'TijsVerkoyen\\CssToInlineStyles\\Css\\Rule\\Rule' => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src/Css/Rule/Rule.php',
-        'VillaSeeder' => __DIR__ . '/../..',
+        'VillaSeeder' => __DIR__ . '/../..' . '/database/seeds/VillaSeeder.php',
         'Webmozart\\Assert\\Assert' => __DIR__ . '/..' . '/webmozart/assert/src/Assert.php',
         'XdgBaseDir\\Xdg' => __DIR__ . '/..' . '/dnoegel/php-xdg-base-dir/src/Xdg.php',
         'phpDocumentor\\Reflection\\DocBlock' => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src/DocBlock.php',

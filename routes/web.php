@@ -54,8 +54,6 @@ Route::get('villa/register/{id?}',function($id = 0) {
 
 });
 
-
-
 /************************
  *    Contract API End Point
 **************************************/
@@ -64,11 +62,13 @@ Route::get("api/contract/list/{status?}","ContractController@index");
 
 Route::get("api/contract/create/","ContractController@create");
 
-Route::post("api/contract/store","ContractController@store");
-
 Route::get("api/contract/renew/{id}","ContractController@renew");
 
-Route::get("api/contract/recalculate/{villaId}","ContractController@recalculate");
+Route::post("api/contract/update","ContractController@update");
+
+Route::post("api/contract/store","ContractController@store");
+
+Route::post("api/contract/recal/","ContractController@recalculate");
 /*****************************************/
 
 Route::get("contract",function() {
@@ -87,6 +87,8 @@ Route::get("contract/create/",function() {
 **********************************/
 
 Route::get('api/bill/create/{contractId}','ContractBillController@create');
+
+Route::get('api/bill/show/{id}','ContractBillController@show');
 
 Route::post('api/bill/store','ContractBillController@store');
 

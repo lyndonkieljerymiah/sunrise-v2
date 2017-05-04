@@ -30,10 +30,9 @@ class UpdateVillaStatus
         $this->repository->findById($args["id"]);
         
         if($args["status"] == 'occupied') 
-            $this->repository->occupied();
+            $this->repository->setOccupied();
         else 
-            $this->repository->vacant();
+            $this->repository->setVacant();
 
-        $this->repository->saveChanges();
     }
 }

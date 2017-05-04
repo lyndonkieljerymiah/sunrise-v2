@@ -52,17 +52,15 @@ class Villa extends BaseModel
         return $this->where('status','vacant');
     }
 
-    public function statusCount() {
-
-        return \DB::table('villas')->select('status',\DB::raw('COUNT(id) as count'))->groupBy('status')->get();
-    }
 
     public function setToVacant() {
         $this->status = 'vacant';
+        return $this;
     }
 
     public function setToOccupied() {
         $this->status = 'occupied';
+        return $this;
     }
     
     public function getLists($pageNumber = 1,$pageSize = 20) {

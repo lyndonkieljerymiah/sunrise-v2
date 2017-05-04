@@ -25,7 +25,7 @@ class Tenant extends BaseModel
         parent::__construct($attributes);
     }
 
-    public function Address() {
+    public function TenantAddress() {
         return $this->hasOne(TenantAddress::class);
     }
 

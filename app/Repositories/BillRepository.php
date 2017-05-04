@@ -18,32 +18,41 @@ class BillRepository extends AbstractRepository {
 
     public function saveBill($model = array()) {
 
-        //update
-        if(isset($model['id']) && $model['id'] != 0) {
+        try {
+            //update
+            if (isset($model['id']) && $model['id'] != 0) {
 
-        }
-        else {
+            }
+            else {
 
-            //create bill
-            $this->model->bill_no = "B".$model['contract_id']."-".Carbon::now()->year."-".$this->createNewId();
-            $this->model->contract_id = $model['contract_id'];
-            $this->model->status = "active";
-            $this->model->toSave(true);
-            $billId = $this->model->id;
-            if(isset($model['payments']) && sizeof($model['payments']) > 0) {
-                foreach($model['payments'] as $rows) {
-                    $rows['bill_id'] = $billId;
-                    $payment = new Payment();
-                    $payment->toMap($rows);
-                    $payment->toSave(true);
+                //create bill
+                $this->model->bill_no = "B" . $model['contract_id'] . "-" . Carbon::now()->year . "-" . $this->createNewId();
+                $this->model->contract_id = $model['contract_id'];
+                $this->model->activate();
+
+                $this->model->toSave(true);
+                $billId = $this->model->id;
+
+                if (isset($model['payments']) && sizeof($model['payments']) > 0) {
+                    foreach ($model['payments'] as $rows) {
+                        $rows['bill_id'] = $billId;
+                        $payment = new Payment();
+                        $payment->toMap($rows);
+                        $payment->toSave(true);
+                    }
                 }
             }
         }
+        catch(Exception $e) {
+            abort(500,$e->getMessage());
+        }
+        return false;
     }
 
-    public function savePayment() {
+    public function withAssociates() {
+        $this->model = $this->model->withAssociates();
 
+        return $this;
     }
-    
 
 }

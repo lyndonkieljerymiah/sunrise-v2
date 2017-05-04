@@ -21,7 +21,7 @@ class CreateTenantsTable extends Migration
 
             $table->string('type',10)->index();
 
-            $table->string('code',50)->index();
+            $table->string('code',50)->unique();
             
             $table->string('full_name',150);
 
@@ -35,11 +35,11 @@ class CreateTenantsTable extends Migration
 
             $table->date('reg_date');
 
-            $table->string('gender',10)->nullable();
-
             $table->string('reg_id',150)->index();
 
             $table->string('reg_name',150);
+
+            $table->string('gender',10)->nullable();
 
             $table->boolean('is_active')->default(1);
 

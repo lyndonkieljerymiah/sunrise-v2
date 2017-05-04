@@ -9,14 +9,20 @@ use App\Selection;
 class ContractRepository extends AbstractRepository {
 
     protected $parameters;
-  
+
+
+    protected function beforeCreate(&$model)
+    {
+        $model['status'] = 'pending';
+    }
 
     public function definedModel() {
 
         return new \App\Contract();
     }
-  
-   
+
+
+
 
     public function saveContract($model) {
 
@@ -81,6 +87,7 @@ class ContractRepository extends AbstractRepository {
     }
 
     public function create($defaultMonths) {
+
         return \App\Contract::createInstance($defaultMonths);
 
     }

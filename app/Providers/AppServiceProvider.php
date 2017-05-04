@@ -18,8 +18,9 @@ class AppServiceProvider extends ServiceProvider
 
         //for old ver of my sql 
         Schema::defaultStringLength(191);
-        
-        
+
+
+
     }
 
     /**

@@ -8,6 +8,8 @@
 require('./bootstrap');
 
 
+
+
 /**
  * Vue is a modern JavaScript library for building interactive web interfaces
  * using reactive data binding and reusable components. Vue's API is clean
@@ -15,20 +17,33 @@ require('./bootstrap');
  */
 window.Vue = require('vue');
 
+
+
+
 /**************************
  * Vue Event
  *
  **************************/
 window.VueEvent = new Vue();
 
+
+
+
+
 /**
  * Vue Router include in vue
  */
 import VueRouter from 'vue-router';
 
-window.VueRouter = VueRouter;
+import VeeValidate from 'vee-validate';
+
+const config = {
+    errorBagName: 'verrors'
+}
 
 Vue.use(VueRouter);
+
+Vue.use(VeeValidate);
 
 
 

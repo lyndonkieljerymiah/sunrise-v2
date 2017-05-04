@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TenantAddress extends BaseModel
 {
+    public $timestamps = false;
     //
     public function __construct(array $attributes = [])
     {

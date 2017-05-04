@@ -23,8 +23,6 @@ class BaseModel extends Model {
         }
     }
 
-
-
     protected function explodeSelection() {
         
         foreach($this->custSelectionKeys as $value)  {

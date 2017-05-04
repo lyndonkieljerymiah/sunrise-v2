@@ -19,7 +19,7 @@ abstract class AbstractRepository {
         $this->model = $this->definedModel();
     }
 
-    protected function beforeCreate() {return false;}
+    protected function beforeCreate(&$model) {return false;}
     
     protected function afterCreate() {return false;}
 
@@ -52,25 +52,16 @@ abstract class AbstractRepository {
   
     public function get($orderBy = 'id') {
 
-        $records =  $this->model->where('is_active',1)->orderBy($orderBy)->get();
+        $result =  $this->model->where('is_active',1)->orderBy($orderBy)->get();
 
         $this->model = $this->definedModel();
 
-        return $records;
-    }
-
-    public function first() {
-
-        $records = $this->model->where('is_active',1)->first();
-
-        $this->model = $this->definedModel();
-
-        return $records;
+        return $result;
     }
 
     public function single($id) {
 
-        $record = $this->model->find($id);
+        $record = $this->model->where('is_active',1)->where('id', $id)->first();
 
         $this->model = $this->definedModel();
 

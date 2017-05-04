@@ -46,18 +46,14 @@ class VillaRepository extends AbstractRepository {
 
     public function setOccupied() {
 
-        $this->model->setToOccupied();
-
-        $this->saveChanges();
+        $this->model->setToOccupied()->save();
 
         return true;
     }
 
     public function setVacant() {
         
-        $this->model->setToVacant();
-
-        $this->saveChanges();
+        $this->model->setToVacant()->save();
 
         return true;
     }
@@ -131,9 +127,9 @@ class VillaRepository extends AbstractRepository {
 
     }
 
-    protected function beforeCreate() {
+    protected function beforeCreate(&$model) {
 
-        $this->emptyModel['status'] = "vacant"; //default
+        $model['status'] = "vacant"; //default
 
     }
 

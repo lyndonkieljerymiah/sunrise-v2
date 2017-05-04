@@ -68,6 +68,8 @@ class Contract extends BaseModel
 
         $contract->toDefaultPeriod(Carbon::now()->toDateTimeString(),$defaultMonths);
 
+        $contract->amount = 0;
+
         $contract->register_tenant = Tenant::createInstance();
 
         $contract->villa_list = Villa::with('villaGalleries')->where('status','vacant')->get();
@@ -111,6 +113,11 @@ class Contract extends BaseModel
 
         $this->period_end = Carbon::now()->addMonths($default)->toDateTimeString();
 
+    }
+
+    public function setPeriod($periodStart,$periodEnd) {
+        $this->period_start = $periodStart;
+        $this->period_end = $periodEnd;
     }
 
     public function toComputeAmount($rate) {

@@ -27,9 +27,10 @@ class ContractBillController extends Controller
     public function create($contractId) {
 
         //get the contract 
-        $contract = $this->contracts->findById($contractId)->withAssociates()->first();
+        $contract = $this->contracts->withAssociates()->single($contractId);
 
         $bill = $this->bills->createNewBill($contractId);
+
         $bill->instance->amount = $contract->payable_per_month;
         //set bill payment to rate per month
 
@@ -48,5 +49,14 @@ class ContractBillController extends Controller
 
     public function edit($id) {
 
+    }
+
+    public function show($id) {
+
+        $bill = $this->bills->withAssociates()->single($id);
+
+        $contract = $this->contracts->withAssociates()->single($bill->contract_id);
+
+        return compact('contract','bill');
     }
 }

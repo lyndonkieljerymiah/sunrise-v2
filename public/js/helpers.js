@@ -63,12 +63,12 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 214);
+/******/ 	return __webpack_require__(__webpack_require__.s = 215);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 214:
+/***/ 215:
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(5);
@@ -87,7 +87,17 @@ var ErrorValidations = function () {
     function ErrorValidations() {
         _classCallCheck(this, ErrorValidations);
 
+        var that = this;
         this.errors = {};
+
+        this.exceptions = {
+            errors: [],
+            add: function add(name, description) {
+                that.errorExceptions.errors.push({
+                    name: name,
+                    description: description });
+            }
+        };
     }
 
     _createClass(ErrorValidations, [{
@@ -152,6 +162,13 @@ var AxiosRequest = function () {
             window.location.href = url;
 
             return this;
+        }
+    }, {
+        key: 'redirect',
+        value: function redirect(controller, action) {
+            var baseUrl = window.Laravel.baseUrl;
+
+            window.location.href = baseUrl + controller + "/" + action;
         }
     }, {
         key: 'postMultiForm',

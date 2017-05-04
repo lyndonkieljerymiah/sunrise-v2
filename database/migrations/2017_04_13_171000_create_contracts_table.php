@@ -31,11 +31,11 @@ class CreateContractsTable extends Migration
             
             $table->boolean('is_active')->default(1);
 
-            $table->integer('villa_id')->unsigned()->unsigned();
+            $table->integer('villa_id')->index()->unsigned();
 
-            $table->integer('tenant_id')->unique()->unsigned();
+            $table->integer('tenant_id')->index()->unsigned();
 
-            $table->integer('user_id')->unique();
+            $table->integer('user_id')->index();
 
             $table->string('status',10)->index();
 

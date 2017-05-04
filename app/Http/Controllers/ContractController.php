@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\Contract\NotifyUpdate;
 use App\Events\Contract\OnCreating;
 use App\Events\Contract\OnRecalculate;
 use App\Http\Requests\ContractRegisterForm;
@@ -26,7 +27,6 @@ class ContractController extends Controller
 
         $this->selections = $selections;
 
-        
 
     }
 
@@ -48,11 +48,13 @@ class ContractController extends Controller
         }
         catch(Exception $e) {
 
-            return abort($e->getMessage());
+            return abort(500,$e->getMessage());
         }
     }
 
-    public function recalculate($villaId) {
+    public function recalculate(Request $request) {
+
+        $villaId = request()->input('villa_id');
 
         //get the selected villa object to get rate per month
         event(new OnRecalculate(["villaId" => $villaId],$expectedOutput));
@@ -64,6 +66,7 @@ class ContractController extends Controller
 
             //create contract with new rate
             $contract = $this->contracts->create(self::DEFAULT_PERIOD);
+            $contract->setPeriod($request->input('period_start'),$request->input('period_end'));
             $contract->toComputeAmount($ratePerMonth);
 
             return $contract;
@@ -76,26 +79,33 @@ class ContractController extends Controller
      public function store(ContractRegisterForm $request) {
 
         try {
-            dd($request->all());
-
             $expectedOutput = array();
+            $result = $request->filterInput();
 
             event(new OnCreating([
-                'tenant'    => $request->input('register_tenant'),
-                'villaId'   => $request->input('villa_id')
+                'tenant'    => $result['register_tenant'],
+                'villaId'   => $result['villa_id']
                 ],$expectedOutput));
-            
-            $contractModel = $request->input('contract');
 
-            $contractModel['tenant_id'] = $expectedOutput['tenant']->tenant_id;
+            //remove tenant
+            unset($result['register_tenant']);
+
+            $contractModel = $result;
+
+            //temp manually add user id
+            $contractModel['user_id'] = 1;
+
+            $contractModel['tenant_id'] = $expectedOutput['tenant']->id;
             
             $contractModel['villa_no']  = $expectedOutput['villa']->villa_no;
+
+
 
             $this->contracts->saveContract($contractModel);
             
             //trigger event since saving
-            event(new \App\Events\Contracts\NotifyUpdate([
-                    'villa' => ["villaId" => $request->input('villa_id'), "status" => "occupied"] 
+            event(new NotifyUpdate([
+                    'villa' => ["id" => $result['villa_id'], "status" => "occupied"]
                 ]));
             
         }

@@ -19,22 +19,20 @@ class CreateTenantAddressesTable extends Migration
 
             $table->string('address_1');
 
-            $table->string('address_2');
+            $table->string('address_2')->nullable();
 
             $table->string('city');
 
             $table->string('postal_code');
 
-            
+            $table->primary('tenant_id');
 
             //foreign key
             $table->foreign('tenant_id')
 
-                ->references('id')
+                ->references('id')->on('tenants')
 
-                ->on('tenants');
-
-                
+                ->onDelete('cascade');
 
         });
     }

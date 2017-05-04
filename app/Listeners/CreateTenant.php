@@ -31,20 +31,7 @@ class CreateTenant
     {
         $models = $event->getArguments('tenant');
 
-        $validator = Validator::make($model,[
-            'type'          =>  'required',
-            'full_name'     =>  'required',
-            'email_address' =>  'required|email',
-            'instance_address.address_1'    =>  'required',
-            'city'  =>  'required',
-            'postal_code'   =>  'required'
-        ]);
-
-        $validator->after(function($validator) {
-
-        });
-
-        $tenant = $this->repository->attach($models)->instance();
+        $tenant = $this->repository->saveTenant($models);
 
         $event->setOutput("tenant",$tenant);
         

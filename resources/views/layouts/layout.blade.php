@@ -20,8 +20,9 @@
 
      <script>
         window.Laravel = {!! json_encode([
-            'csrfToken' => csrf_token(),
-            'imagePath'   =>  asset('img/villa')
+            'csrfToken'     => csrf_token(),
+            'imagePath'     => asset('img/villa'),
+            'baseUrl'       =>  url('/')
         ]) !!};
     </script>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->

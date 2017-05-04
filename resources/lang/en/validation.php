@@ -101,6 +101,18 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+
+        'period_start'  => [
+            'required'  =>  'Period Start is required'
+        ],
+
+        'period_end'  => [
+            'required'  =>  'Period Start is required'
+        ],
+
+        'amount'    => [
+            'required'  =>  'Amount is required'
+        ],
     ],
 
     /*
