@@ -5,7 +5,7 @@
             <strong>Tenant Information</strong>
         </div>
         <div class="panel-body">
-            <div class="form-group">
+            <div class="row">
                 <p>
                     <strong class="col-md-2">Code:</strong>
                     <span class="col-md-10">{{tenant.code}}</span>
@@ -16,7 +16,7 @@
                 </p>
             </div>
             <hr/>
-            <div class="form-group">
+            <div class="row">
                 <p>
                     <strong class="col-md-2">Villa No:</strong>
                     <span class="col-md-10">{{villa.villa_no}}</span>
@@ -30,6 +30,9 @@
                     <span class="col-md-10">{{villa.rate_per_month}}</span>
                 </p>
             </div>
+            <hr/>
+            
+            <slot></slot>
         </div>
     </div>
 </template>

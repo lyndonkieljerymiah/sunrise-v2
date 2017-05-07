@@ -28774,17 +28774,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+    props: {
+        fieldList: []
+    },
     data: function data() {
         return {
             searchField: ''
+
         };
     },
 
     methods: {
         onClickSearch: function onClickSearch() {
-            console.log('emitting search');
             this.$emit("trigger", this.searchField);
         }
     }
@@ -28925,7 +28934,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-
 var billModel = __webpack_require__(185);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -29008,8 +29016,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__GridView_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__GridView_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Modal_vue__ = __webpack_require__(131);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Modal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Modal_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__PaymentModal_vue__ = __webpack_require__(133);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__PaymentModal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__PaymentModal_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__TenantInfo_vue__ = __webpack_require__(201);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__TenantInfo_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__TenantInfo_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ContractInfo_vue__ = __webpack_require__(200);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ContractInfo_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__ContractInfo_vue__);
 //
 //
 //
@@ -29028,12 +29038,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
+
+
 
 
 
@@ -29044,22 +29050,42 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: {
         billNo: 0
     },
+    components: {
+        'tenantInfo': __WEBPACK_IMPORTED_MODULE_2__TenantInfo_vue___default.a,
+        'contractInfo': __WEBPACK_IMPORTED_MODULE_3__ContractInfo_vue___default.a,
+        'gridview': __WEBPACK_IMPORTED_MODULE_0__GridView_vue___default.a
+    },
     data: function data() {
         return {
             bill: {},
-            contract: {}
+            contract: {
+                tenant: {},
+                villa: {}
+            },
+            gridColumn: [{ name: 'effectivity_date', column: 'Date', style: 'width:10%', class: 'text-center', static: true }, { name: 'payment_no', column: 'Payment No', static: true }, { name: 'bank', column: 'Bank', static: true }, { name: 'full_payment_mode', column: 'Payment Mode', static: true }, { name: 'full_payment_type', column: 'Payment Type', static: true }, { name: 'amount', column: 'Amount', static: true }, { name: 'full_status', column: 'Status', static: true }]
         };
     },
-    mounted: function mounted() {
+    created: function created() {
         var _this = this;
 
         AjaxRequest.get('bill', 'show', this.billNo).then(function (r) {
-
             _this.bill = r.data.bill;
-
             _this.contract = r.data.contract;
         });
+    },
+
+    computed: {
+        tenant: function tenant() {
+            if (this.contract.tenant !== undefined) return this.contract.tenant;
+        },
+        villa: function villa() {
+            if (this.contract.villa !== undefined) return this.contract.villa;
+        },
+        contract: function contract() {
+            return this.contract;
+        }
     }
+
 });
 
 /***/ }),
@@ -29253,6 +29279,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
@@ -29316,21 +29345,42 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
 
 
 
 
+
+var model = __webpack_require__(241);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            contract: model.default.newInstance(),
+            gridColumns: [{ name: 'created_at', column: 'Date' }, { name: 'contract_no', column: 'Contract No' }, { name: 'contract_type', column: 'Contract Type' }, { name: 'period_start', column: 'Period Start' }, { name: 'period_end', column: 'Period End' }, { name: 'amount', column: 'Amount' }, { name: 'full_name', column: 'Tenant Id' }, { name: 'villa_no', column: 'Villa No' }, { name: 'status', column: 'Status' }, { name: 'action', column: '', static: true, class: 'text-center' }],
+
+            actions: [{ key: 'approved', name: 'Approved' }, { key: 'cancelled', name: 'Cancelled' }, { key: 'remove', name: 'Remove' }]
+        };
+    },
 
     name: "app",
     props: ['url'],
     components: {
-        'gridview': __WEBPACK_IMPORTED_MODULE_0__GridView_vue___default.a,
-        'contractactive': __WEBPACK_IMPORTED_MODULE_1__ContractActive_vue___default.a,
-        'contractpending': __WEBPACK_IMPORTED_MODULE_2__ContractPending_vue___default.a
+        'gridview': __WEBPACK_IMPORTED_MODULE_0__GridView_vue___default.a
+    },
+    created: function created() {
+
+        this.contract.create();
+    },
+
+    methods: {
+        change: function change(status) {
+            this.contract.create(status);
+        }
+    },
+    computed: {
+        contractData: function contractData() {
+            return this.contract.data;
+        }
     }
 });
 
@@ -29355,16 +29405,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
+
+var model = __webpack_require__(241);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 
-  name: "app",
+  name: "active",
   props: ['url'],
   components: {
     'gridview': __WEBPACK_IMPORTED_MODULE_0__GridView_vue___default.a
   },
+  data: function data() {
+    return {
+      contract: model.default.newInstance(),
+      gridColumns: [{ name: 'created_at', column: 'Date' }, { name: 'contract_no', column: 'Contract No' }, { name: 'contract_type', column: 'Contract Type' }, { name: 'period_start', column: 'Period Start' }, { name: 'period_end', column: 'Period End' }, { name: 'amount', column: 'Amount' }, { name: 'full_name', column: 'Tenant Id' }, { name: 'villa_no', column: 'Villa No' }, { name: 'status', column: 'Status' }, { name: 'action', column: '', static: true, class: 'text-center' }],
+      actions: [{ key: 'terminated', name: 'Terminate' }, { key: 'renew', name: 'Renew' }, { key: 'remove', name: 'Remove' }]
+    };
+  },
+
   methods: {
     doAction: function doAction(a, contract_no) {
       if (a.key == 'renew') {
@@ -29376,21 +29439,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       AjaxRequest.route(this.url);
     }
   },
-  data: function data() {
-    return {
-      items: [],
-      gridColumns: [{ name: 'created_at', column: 'Date' }, { name: 'contract_no', column: 'Contract No' }, { name: 'contract_type', column: 'Contract Type' }, { name: 'period_start', column: 'Period Start' }, { name: 'period_end', column: 'Period End' }, { name: 'amount', column: 'Amount' }, { name: 'full_name', column: 'Tenant Id' }, { name: 'villa_no', column: 'Villa No' }, { name: 'status', column: 'Status' }, { name: 'action', column: '', static: true, class: 'text-center' }],
-      actions: [{ key: 'terminated', name: 'Terminate' }, { key: 'renew', name: 'Renew' }, { key: 'remove', name: 'Remove' }],
-      statusCounts: []
-
-    };
+  created: function created() {
+    this.contract.create();
   },
 
-  created: function created() {
-    var self = this;
-    AjaxRequest.get("contract", "list").then(function (response) {
-      self.items = response.data;
-    });
+  computed: {
+    contractData: function contractData() {
+      return this.contract.data;
+    }
   }
 });
 
@@ -29524,18 +29580,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 
-  name: "app",
-  props: ['url'],
-
+  name: "pending",
+  props: ['contract'],
   components: {
     'gridview': __WEBPACK_IMPORTED_MODULE_0__GridView_vue___default.a
   },
-
   methods: {
     doAction: function doAction(a, contract_no) {
       if (a.key == 'renew') {
@@ -29552,17 +29608,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     return {
       items: [],
       gridColumns: [{ name: 'created_at', column: 'Date' }, { name: 'contract_no', column: 'Contract No' }, { name: 'contract_type', column: 'Contract Type' }, { name: 'period_start', column: 'Period Start' }, { name: 'period_end', column: 'Period End' }, { name: 'amount', column: 'Amount' }, { name: 'full_name', column: 'Tenant Id' }, { name: 'villa_no', column: 'Villa No' }, { name: 'status', column: 'Status' }, { name: 'action', column: '', static: true, class: 'text-center' }],
-      actions: [{ key: 'terminated', name: 'Terminate' }, { key: 'renew', name: 'Renew' }, { key: 'remove', name: 'Remove' }],
-      statusCounts: []
-
+      actions: [{ key: 'approved', name: 'Approved' }, { key: 'cancelled', name: 'Cancelled' }, { key: 'remove', name: 'Remove' }]
     };
-  },
-
-  created: function created() {
-    var self = this;
-    AjaxRequest.get("contract", "list").then(function (response) {
-      self.items = response.data;
-    });
   }
 });
 
@@ -30267,7 +30314,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 
 
@@ -30301,13 +30347,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             gridData: [],
             filterKey: "",
-            gridColumns: [{ name: 'villa_no', column: 'Villa No', style: 'width:10%', class: 'text-center' }, { name: 'location', column: 'Location' }, { name: 'electricity_no', column: 'Electricity No' }, { name: 'water_no', column: 'Water No' }, { name: 'qtel_no', column: 'QTel No' }, { name: 'villa_class', column: 'Class' }, { name: 'rate_per_month', column: 'Rate/Month', class: 'text-right' }, { name: 'status', column: 'Full Status', class: 'text-center', style: 'width:10%' }, { name: 'action', column: '', static: true, class: 'text-center' }],
+            filterFields: [{ name: 'villa_no', text: 'Villa No' }, { name: 'location', text: 'Location' }, { name: 'villa_class', text: 'Class' }, { name: 'rate_per_month', text: 'Rate/Month' }, { name: 'status', text: 'Status' }],
+            gridColumns: [{ name: 'villa_no', column: 'Villa No', style: 'width:10%', class: 'text-center' }, { name: 'location', column: 'Location' }, { name: 'electricity_no', column: 'Electricity No' }, { name: 'water_no', column: 'Water No' }, { name: 'qtel_no', column: 'QTel No' }, { name: 'villa_class', column: 'Class' }, { name: 'rate_per_month', column: 'Rate/Month', class: 'text-right' }, { name: 'status', column: 'Status', class: 'text-center', style: 'width:10%' }, { name: 'action', column: '', static: true, class: 'text-center' }],
             actions: [{ key: 'edit', name: 'Edit' }, { key: 'remove', name: 'Remove' }],
             statusCounts: []
 
         };
     },
     mounted: function mounted() {
+
         var $this = this;
         AjaxRequest.get('villa', 'list').then(function (response) {
             $this.gridData = response.data.data;
@@ -30370,6 +30418,7 @@ Vue.component('contract-tenantregister', __WEBPACK_IMPORTED_MODULE_1__components
 Vue.component('contract-villa', __WEBPACK_IMPORTED_MODULE_2__components_contract_ContractVilla_vue___default.a);
 Vue.component('contract-create', __WEBPACK_IMPORTED_MODULE_3__components_contract_ContractCreate_vue___default.a);
 Vue.component('contract-active', __WEBPACK_IMPORTED_MODULE_4__components_contract_ContractActive_vue___default.a);
+Vue.component('contract-pending', __WEBPACK_IMPORTED_MODULE_5__components_contract_ContractPending_vue___default.a);
 
 // END CONTRACT
 
@@ -55471,14 +55520,16 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('br'), _vm._v(" "), _c('gridview', {
     attrs: {
-      "data": _vm.items,
+      "data": _vm.contractData,
       "columns": _vm.gridColumns,
       "actions": _vm.actions
     },
     on: {
       "action": _vm.doAction
     }
-  })], 1)
+  }), _vm._v(" "), _vm._l((_vm.contractData), function(d) {
+    return _c('div', [_vm._v(" \n  " + _vm._s(d.amount) + "\n  ")])
+  })], 2)
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -55585,6 +55636,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "col-md-6"
   }, [_c('searchbox', {
+    attrs: {
+      "field-list": _vm.filterFields
+    },
     on: {
       "trigger": _vm.search
     }
@@ -55654,11 +55708,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "tenant-data": _vm.tenant,
       "villa-data": _vm.villa
     }
-  }), _vm._v(" "), _c('div', {
-    staticClass: "panel panel-info"
-  }, [_c('div', {
-    staticClass: "panel-body"
-  }, [_c('button', {
+  }, [_c('div', [_c('button', {
     staticClass: "btn btn-info",
     staticStyle: {
       "margin-bottom": "10px"
@@ -55726,9 +55776,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "app"
     }
-  }, [_c('gridview', {
+  }, [_c('br'), _vm._v(" "), _c('gridview', {
     attrs: {
-      "data": _vm.items,
+      "data": _vm.contract.data,
       "columns": _vm.gridColumns,
       "actions": _vm.actions
     },
@@ -56804,33 +56854,32 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _vm._m(0)
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "form-horizontal",
     attrs: {
       "id": "app"
     }
   }, [_c('div', {
-    staticClass: "form-group"
+    staticClass: "row"
   }, [_c('div', {
     staticClass: "col-md-8"
-  }), _vm._v(" "), _c('div', {
+  }, [_c('tenant-info', {
+    attrs: {
+      "tenant-data": _vm.tenant,
+      "villa-data": _vm.villa
+    }
+  }, [_c('gridview', {
+    attrs: {
+      "data": _vm.bill.payments,
+      "columns": _vm.gridColumn
+    }
+  })], 1)], 1), _vm._v(" "), _c('div', {
     staticClass: "col-md-4"
-  }, [_c('div', {
-    staticClass: "panel panel-info"
-  })])]), _vm._v(" "), _c('div', {
-    staticClass: "form-group"
-  }, [_c('div', {
-    staticClass: "col-md-8"
-  }, [_c('div', {
-    staticClass: "panel panel-info"
-  }, [_c('div', {
-    staticClass: "panel-body"
-  }, [_c('div', {
-    staticClass: "col-md-3 col-md-offset-9 text-right"
-  })])])])])])
-}]}
+  }, [_c('contract-info', {
+    attrs: {
+      "contract-data": _vm.contract
+    }
+  })], 1)])])
+},staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
@@ -56946,7 +56995,21 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.searchField = $event.target.value
       }
     }
-  })]), _vm._v(" "), _vm._m(0)])
+  })]), _vm._v(" "), _c('div', {
+    staticClass: "form-group"
+  }, [_c('select', {
+    staticClass: "form-control",
+    attrs: {
+      "name": "fieldKey",
+      "id": "fieldKey"
+    }
+  }, [_c('option', [_vm._v("--Select Field--")]), _vm._v(" "), _vm._l((_vm.fieldList), function(field) {
+    return _c('option', {
+      attrs: {
+        "value": "field.value"
+      }
+    }, [_vm._v(_vm._s(field.text))])
+  })], 2)]), _vm._v(" "), _vm._m(0)])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "form-group"
@@ -57580,7 +57643,29 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "panel-body"
   }, [_c('ul', {
     staticClass: "nav nav-tabs"
-  }, [_vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _c('div', {
+  }, [_c('li', {
+    staticClass: "active",
+    on: {
+      "click": function($event) {
+        _vm.change('pending')
+      }
+    }
+  }, [_c('a', {
+    attrs: {
+      "data-toggle": "tab",
+      "href": "#pending"
+    }
+  }, [_vm._v("Pending")])]), _vm._v(" "), _c('li', [_c('a', {
+    attrs: {
+      "data-toggle": "tab",
+      "href": "#active"
+    },
+    on: {
+      "click": function($event) {
+        _vm.change('active')
+      }
+    }
+  }, [_vm._v("Active")])]), _vm._v(" "), _c('div', {
     staticClass: "actions"
   }, [_c('a', {
     staticClass: "btn btn-default pull-right",
@@ -57600,29 +57685,17 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "pending"
     }
-  }, [_c('contract-active')], 1), _vm._v(" "), _c('div', {
-    staticClass: "tab-pane fade",
+  }, [_c('gridview', {
     attrs: {
-      "id": "menu1"
+      "data": _vm.contractData,
+      "actions": _vm.actions,
+      "columns": _vm.gridColumns
+    },
+    on: {
+      "action": _vm.doAction
     }
-  }, [_c('contract-pending')], 1)])])])])])])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('li', {
-    staticClass: "active"
-  }, [_c('a', {
-    attrs: {
-      "data-toggle": "tab",
-      "href": "#pending"
-    }
-  }, [_vm._v("Pending")])])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('li', [_c('a', {
-    attrs: {
-      "data-toggle": "tab",
-      "href": "#menu1"
-    }
-  }, [_vm._v("Active")])])
-}]}
+  })], 1)])])])])])])
+},staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
@@ -57807,7 +57880,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_vm._m(0), _vm._v(" "), _c('div', {
     staticClass: "panel-body"
   }, [_c('div', {
-    staticClass: "form-group"
+    staticClass: "row"
   }, [_c('p', [_c('strong', {
     staticClass: "col-md-2"
   }, [_vm._v("Code:")]), _vm._v(" "), _c('span', {
@@ -57817,7 +57890,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_vm._v("Full Name:")]), _vm._v(" "), _c('span', {
     staticClass: "col-md-10"
   }, [_vm._v(_vm._s(_vm.tenant.full_name))])])]), _vm._v(" "), _c('hr'), _vm._v(" "), _c('div', {
-    staticClass: "form-group"
+    staticClass: "row"
   }, [_c('p', [_c('strong', {
     staticClass: "col-md-2"
   }, [_vm._v("Villa No:")]), _vm._v(" "), _c('span', {
@@ -57830,7 +57903,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "col-md-2"
   }, [_vm._v("Rate/Month:")]), _vm._v(" "), _c('span', {
     staticClass: "col-md-10"
-  }, [_vm._v(_vm._s(_vm.villa.rate_per_month))])])])])])
+  }, [_vm._v(_vm._s(_vm.villa.rate_per_month))])])]), _vm._v(" "), _c('hr'), _vm._v(" "), _vm._t("default")], 2)])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "panel-heading"
@@ -69764,6 +69837,48 @@ module.exports = Vue$3;
 __webpack_require__(140);
 module.exports = __webpack_require__(141);
 
+
+/***/ }),
+/* 238 */,
+/* 239 */,
+/* 240 */,
+/* 241 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ContractListModel = function () {
+    function ContractListModel() {
+        _classCallCheck(this, ContractListModel);
+
+        this.data = [];
+    }
+
+    _createClass(ContractListModel, [{
+        key: "create",
+        value: function create() {
+            var _this = this;
+
+            var status = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'active';
+
+            AjaxRequest.get("contract", "list", status).then(function (response) {
+                _this.data = response.data;
+            });
+        }
+    }]);
+
+    return ContractListModel;
+}();
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    newInstance: function newInstance() {
+        return new ContractListModel();
+    }
+});
 
 /***/ })
 /******/ ]);

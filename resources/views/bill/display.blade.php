@@ -3,7 +3,7 @@
 @section('content')
     <div id="mainApp">
         <app-main page-title="Contract Bill">
-            <bill-readable :main-data="{{$bill}}"></bill-readable>
+            <bill-readable bill-no="{{$billNo}}"></bill-readable>
         </app-main>
     </div>
 @endsection

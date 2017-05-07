@@ -23,6 +23,11 @@ class VillaController extends Controller
         
         $this->villa = new Villa();
         $this->selection = new Selection();
+
+        $this->middleware('auth');
+
+
+
     }
 
 
@@ -88,13 +93,18 @@ class VillaController extends Controller
     {
         
         $inputs = $request->filterInput();
-
+        
         try { 
+
             //get gallery files
             $files =   isset($inputs['galleries']) ? $inputs['galleries'] : [];
+            
             $inputs['galleries'] = $this->storeImages($files,$inputs['villa_no']);
+            
             $inputs['id'] = 0;
+            
             $this->villa->saveVilla($inputs);
+
         }
         catch(Exception $e) {
             abort('500',$e);

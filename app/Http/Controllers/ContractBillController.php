@@ -26,18 +26,18 @@ class ContractBillController extends Controller
 
     public function create($contractNo) {
 
-//        $contract = $this->bills->getExistingContract($contractNo);
-//
-//        if(!empty($contract)) {
-//            redirect()->action("bill.show",['billNo' => $contract->bill_no]);
-//        }
+       $contract = $this->bills->getExistingContract($contractNo);
+
+       if(!empty($contract)) {
+           return redirect()->action("ContractBillController@show",['billNo' => $contract->bill_no]);
+       }
 
         return view("bill.entry",compact('contractNo'));
     }
 
     public function show($billNo) {
 
-        return view('bill.display',compact('bill'));
+        return view('bill.display',compact('billNo'));
     }
 
 

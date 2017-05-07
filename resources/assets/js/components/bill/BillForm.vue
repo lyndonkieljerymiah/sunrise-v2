@@ -2,9 +2,8 @@
     <div id="app">
         <div class="row">
             <div class="col-md-8">
-                <tenant-info :tenant-data="tenant" :villa-data="villa"></tenant-info>
-                <div class="panel panel-info">
-                    <div class="panel-body">
+                <tenant-info :tenant-data="tenant" :villa-data="villa">
+                    <div>
                         <button class="btn btn-info" @click="showModal" style="margin-bottom: 10px;">Add New</button>
                         <modal size="" dialog-title="Payment Entry" @dismiss="onDismissal">
                             <payment-modal  :bill="bill"></payment-modal>
@@ -17,7 +16,7 @@
                             <strong class="col-md-6">Payment Total:</strong> <strong class="col-md-3 text-right text-warning">{{totalPayment}}</strong>
                         </div>
                     </div>
-                </div>
+                </tenant-info>
             </div>
             <div class="col-md-4">
                 <div class="panel panel-info">
@@ -30,8 +29,8 @@
         </div>
     </div>
 </template>
-<script>
 
+<script>
     import GridView from '../GridView.vue';
     import Modal from '../Modal.vue';
     import PaymentModal from './PaymentModal.vue';

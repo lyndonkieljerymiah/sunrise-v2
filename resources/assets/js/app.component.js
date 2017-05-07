@@ -11,6 +11,7 @@ Vue.component('contract-tenantregister',ContractTenantRegister);
 Vue.component('contract-villa', ContractVilla);
 Vue.component('contract-create', ContractCreate);
 Vue.component('contract-active', ContractActive);
+Vue.component('contract-pending', ContractPending);
 
 // END CONTRACT
 

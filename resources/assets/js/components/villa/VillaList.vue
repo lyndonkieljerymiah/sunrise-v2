@@ -2,7 +2,7 @@
     <div id="app">
         <div class="row">
             <div class="col-md-6">
-                <searchbox @trigger="search"></searchbox>
+                <searchbox @trigger="search" :field-list="filterFields"></searchbox>
             </div>
             <div class="col-md-2 col-md-offset-4">
                 <button class="btn btn-info" @click="addNew()">Add</button>
@@ -11,7 +11,6 @@
         <hr/>
         <div class="row">
             <div class="col-md-9">
-
                 <gridview
                     :data="gridData"
                     :columns="gridColumns"
@@ -33,8 +32,8 @@
 </template>
 
 <script>
-    import SearchBox from '../SearchBox.vue';
 
+    import SearchBox from '../SearchBox.vue';
     import GridView from '../GridView.vue';
 
     export default {
@@ -67,6 +66,13 @@
             return {
                 gridData:[],
                 filterKey: "",
+                filterFields: [
+                    {name: 'villa_no', text: 'Villa No' },
+                    {name: 'location', text: 'Location'},
+                    {name: 'villa_class', text: 'Class'},
+                    {name: 'rate_per_month', text: 'Rate/Month'},
+                    {name: 'status', text: 'Status'},
+                ],
                 gridColumns: [
                     {name: 'villa_no', column: 'Villa No', style: 'width:10%',class:'text-center'},
                     {name: 'location', column: 'Location'},
@@ -75,7 +81,7 @@
                     {name: 'qtel_no', column: 'QTel No'},
                     {name: 'villa_class', column: 'Class'},
                     {name: 'rate_per_month', column: 'Rate/Month', class:'text-right'},
-                    {name: 'status', column: 'Full Status', class:'text-center',style: 'width:10%'},
+                    {name: 'status', column: 'Status', class:'text-center',style: 'width:10%'},
                     {name: 'action', column: '',static:true, class: 'text-center'}],
                 actions: [
                     {key:'edit', name:'Edit'},
@@ -86,6 +92,7 @@
             }
         },
         mounted() {
+
             var $this= this;
             AjaxRequest.get('villa','list')
             .then(response => {

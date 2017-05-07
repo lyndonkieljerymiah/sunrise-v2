@@ -1,40 +1,34 @@
 <template>
+
   <div id="app">
     <br/>
     <gridview
-    :data="items"
+    :data="contractData"
     :columns="gridColumns"
     :actions="actions"
     @action="doAction">
   </gridview>
+  <div v-for="d in contractData"> 
+  {{d.amount}}
+  </div>
 </div>
 </template>
-
 
 <script>
 
 import GridView from '../GridView.vue';
+let model = require('./ContractListModel.js');
+
 export default {
 
-  name: "app",
+  name: "active",
   props: ['url'],
   components: {
     'gridview': GridView
   },
-  methods: {
-      doAction(a, contract_no) {
-           if(a.key == 'renew') {
-              var redirectToEdit = this.url + "/" + contract_no;
-              AjaxRequest.route(redirectToEdit);
-          }
-      },
-      addNew() {
-          AjaxRequest.route(this.url);
-      }
-  },
-  data: function () {
+  data() {
     return {
-      items:[],
+      contract: model.default.newInstance(),
       gridColumns: [
         {name: 'created_at', column: 'Date'},
         {name: 'contract_no', column: 'Contract No'},
@@ -51,19 +45,27 @@ export default {
             {key:'renew', name:'Renew'},
             {key:'remove',name:'Remove'}
         ],
-        statusCounts: []
-
-
     }
   },
-
+  methods: {
+      doAction(a, contract_no) {
+           if(a.key == 'renew') {
+              var redirectToEdit = this.url + "/" + contract_no;
+              AjaxRequest.route(redirectToEdit);
+          }
+      },
+      addNew() {
+          AjaxRequest.route(this.url);
+      }
+  },
   created() {
-        var self = this;
-        AjaxRequest.get("contract", "list")
-        .then(response=> {
-          self.items = response.data;
-        });
-
+    this.contract.create();
+    
+  },
+  computed: {
+    contractData() {
+      return this.contract.data;
+    }
   }
 }
 

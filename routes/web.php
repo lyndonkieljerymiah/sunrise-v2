@@ -22,24 +22,31 @@ Route::get('/', function() {
 /**********************
 *    Villa API End Point
 ***********************/
-Route::get('api/villa/list/{status?}',[
+Route::get('/api/villa/list/{status?}',[
     'uses'  =>  "VillaController@apiList",
     'as'    =>  "villa.list"
     ]);
 
-Route::get('api/villa/search/{filterKey}/{filterValue?}',"VillaController@apiSearch");
+Route::get('/api/villa/search/{filterKey}/{filterValue?}',[
+    "uses"  => "VillaController@apiSearch"
+]);
 
-Route::get('api/villa/vacant',"VillaController@apiVacant");
+Route::get('/api/villa/vacant',[
+    "uses"  =>  "VillaController@apiVacant"
+]);
 
-Route::get("api/villa/create","VillaController@apiCreate");
+Route::get("/api/villa/create",
+[
+    "uses"  =>  "VillaController@apiCreate"
+]);
 
-Route::get("api/villa/edit/{id}","VillaController@apiEdit");
+Route::get("/api/villa/edit/{id}","VillaController@apiEdit");
 
-Route::post("api/villa/store","VillaController@apiStore");
+Route::post("/api/villa/store","VillaController@apiStore");
 
-Route::delete("api/villa/destroy/","VillaController@apiDestroy");
+Route::delete("/api/villa/destroy/","VillaController@apiDestroy");
 
-Route::post("api/villa/update","VillaController@apiUpdate");
+Route::post("/api/villa/update","VillaController@apiUpdate");
 /***************************************/
 
 Route::get('villa',[
@@ -74,26 +81,22 @@ Route::get('users/profile',function() {
 
 Route::get("/api/contract/list/{status?}",
     [
-        'uses'  => "ContractController@apiList",
-        'as'    =>  "contract.list"
+        'uses'  => "ContractController@apiList"
     ]);
 
 Route::get("/api/contract/create/",
     [
-        "uses" => "ContractController@apiCreate",
-        "as"    =>  "contract.create"
+        "uses" => "ContractController@apiCreate"
     ]);
 
 Route::get("/api/contract/renew/{contract_no}",
     [
-        "uses"  =>  "ContractController@apiRenew",
-        "as"    =>  "contract.renew"
+        "uses"  =>  "ContractController@apiRenew"
     ]);
 
 Route::post("/api/contract/update",
     [
-        "uses"  =>  "ContractController@apiUpdate",
-        "as"    =>  "contract.update"
+        "uses"  =>  "ContractController@apiUpdate"
     ]);
 
 Route::post("/api/contract/store",
@@ -116,7 +119,8 @@ Route::get("/contract",
 
 Route::get("contract/create/",
     [
-        "uses"   =>  "ContractController@create"
+        "uses"  =>  "ContractController@create",
+        "as"    =>  "contract.create"
     ]);
 
 
@@ -124,13 +128,19 @@ Route::get("contract/create/",
 /*************************
  *BILL API End Point
 **********************************/
-Route::get('api/bill/create/{contractNo}',[
-    'uses'  =>  'ContractBillController@apiCreate'
+Route::get('api/bill/create/{contractNo}',
+    [
+        'uses'  =>  'ContractBillController@apiCreate'
     ]);
 
 Route::get('api/bill/show/{billNo}',
     [
         'uses'  =>  'ContractBillController@apiShow'
+    ]);
+
+Route::post('api/bill/store',
+    [
+        'uses' =>   'ContractBillController@apiStore'
     ]);
 
 
@@ -139,8 +149,8 @@ Route::get("bill/create/{contractNo}",
         "uses"  =>  "ContractBillController@create"
     ]);
 
-
-Route::post('api/bill/store',
+Route::get("bill/show/{billNo}",
     [
-        'uses' =>   'ContractBillController@apiStore'
-    ]);
+        "uses"  =>  "ContractBillController@show" ,
+        "as"    =>  "bill.show"
+    ])->name('bill.show');

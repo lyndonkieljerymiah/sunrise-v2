@@ -38,7 +38,7 @@
             <li><hr/></li>
             <li>
                 <a href="#" onclick="event.preventDefault();
-                                    document.getElementById('logout-form').submit();">
+                                    document.getElementById('logout-form').submit()">
                   <i class="fa fa-power-off" aria-hidden="true"></i> Logout
 
                 </a>

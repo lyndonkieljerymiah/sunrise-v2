@@ -1,7 +1,8 @@
 <template>
   <div id="app">
+    <br/>
     <gridview
-    :data="items"
+    :data="contract.data"
     :columns="gridColumns"
     :actions="actions"
     @action="doAction">
@@ -13,15 +14,14 @@
 <script>
 
 import GridView from '../GridView.vue';
+
 export default {
 
-  name: "app",
-  props: ['url'],
-
+  name: "pending",
+  props: ['contract'],
   components: {
     'gridview': GridView
   },
-  
   methods: {
       doAction(a, contract_no) {
            if(a.key == 'renew') {
@@ -52,23 +52,11 @@ export default {
         {name: 'status', column: 'Status'},
         {name: 'action', column: '',static:true, class: 'text-center'}],
         actions: [
-            {key:'terminated', name:'Terminate'},
-            {key:'renew', name:'Renew'},
+            {key:'approved', name:'Approved'},
+            {key:'cancelled', name:'Cancelled'},
             {key:'remove',name:'Remove'}
-        ],
-        statusCounts: []
-
-
+        ]
     }
-  },
-
-  created() {
-        var self = this;
-        AjaxRequest.get("contract", "list")
-        .then(response=> {
-          self.items = response.data;
-        });
-
   }
 }
 
