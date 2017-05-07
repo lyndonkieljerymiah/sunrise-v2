@@ -41,7 +41,7 @@ class CreateTenantsTable extends Migration
 
             $table->string('gender',10)->nullable();
 
-            $table->boolean('is_active')->default(1);
+            $table->softDeletes();
 
         });
 

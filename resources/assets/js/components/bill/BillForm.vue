@@ -1,37 +1,20 @@
 <template>
-    <div id="app" class="form-horizontal">
-        <div class="form-group">
+    <div id="app">
+        <div class="row">
             <div class="col-md-8">
+                <tenant-info :tenant-data="tenant" :villa-data="villa"></tenant-info>
                 <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <span></span>
-                        <strong>Tenant Information</strong>
-                    </div>
                     <div class="panel-body">
-                        <div class="form-group">
-                            <p>
-                                <strong class="col-md-2">Code:</strong>
-                                <span class="col-md-10">{{tenant.code}}</span>
-                            </p>
-                            <p>
-                                <strong class="col-md-2">Full Name:</strong>
-                                <span class="col-md-10">{{tenant.full_name}}</span>
-                            </p>
-                        </div>
-                        <hr/>
-                        <div class="form-group">
-                            <p>
-                                <strong class="col-md-2">Villa No:</strong>
-                                <span class="col-md-10">{{villa.villa_no}}</span>
-                            </p>
-                            <p>
-                                <strong class="col-md-2">Description:</strong>
-                                <span class="col-md-10">{{villa.description}}</span>
-                            </p>
-                            <p>
-                                <strong class="col-md-2">Rate/Month:</strong>
-                                <span class="col-md-10">{{villa.rate_per_month}}</span>
-                            </p>
+                        <button class="btn btn-info" @click="showModal" style="margin-bottom: 10px;">Add New</button>
+                        <modal size="" dialog-title="Payment Entry" @dismiss="onDismissal">
+                            <payment-modal  :bill="bill"></payment-modal>
+                        </modal>
+                        <gridview :data="bill.data.payments"
+                                  :columns="gridColumn"
+                                  @action="onDelete">
+                        </gridview>
+                        <div class="col-md-4 pull-right">
+                            <strong class="col-md-6">Payment Total:</strong> <strong class="col-md-3 text-right text-warning">{{totalPayment}}</strong>
                         </div>
                     </div>
                 </div>
@@ -42,54 +25,7 @@
                         <button class="btn btn-info btn-block" @click="save">Save</button>
                     </div>
                 </div>
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <strong>Contract</strong>
-                    </div>
-                    <div class="panel-body">
-                        <p>
-                            <strong class="col-md-3">Contract No:</strong>
-                            <span class="col-md-9">{{contract.contract_no}}</span>
-                        </p>
-                        <p>
-                            <strong class="col-md-3">Type:</strong>
-                            <span class="col-md-9">{{contract.full_contract_type}}</span>
-                        </p>
-                        <p>
-                            <strong class="col-md-3">Period:</strong>
-                            <span class="col-md-9">From {{contract.period_start}} To {{contract.period_end}}</span>
-                        </p>
-                        <p>
-                            <strong class="col-md-3">Amount:</strong>
-                            <span class="col-md-9">{{contract.amount}}</span>
-                        </p>
-                        <p>
-                            <strong class="col-md-3">Status:</strong>
-                            <span class="col-md-9">{{contract.full_status}}</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-8">
-                <div class="panel panel-info">
-                    <div class="panel-body">
-                        <button class="btn btn-info" @click="showModal" style="margin-bottom: 10px;">Add New</button>
-                        <modal size="" dialog-title="Payment Entry" @dismiss="onDismissal">
-                            <payment-modal  :bill="bill"></payment-modal>
-                        </modal>
-
-                        <gridview :data="bill.data.payments"
-                                  :columns="gridColumn"
-                                    @action="onDelete">
-                        </gridview>
-
-                        <div class="col-md-3 col-md-offset-9 text-right">
-                            <strong>Payment Total:</strong>{{totalPayment}}
-                        </div>
-                    </div>
-                </div>
+                <contract-info :contract-data="contract"></contract-info>
             </div>
         </div>
     </div>
@@ -99,15 +35,20 @@
     import GridView from '../GridView.vue';
     import Modal from '../Modal.vue';
     import PaymentModal from './PaymentModal.vue';
+    import TenantInfo from './TenantInfo.vue';
+    import ContractInfo from './ContractInfo.vue';
+    import Toastr from 'vue-toastr';
 
     let billModel = require('./BillModel.js');
     
     export default {
         name: 'billForm',
         props: {
-            contractId: 0
+            contractId: 0,
         },
         components: {
+            "tenantInfo": TenantInfo,
+            "contractInfo": ContractInfo,
             "gridview": GridView,
             "modal":    Modal,
             "paymentModal": PaymentModal

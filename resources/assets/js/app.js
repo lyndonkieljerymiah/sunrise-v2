@@ -18,16 +18,11 @@ require('./bootstrap');
 window.Vue = require('vue');
 
 
-
-
 /**************************
  * Vue Event
  *
  **************************/
 window.VueEvent = new Vue();
-
-
-
 
 
 /**
@@ -36,10 +31,6 @@ window.VueEvent = new Vue();
 import VueRouter from 'vue-router';
 
 import VeeValidate from 'vee-validate';
-
-import VeeValidator from 'vee-validate';
-
-window.veeValidator = VeeValidator;
 
 Vue.use(VueRouter);
 
@@ -53,10 +44,22 @@ require('./app.register.js');
 
 require('./app.component.js');
 
+import VillaList from './components/villa/VillaList.vue';
+import VillaForm from './components/villa/VillaForm.vue';
+import App from './components/App.vue';
+import BillReadable from './components/bill/BillReadable.vue';
+import BillForm from './components/bill/BillForm.vue';
 
 
 new Vue({
-    el: "#mainApp"
+    el: "#mainApp",
+    components: {
+        'appMain': App,
+        'contractBill': BillForm,
+        'billReadable': BillReadable,
+        'villaList': VillaList,
+        'villaForm': VillaForm
+    }
 });
 
 

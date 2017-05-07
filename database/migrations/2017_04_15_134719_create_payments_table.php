@@ -31,6 +31,8 @@ class CreatePaymentsTable extends Migration
 
             $table->date('period_end');
 
+            $table->string('description',150)->nullable();
+
             $table->string('bank',50);
 
             $table->decimal('amount')->default(0.00);
@@ -43,8 +45,6 @@ class CreatePaymentsTable extends Migration
 
             $table->integer('user_id')->index();
 
-            $table->boolean('is_active');
-
             $table->timestamps();
 
              //foreign key
@@ -52,7 +52,9 @@ class CreatePaymentsTable extends Migration
 
                 ->references('id')
 
-                ->on('contract_bills');
+                ->on('contract_bills')
+
+                ->onDelete('cascade');
                 
         });
     }

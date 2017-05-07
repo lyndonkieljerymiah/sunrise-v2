@@ -3,8 +3,8 @@
 namespace App;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
 
 class ContractBill extends BaseModel
 {
@@ -26,8 +26,6 @@ class ContractBill extends BaseModel
         return $this->hasMany(Payment::class,'bill_id','id');
     }
 
-
-
     public static function createInstance($contractId) {
 
         $bill = new ContractBill();
@@ -47,15 +45,72 @@ class ContractBill extends BaseModel
     }
 
     public function withAssociates() {
-
         return $this->with('Payments');
-
     }
 
 
 
+    public function saveBill($entity) {
+        try {
+
+            //validate payment first
 
 
+            $this->bill_no = "B" . $entity['contract_id'] . "-" . Carbon::now()->year . "-" . $this->createNewId();
+            $this->contract_id = $entity['contract_id'];
+            $this->user_id = $entity['user_id'];
+
+
+            $this->save();
+
+            if(isset($entity['payments']) && sizeof($entity['payments']) > 0) {
+
+                $this->Payments()->saveMany(array_map(function ($item) {
+
+                    $payment = new Payment();
+                    $payment->user_id = 1;
+                    $payment->toMap($item);
+                    return $payment;
+
+                }, $entity['payments']));
+            }
+
+
+
+            return true;
+        }
+        catch (Exception $e) {
+            abort(500,$e->getMessage());
+        }
+    }
+
+    public function isBalance($entity,$contractAmount) {
+
+        if(isset($entity['payments']) && sizeof($entity['payments']) > 0) {
+            $amountReceived = 0;
+            foreach($entity['payments'] as $payment) {
+                $amountReceived += (float)$payment['amount'];
+            }
+            if($amountReceived >= $contractAmount) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    public function getExistingContract($contractNo) {
+
+        $raw =  DB::table('contracts AS c')
+                ->select('cb.bill_no')
+                ->join('contract_bills AS cb','c.id', '=' ,'cb.contract_id')
+                ->where('c.contract_no','=',$contractNo)
+                ->first();
+
+        return $raw;
+
+    }
 
 
 

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\VillaForm;
 
+use App\Selection;
 use App\Services\Result;
 
+use App\Villa;
 use Illuminate\Support\Facades\Validator;
 
 use Carbon\Carbon;
@@ -17,64 +19,72 @@ class VillaController extends Controller
 
     protected $selection;
 
-    public function __construct(
-        \App\Repositories\VillaRepository $villa, 
-        \App\Repositories\SelectionRepository $selection) {
+    public function __construct() {
         
-        $this->villa = $villa;
+        $this->villa = new Villa();
+        $this->selection = new Selection();
+    }
 
-        $this->selection = $selection;
 
+    public function index() {
+
+
+        return view("villa.index");
+
+    }
+
+    public function register($id = 0) {
+
+        return view("villa.create",compact('id'));
     }
 
     /**********************API****************************/
-    public function index($status = '') {
+    public function apiList($status = '') {
 
         return [
-            "data"      =>  $this->villa->getVillas(),
-            "counts"    =>  $this->villa->getStatusCount()
+
+            "data"      =>  $this->villa->getLists(),
+
+            "counts"    =>  $this->villa->statusCount()
+
         ];
     }
 
-    public function search($filterKey,$filterValue = "") {
+    public function apiSearch($filterKey,$filterValue = "") {
         
-        $value = $this->villa->dynamicSearch($filterKey,$filterValue)->get();
+        $value = $this->villa->explicitSearch($filterKey,$filterValue)->get();
 
         return $value;
 
     }
 
 
-    public function edit($id) {
-        
-        $villa = [ 
-            "data"      =>  $this->villa->withChildren()->single($id),
+    public function apiEdit($id) {
+
+        $villa = [
+            "data"      =>  $this->villa->withGalleries()->find($id),
             "lookups"   =>  $this->selection->getSelections(array("villa_type","villa_location"))
         ];
-        
+
         $villaObject = $villa['data'];
-        
-        foreach($villaObject->villaGalleries as $gallery) {
-                $gallery->image_name = asset('img/villa').'/'.$gallery->image_name; 
-        }
-        
+
         return $villa;
     }
 
-    public function vacant() {
+    public function apiVacant() {
 
-        return $this->villa->withStatus("vacant")->get();
+        return $this->villa->hasStatusOf("vacant")->get();
     }
 
-    public function create() {
+    public function apiCreate() {
         return 
         [
-            "data"      =>  $this->villa->create(),
+            "data"      =>  $this->villa->createInstance(),
             "lookups"   => $this->selection->getSelections(array("villa_type","villa_location"))
         ];
     }
 
-    public function store(VillaForm $request) 
+    public function apiStore(VillaForm $request)
     {
         
         $inputs = $request->filterInput();
@@ -83,7 +93,8 @@ class VillaController extends Controller
             //get gallery files
             $files =   isset($inputs['galleries']) ? $inputs['galleries'] : [];
             $inputs['galleries'] = $this->storeImages($files,$inputs['villa_no']);
-            $this->villa->saveVilla($inputs,'create');
+            $inputs['id'] = 0;
+            $this->villa->saveVilla($inputs);
         }
         catch(Exception $e) {
             abort('500',$e);
@@ -92,14 +103,15 @@ class VillaController extends Controller
         return Result::ok();
     }
 
-    public function update(VillaForm $request) {
+    public function apiUpdate(VillaForm $request) {
 
         $inputs = $request->filterInput();
         try {
             //get gallery files
             $files =   isset($inputs['galleries']) ? $inputs['galleries'] : [];
             $inputs['galleries'] = $this->storeImages($files,$inputs['villa_no']);
-            $this->villa->saveVilla($inputs,'modify');
+
+            $this->villa->saveVilla($inputs);
         }
         catch(Exception $e) {
             abort('500',$e);
@@ -108,14 +120,11 @@ class VillaController extends Controller
         return Result::ok();
     }
 
-    public function destroy($id) {
+    public function apiDestroy($id) {
         
-        $this->repository
-            ->findById($id)
-            ->markDeleted()
-            ->saveChanges();
+        $this->villa->find($id)->delete();
 
-        $result = ["isOk" => true];
+        return Result::ok('Successfully Deleted');
     }
 
     private function storeImages($files,$villaNo) {

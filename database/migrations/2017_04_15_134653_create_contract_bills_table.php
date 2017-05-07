@@ -20,23 +20,22 @@ class CreateContractBillsTable extends Migration
 
             $table->timestamps();
 
-            $table->string('bill_no',50)->index();
+            $table->string('bill_no',50)->unique();
 
             $table->integer('contract_id')->unique()->unsigned();
 
-            $table->integer('user_id')->unique();
+            $table->integer('user_id')->index();
 
-            $table->string('status',20)->index();
-
-            $table->string('is_active')->index();
+            $table->softDeletes();
 
               //foreign key
             $table->foreign('contract_id')
 
                 ->references('id')
 
-                ->on('contracts');
-                
+                ->on('contracts')
+
+                ->onDelete('cascade');
                 
         });
 

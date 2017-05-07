@@ -29,7 +29,7 @@
         },
         methods: {
             dismiss(result) {
-                //$("#modalComponent").modal('hide');
+                $("#modalComponent").modal('hide');
                 this.$emit("dismiss",result);
             }
         },

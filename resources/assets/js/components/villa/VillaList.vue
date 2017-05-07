@@ -11,6 +11,7 @@
         <hr/>
         <div class="row">
             <div class="col-md-9">
+
                 <gridview
                     :data="gridData"
                     :columns="gridColumns"
@@ -21,17 +22,9 @@
             </div>
             <div class="col-md-3">
                 <div class="list-group">
-                    <a href="#" class="list-group-item">
-                        <i class="fa fa-home"></i> Vacant
-                        <span class="badge">{{statusVacant}}</span>
-                    </a>
-                    <a href="#" class="list-group-item">
-                        <i class="fa fa-home"></i> Occupied
-                        <span class="badge">{{statusOccupied}}</span>
-                    </a>
-                    <a href="#" class="list-group-item">
-                        <i class="fa fa-home"></i> Maintenance
-                        <span class="badge">0</span>
+                    <a href="#" class="list-group-item" v-for="count in statusCounts">
+                        <i class="fa fa-home"></i> {{count.status}}
+                        <span class="badge">{{count.count}}</span>
                     </a>
                 </div>
             </div>

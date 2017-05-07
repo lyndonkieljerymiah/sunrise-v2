@@ -27,14 +27,14 @@ class CreateVillaGalleriesTable extends Migration
 
             $table->string('mime_type',50);
 
-            
             //foreign key
             $table->foreign('villa_id')
 
                 ->references('id')
 
-                ->on('villas');
+                ->on('villas')
 
+                ->onDelete('cascade');
             
         });
     }

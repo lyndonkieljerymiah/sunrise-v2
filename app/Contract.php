@@ -12,21 +12,38 @@ class Contract extends BaseModel
     const COMPLETED = 'completed';
     const CANCELLED = 'cancelled';
 
-    //
-    
-
     protected $table = "contracts";
 
     protected $appends = ['full_status','full_contract_type','payable_per_month'];
 
+    //factory method
+    public static function createInstance($defaultMonths) {
+
+        $contract = new Contract();
+
+        $contract->contract_type = "legalized";
+
+        $contract->tenant_id = 0;
+
+        $contract->villa_id = 0;
+
+        $contract->toDefaultPeriod(Carbon::now()->toDateTimeString(),$defaultMonths);
+
+        $contract->amount = 0;
+
+        $contract->register_tenant = Tenant::createInstance();
+
+        $contract->villa_list = Villa::with('villaGalleries')->where('status','vacant')->get();
+
+        return $contract;
+    }
+
+
     protected function getFullStatusAttribute() {
-
         return $this->attributes['full_status'] = Selection::convertCode($this->status);
-
     }
 
     protected function getFullContractTypeAttribute() {
-
         return $this->attributes['contract_type'] = Selection::convertCode($this->contract_type);
     }
 
@@ -55,31 +72,13 @@ class Contract extends BaseModel
         return $this->hasOne(Tenant::class,"id","tenant_id");
     }
 
+    public function searchByNo($contractNo) {
 
-    public static function createInstance($defaultMonths) {
-        
-        $contract = new Contract();
-        
-        $contract->contract_type = "legalized";
+        return $this->where('contract_no',$contractNo);
 
-        $contract->tenant_id = 0;
-
-        $contract->villa_id = 0;
-
-        $contract->toDefaultPeriod(Carbon::now()->toDateTimeString(),$defaultMonths);
-
-        $contract->amount = 0;
-
-        $contract->register_tenant = Tenant::createInstance();
-
-        $contract->villa_list = Villa::with('villaGalleries')->where('status','vacant')->get();
-
-        return $contract;
     }
 
-
-    
-    public function lists($status = "") {
+    public function getContracts($status = "") {
 
           $contracts = \DB::table('contracts')
                         ->join('tenants', 'contracts.tenant_id', '=','tenants.id')
@@ -90,6 +89,7 @@ class Contract extends BaseModel
                             'period_start','period_end',
                             'tenants.full_name',
                             'villas.villa_no',
+                            'amount',
                             \DB::raw('(SELECT name FROM selections WHERE code=contracts.status) AS status'));
 
         if($status != "") 
@@ -101,9 +101,7 @@ class Contract extends BaseModel
 
     public function withAssociates() {
         
-        $this->with('villa')->with('tenant');
-
-        return $this;
+        return $this->with('villa')->with('tenant');
 
     }
    
@@ -130,18 +128,48 @@ class Contract extends BaseModel
 
     }
 
+    public function saveContract($entity) {
+
+        $villaNo = $entity['villa_no'];
+
+        unset($entity['villa_no']);
+
+        $entity['contract_no'] = "C".$villaNo."-".Carbon::now()->year."-".$this->createNewId();
+
+        $this->toMap($entity);
+
+        $this->pending()->save();
+
+        return $this;
+    }
+
+    public function pending() {
+        $this->status = "pending";
+        return $this;
+    }
+
     public function terminate() {
 
         $this->status = "terminated";
+        return $this;
     }
 
     public function cancel() {
 
         $this->status = "cancelled";
+
+        return $this;
     }
 
     public function completed() {
         $this->status = "completed";
+        return $this;
+    }
+
+    public function active() {
+        $this->status = "active";
+
+        return $this;
     }
 
     

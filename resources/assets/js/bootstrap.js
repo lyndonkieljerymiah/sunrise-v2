@@ -9,8 +9,6 @@ try {
 
 window.bbox = require('bootbox');
 
-window.toastr = require('toastr');
-
 
 /**
  * Moment Js

@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use \App\Events\Contract\NotifyUpdate;
+use App\Villa;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -27,12 +28,13 @@ class UpdateVillaStatus
         $args = $event->getArguments('villa');
 
         //make villa occupied
-        $this->repository->findById($args["id"]);
+        $villaModel = Villa::find($args["id"]);
         
-        if($args["status"] == 'occupied') 
-            $this->repository->setOccupied();
+        if($args["status"] == 'occupied')
+            $villaModel->setToOccupied();
         else 
-            $this->repository->setVacant();
+            $villaModel->setToVacant();
 
+        $villaModel->save();
     }
 }

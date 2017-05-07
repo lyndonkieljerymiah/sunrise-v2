@@ -44,9 +44,11 @@ class Payment extends BaseModel
         $this->period_end = Carbon::now()->addMonth($defaultMonth)->toDateTimeString();
 
         return $this;
+
     }
 
     public static function createInstance() {
+
         $p = new Payment([
             "effectivity_date"      =>  Carbon::now()->toDateTimeString(),
             "payment_type"          =>  "cheque",

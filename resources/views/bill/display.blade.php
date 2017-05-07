@@ -1,7 +1,12 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: arnold.mercado
- * Date: 5/7/2017
- * Time: 5:00 PM
- */
+@extends('layouts.layout');
+
+@section('content')
+    <div id="mainApp">
+        <app-main page-title="Contract Bill">
+            <bill-readable :main-data="{{$bill}}"></bill-readable>
+        </app-main>
+    </div>
+@endsection
+
+
+

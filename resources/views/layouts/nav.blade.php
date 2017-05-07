@@ -34,7 +34,7 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user-circle fa-lg" aria-hidden="true"></i> <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#"><i class="fa fa-user-plus" aria-hidden="true"></i> Profile</a></li>
+            <li><a href="{!! url('users/profile') !!}"><i class="fa fa-user-plus" aria-hidden="true"></i> Profile</a></li>
             <li><hr/></li>
             <li>
                 <a href="#" onclick="event.preventDefault();
@@ -93,7 +93,7 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user fa-lg" aria-hidden="true"></i>  SETTINGS <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
-                  <a href="#"><i class="fa fa-caret-right fa-lg" aria-hidden="true"></i>  User</a>
+                  <a href="{!!url('users')!!}"><i class="fa fa-caret-right fa-lg" aria-hidden="true"></i>  User</a>
               </ul>
             </li>
         </ul>

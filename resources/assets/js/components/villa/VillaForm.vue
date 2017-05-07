@@ -2,12 +2,9 @@
 <div>
     <form id="frmVillaEntry" @submit.prevent="onSave" class="form-horizontal" enctype="multipart/form-data" @keydown="errors.clear($event.target.name)">
         <div class="form-group">
-
             <div class="col-md-8">
                 <div class="panel panel-default">
                     <div class="panel-body">
-
-
                         <div class="form-group">
                             <label for="location" class="col-md-2 text-right">Location:</label>
                             <div class="col-md-10">
@@ -187,6 +184,7 @@
 
             var $this = this;
             //create initialize
+
             AjaxRequest.get('villa',this.formAction)
                 .then(response => {
                     $this.model = response.data.data;

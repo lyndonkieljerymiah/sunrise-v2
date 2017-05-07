@@ -14,8 +14,6 @@ class CreateContractTerminationsTable extends Migration
     public function up()
     {
         Schema::create('contract_terminations', function (Blueprint $table) {
-            
-            $table->increments('id');
 
             $table->timestamps();
             
@@ -24,6 +22,8 @@ class CreateContractTerminationsTable extends Migration
             $table->text('description');
 
             $table->string('ref_no');
+
+            $table->primary('contract_id');
 
              //foreign key
             $table->foreign('contract_id')

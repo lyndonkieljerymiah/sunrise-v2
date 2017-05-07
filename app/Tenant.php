@@ -36,4 +36,17 @@ class Tenant extends BaseModel
 
     }
 
+    public function saveTenant($entity) {
+
+        $addressInstance = isset($entity['address_instance']) ? $entity['address_instance'] : false;
+        unset($entity['address_instance']);
+
+        $tenant = $this->toMap($entity)->save();
+
+        $address = new TenantAddress($addressInstance);
+        $this->TenantAddress()->save($address);
+
+        return $this;
+    }
+
 }

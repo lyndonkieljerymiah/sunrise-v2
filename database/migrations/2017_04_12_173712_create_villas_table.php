@@ -32,7 +32,6 @@ class CreateVillasTable extends Migration
             $table->string("qtel_no",150)->nullable();
 
             $table->string("villa_class",50)->index();
-                
 
             $table->integer("capacity")->default(0);
 
@@ -40,7 +39,7 @@ class CreateVillasTable extends Migration
 
             $table->decimal("rate_per_month")->default(0);
 
-            $table->boolean("is_active")->default(1);
+            $table->softDeletes();
             
             $table->string("status",20);
 

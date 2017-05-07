@@ -14,5 +14,7 @@ class VillaGallery extends BaseModel
         $this->created_at = Carbon::now();
         $this->updated_at = Carbon::now();
 
+
+
     }
 }

@@ -33,7 +33,7 @@ class Villa extends BaseModel
     }
 
 
-    public function villaGalleries() {
+    public function VillaGalleries() {
 
         return $this->hasMany(VillaGallery::class);
     }
@@ -47,19 +47,28 @@ class Villa extends BaseModel
 
     }
 
+
+
+
     /*************************************************************/
     public function vacantOnly() {
+
         return $this->where('status','vacant');
+
     }
 
 
     public function setToVacant() {
+
         $this->status = 'vacant';
+
         return $this;
     }
 
     public function setToOccupied() {
+
         $this->status = 'occupied';
+
         return $this;
     }
     
@@ -74,5 +83,71 @@ class Villa extends BaseModel
             'water_no','qtel_no','rate_per_month',
             DB::raw('(SELECT name FROM selections WHERE code = villas.status) AS status'))->where('is_active',1)->get();
     }
+
+    public function statusCount() {
+
+        return $this->select('status',\DB::raw('count(id) as count'))->groupBy('status')->get();
+    }
+
+    public function withGalleries() {
+
+        return $this->with('villaGalleries');
+
+    }
+
+    public function saveVilla($entity) {
+
+        try {
+
+            $collectionGallery = isset($entity['galleries']) ? $entity['galleries'] : [];
+            $villaGalleries = isset($entity['villa_galleries']) ?  $entity['villa_galleries'] : [];
+
+            unset($entity['galleries']);
+            unset($entity['villa_galleries']);
+
+            if($entity['id'] == 0) {
+
+                $this->find($entity['id']);
+
+                $this->toMap($entity)->save();
+
+            }
+            else {
+                //default status
+                $entity['status'] = 'vacant';
+
+                $this->find($entity['id']);
+                $this->toMap($entity)->save();
+            }
+
+            //save collection
+            if(sizeof($collectionGallery) > 0) {
+
+                $this->VillaGalleries()->saveMany(array_map(function($item) {
+
+                    return new VillaGallery($item);
+
+                },$collectionGallery));
+
+            }
+
+            if(sizeof($villaGalleries) > 0) {
+                foreach ($villaGalleries as $villaGallery)
+                {
+                    if($villaGallery['markDeleted'] == true) {
+                        VillaGallery::deleted($villaGallery['id']);
+                    }
+                }
+            }
+
+        }
+        catch(Exception $e) {
+            abort(500,$e->getMessage());
+        }
+
+        return true;
+    }
+
+
 
 }

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Contract;
 use App\Events\Contract\NotifyUpdate;
 use App\Events\Contract\OnCreating;
 use App\Events\Contract\OnRecalculate;
 use App\Http\Requests\ContractRegisterForm;
+use App\Selection;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Services\Result;
@@ -19,39 +22,46 @@ class ContractController extends Controller
     
     const DEFAULT_PERIOD = 12;
 
-    public function __construct(
-        \App\Repositories\ContractRepository $contracts,
-        \App\Repositories\SelectionRepository $selections) {
+    public function __construct() {
         
-        $this->contracts = $contracts;
-
-        $this->selections = $selections;
+        $this->contracts = new Contract();
+        $this->selections = new Selection();
 
     }
 
-    public function index($status = "") {
-        
+    public function index() {
+
+        return view("contract.contract");
+    }
+
+    public function create() {
+        return view("contract.create");
+    }
+
+    public function apiList($status = "") {
+
         return $this->contracts->getContracts($status);
         
     }
 
-    public function create()  {
+    public function apiCreate()  {
         try {
 
             $outputs = array();
 
             return [
-                "data"      => $this->contracts->create(self::DEFAULT_PERIOD),
+                "data"      => $this->contracts->createInstance(self::DEFAULT_PERIOD),
                 "lookups"   => $this->selections->getSelections(["contract_type","tenant_type"])
             ];
         }
         catch(Exception $e) {
 
             return abort(500,$e->getMessage());
+
         }
     }
 
-    public function recalculate(Request $request) {
+    public function apiRecalculate(Request $request) {
 
         $villaId = request()->input('villa_id');
 
@@ -59,12 +69,16 @@ class ContractController extends Controller
         event(new OnRecalculate(["villaId" => $villaId],$expectedOutput));
 
         if(sizeof($expectedOutput)) {
+
             //get the rate
             $ratePerMonth = $expectedOutput['villa']->rate_per_month;
 
             //create contract with new rate
-            $contract = $this->contracts->create(self::DEFAULT_PERIOD);
-            $contract->setPeriod($request->input('period_start'),$request->input('period_end'));
+            $contract = $this->contracts->createInstance(self::DEFAULT_PERIOD);
+
+            $contract->setPeriod($request->input('period_start'),
+                                $request->input('period_end'));
+
             $contract->toComputeAmount($ratePerMonth);
 
             return $contract;
@@ -74,7 +88,7 @@ class ContractController extends Controller
 
     }
 
-     public function store(ContractRegisterForm $request) {
+     public function apiStore(ContractRegisterForm $request) {
         try {
 
             $expectedOutput = array();
@@ -99,44 +113,44 @@ class ContractController extends Controller
             $contractModel['villa_no']  = $expectedOutput['villa']->villa_no;
 
             $contract = $this->contracts->saveContract($contractModel);
-            
+
             //trigger event since saving
             event(new NotifyUpdate([
                     'villa' => ["id" => $result['villa_id'], "status" => "occupied"]
                 ]));
         }
         catch(Exception $e) {
-            abort(500, $e->getMessage());
+            return Result::badRequest(['message' => $e->getMessage()]);
         }
 
-        return Result::ok("Successfully save!!!",['id' => $contract->id]);
+        return Result::ok("Successfully save!!!",['id' => $contract->contract_no]);
     }
 
-    public function renew($id) {
+    public function apiRenew($id) {
 
-        //check fully paid
-        //code here...
+        if(!$this->contracts->hasStatusOf('active')) {
 
-        //get the current contract
-        $model = $this->contracts->single($id);
-        
-        $model->toDefaultPeriod(Carbon::now(),$this->DEFAULT_PERIOD);
+            return Result::badRequest(['message' => 'Contract is not active']);
 
-        $villa = $this->villas->single($model->villa_id);
-        
-        $model->toComputeAmount($villa->rate_per_month);
+        }
 
-        return $model;
+        //get the old contract including villa
+        $contract = $this->contracts->withAssociates()->find($id);
+
+        //display contract
+        $contract->toDefaultPeriod(Carbon::now(),self::DEFAULT_PERIOD);
+
+        return $contract;
         
     }
 
     
-    public function update(ContactForm $request) {
+    public function apiUpdate(ContractRegisterForm $request) {
         try {
 
-            //check fully paid
-            //code here...
-            $this->contracts->renew($request->all());
+            $inputs = $request->filterInput();
+
+
 
         }
         catch(Exception $e) {
@@ -149,41 +163,42 @@ class ContractController extends Controller
 
     }
 
-    public function cancelled(Request $request) {
+    public function apiCancel(Request $request) {
         try {
-
-            $this->contracts->cancelled(request()->all());
+            $this->contracts
+                ->find($request->input('id'))
+                ->cancel()->save();
         }
         catch(Exception $e) {
-
+            Result::badRequest(['message' => $e->getMessage()]);
         }
 
         return Result::ok('Succefully cancelled!!!');
     }
 
 
-    public function terminate(Request $request,$id) {
+    public function apiTerminate(Request $request,$id) {
 
         try {
             
-            $model = $this->contracts->single($id);
-            
-            $model->terminate();
-            
-            $model->save();
+            $model = $this->contracts->find($id)
+                        ->terminate()
+                        ->save();
 
             //trigger event since saving
-            event(new \App\Events\OnContractCreated(['villa' =>
+            event(new NotifyUpdate(['villa' =>
                     [
                         "villaId" => $request->input('villa_id'),
-                        "status" => "occupied"
+                        "status" => "vacant"
                     ]
             ]));
           
         }
         catch(Exception $e) {
-            return ["isOk" => false, "errors" => [$e->getMessages()]];
+            return Result::badRequest(['message' => $e->getMessage()]);
         }
+
+        return Result::ok('Successfully Terminate contract');
 
     }
 

@@ -20,12 +20,11 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\CreateTenant',
             'App\Listeners\GetVilla'
         ],
-        'App\Events\Contract\OnInitialize' => [
-            'App\Listeners\InitializeTenant',
-            'App\Listeners\InitializeVilla'
-        ],
         'App\Events\Contract\OnRecalculate' => [
             'App\Listeners\GetVillaOnRecalculate'
+        ],
+        'App\Events\Bill\NotifyUpdate' => [
+            'App\Listeners\UpdateContractStatus'
         ]
     ];
 

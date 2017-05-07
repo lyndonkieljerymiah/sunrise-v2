@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use \App\Events\Contract\OnCreating;
+use App\Tenant;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Validation\Validator;
@@ -29,9 +30,11 @@ class CreateTenant
      */
     public function handle(OnCreating $event)
     {
-        $models = $event->getArguments('tenant');
+        $entity = $event->getArguments('tenant');
 
-        $tenant = $this->repository->saveTenant($models);
+        $tenantModel = new Tenant();
+
+        $tenant = $tenantModel->saveTenant($entity);
 
         $event->setOutput("tenant",$tenant);
         

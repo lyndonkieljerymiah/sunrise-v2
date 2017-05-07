@@ -11,12 +11,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config("app.name")}}</title>
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.1.3/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('vendor/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="{{asset('vendor/bootstrap/dist/css/bootstrap.min.css')}}">
+
     <link href="{{ asset('css/sb-admin.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{asset('css/sidebar.css') }}" />
     <link rel="stylesheet" href="{{asset('css/app.css') }}" />
+    <link rel="stylesheet" href="{{asset('css/toastr.css')}}">
 
      <script>
         window.Laravel = {!! json_encode([
@@ -34,6 +37,7 @@
 
 </head>
 <body>
+
     <div id="wrapper">
        @include('layouts.nav')
         <div>
@@ -42,6 +46,7 @@
             </div>
         </div>
     </div>
+
     <!-- /#wrapper -->
     <script src="{{asset('js/sidebar.js')}}"></script>
     <script src="{{asset('js/app.js')}}"></script>

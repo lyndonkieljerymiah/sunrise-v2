@@ -12,7 +12,7 @@ class BaseModel extends Model {
 
     protected $custSelectionValues = array();
 
-    public function setField($field,$value) {
+    protected function setField($field,$value) {
         if(!in_array($field,$this->appends)) {
             if(is_numeric($value)) {
                 eval('$this->'. $field . "=" . $value . ";");
@@ -61,18 +61,27 @@ class BaseModel extends Model {
         //update save
         $this->created_at = Carbon::now();
         $this->updated_at = Carbon::now();
-        if($isUserInclude) {
-            $this->user_id = 1;
-        }
 
         return $this->save();
-
     }
 
-    public function toUpdate($isUserInclude = false) {
-        $this->updated_at = Carbon::now();
-        return $this->save();
+    //chaining
+    public function explicitSearch($fieldKey,$fieldValue) {
+        return $this->where($fieldKey,$fieldValue);
+    }
 
+    public function createNewId() {
+
+        $lastRecord = $this->orderBy('id','desc')->first();
+
+        if($lastRecord == null)
+            return 1;
+
+        return $lastRecord->id++;
+    }
+
+    public function getId() {
+        return $this->id;
     }
 
 }

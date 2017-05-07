@@ -29,7 +29,7 @@ class CreateContractsTable extends Migration
             
             $table->decimal('amount')->default(0);
             
-            $table->boolean('is_active')->default(1);
+            $table->softDeletes();
 
             $table->integer('villa_id')->index()->unsigned();
 
