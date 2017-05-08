@@ -5242,12 +5242,13 @@ var AxiosRequest = function () {
         }
     }, {
         key: 'redirect',
-        value: function redirect(controller, action, data) {
+        value: function redirect(controller, action) {
+            var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
 
             var baseUrl = window.Laravel.baseUrl;
 
             var url = baseUrl + "/" + controller + "/" + (action !== null ? action : "") + (data !== null ? "/" + data : "");
-            console.log(url);
             window.location.href = url;
         }
     }, {
@@ -28783,12 +28784,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
-        fieldList: []
+        fieldList: {}
     },
     data: function data() {
         return {
             searchField: ''
-
         };
     },
 
@@ -28894,6 +28894,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ContractInfo_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__ContractInfo_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_vue_toastr__ = __webpack_require__(235);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_vue_toastr___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_vue_toastr__);
+//
+//
 //
 //
 //
@@ -29353,35 +29355,46 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 var model = __webpack_require__(241);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    data: function data() {
-        return {
-            contract: model.default.newInstance(),
-            gridColumns: [{ name: 'created_at', column: 'Date' }, { name: 'contract_no', column: 'Contract No' }, { name: 'contract_type', column: 'Contract Type' }, { name: 'period_start', column: 'Period Start' }, { name: 'period_end', column: 'Period End' }, { name: 'amount', column: 'Amount' }, { name: 'full_name', column: 'Tenant Id' }, { name: 'villa_no', column: 'Villa No' }, { name: 'status', column: 'Status' }, { name: 'action', column: '', static: true, class: 'text-center' }],
+  data: function data() {
+    return {
+      contract: model.default.newInstance(),
+      gridColumns: [{ name: 'created_at', column: 'Date' }, { name: 'contract_no', column: 'Contract No' }, { name: 'contract_type', column: 'Contract Type' }, { name: 'period_start', column: 'Period Start' }, { name: 'period_end', column: 'Period End' }, { name: 'amount', column: 'Amount' }, { name: 'full_name', column: 'Tenant Id' }, { name: 'villa_no', column: 'Villa No' }, { name: 'status', column: 'Status' }, { name: 'action', column: '', static: true, class: 'text-center' }],
 
-            actions: [{ key: 'approved', name: 'Approved' }, { key: 'cancelled', name: 'Cancelled' }, { key: 'remove', name: 'Remove' }]
-        };
-    },
+      actions: [{ key: 'create', name: 'Create Bill' }, { key: 'cancelled', name: 'Cancelled' }, { key: 'remove', name: 'Remove' }]
+    };
+  },
 
-    name: "app",
-    props: ['url'],
-    components: {
-        'gridview': __WEBPACK_IMPORTED_MODULE_0__GridView_vue___default.a
-    },
-    created: function created() {
+  name: "app",
+  props: ['url'],
+  components: {
+    'gridview': __WEBPACK_IMPORTED_MODULE_0__GridView_vue___default.a
+  },
+  created: function created() {
 
-        this.contract.create();
-    },
+    this.contract.create();
+  },
 
-    methods: {
-        change: function change(status) {
-            this.contract.create(status);
-        }
+  methods: {
+    change: function change(status) {
+      this.contract.create(status);
+      if (status == 'pending') {
+        this.actions = [{ key: 'create', name: 'Create Bill' }, { key: 'cancelled', name: 'Cancelled' }, { key: 'remove', name: 'Remove' }];
+      } else {
+        this.actions = [{ key: 'terminated', name: 'Terminated' }, { key: 'renew', name: 'Renew' }];
+      }
     },
-    computed: {
-        contractData: function contractData() {
-            return this.contract.data;
-        }
+    doAction: function doAction(a, id) {
+      if (a.key == 'create') {
+        var redirectobill = this.contract.bill + "/" + id;
+        AjaxRequest.route(redirectobill);
+      }
     }
+  },
+  computed: {
+    contractData: function contractData() {
+      return this.contract.data;
+    }
+  }
 });
 
 /***/ }),
@@ -30320,24 +30333,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    name: 'app',
+    name: 'list',
     components: {
         'searchbox': __WEBPACK_IMPORTED_MODULE_0__SearchBox_vue___default.a,
         'gridview': __WEBPACK_IMPORTED_MODULE_1__GridView_vue___default.a
-    },
-    props: {
-        url: { required: true }
     },
     methods: {
         search: function search(field) {},
         doAction: function doAction(a, id) {
             if (a.key == 'edit') {
-                var redirectToEdit = this.url + "/" + id;
-                AjaxRequest.route(redirectToEdit);
+                AjaxRequest.redirect("villa", "register", id);
             }
         },
         addNew: function addNew() {
-            AjaxRequest.route(this.url);
+            AjaxRequest.redirect("villa", "register");
         },
         sorted: function sorted(sortKey) {
             this.filterKey = sortKey;
@@ -30351,7 +30360,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             gridColumns: [{ name: 'villa_no', column: 'Villa No', style: 'width:10%', class: 'text-center' }, { name: 'location', column: 'Location' }, { name: 'electricity_no', column: 'Electricity No' }, { name: 'water_no', column: 'Water No' }, { name: 'qtel_no', column: 'QTel No' }, { name: 'villa_class', column: 'Class' }, { name: 'rate_per_month', column: 'Rate/Month', class: 'text-right' }, { name: 'status', column: 'Status', class: 'text-center', style: 'width:10%' }, { name: 'action', column: '', static: true, class: 'text-center' }],
             actions: [{ key: 'edit', name: 'Edit' }, { key: 'remove', name: 'Remove' }],
             statusCounts: []
-
         };
     },
     mounted: function mounted() {
@@ -57688,8 +57696,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('gridview', {
     attrs: {
       "data": _vm.contractData,
-      "actions": _vm.actions,
-      "columns": _vm.gridColumns
+      "columns": _vm.gridColumns,
+      "actions": _vm.actions
     },
     on: {
       "action": _vm.doAction
@@ -69856,6 +69864,7 @@ var ContractListModel = function () {
         _classCallCheck(this, ContractListModel);
 
         this.data = [];
+        this._status = "";
     }
 
     _createClass(ContractListModel, [{
@@ -69865,14 +69874,49 @@ var ContractListModel = function () {
 
             var status = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'active';
 
+            this._status = status;
             AjaxRequest.get("contract", "list", status).then(function (response) {
                 _this.data = response.data;
+                _this.errors = ErrorValidations.newInstance();
             });
+        }
+    }, {
+        key: "cancel",
+        value: function cancel(contractId) {
+
+            bbox.confirm({
+                title: "Contract cancel confirmation",
+                message: "Do you want to cancel the contract?",
+                callback: function callback(result) {
+                    var _this2 = this;
+
+                    if (result) {
+                        AjaxRequest.post("contract", "cancel", { id: contractId }).then(function (r) {
+
+                            //this.data.splice(id,1);
+                        }).catch(function (e) {
+                            if (e.response.status == 422) _this2.errors.register(e.response.data);
+                        });
+                    }
+                }
+            });
+        }
+    }, {
+        key: "createBill",
+        value: function createBill(contractId) {
+            var item = _.find(this.data, function (item) {
+                return item.id == contractId;
+            });
+            AjaxRequest.redirect("bill", "create", item.contract_no);
         }
     }]);
 
     return ContractListModel;
 }();
+
+var ContractRenewModel = function ContractRenewModel() {
+    _classCallCheck(this, ContractRenewModel);
+};
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     newInstance: function newInstance() {

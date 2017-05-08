@@ -5,9 +5,11 @@
                 <tenant-info :tenant-data="tenant" :villa-data="villa">
                     <div>
                         <button class="btn btn-info" @click="showModal" style="margin-bottom: 10px;">Add New</button>
+
                         <modal size="" dialog-title="Payment Entry" @dismiss="onDismissal">
                             <payment-modal  :bill="bill"></payment-modal>
                         </modal>
+                        
                         <gridview :data="bill.data.payments"
                                   :columns="gridColumn"
                                   @action="onDelete">

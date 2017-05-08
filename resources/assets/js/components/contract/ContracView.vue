@@ -18,9 +18,9 @@
                 <div id="pending" class="tab-pane fade in active">
                     <gridview
                       :data="contractData"
+                      :columns="gridColumns"
                       :actions="actions"
-                      @action="doAction"
-                      :columns="gridColumns">
+                      @action="doAction">
                   </gridview>
                 </div>
               </div>
@@ -58,9 +58,9 @@ export default {
           {name: 'action', column: '',static:true, class: 'text-center'}],
 
           actions: [
-              {key:'approved', name:'Approved'},
-              {key:'cancelled', name:'Cancelled'},
-              {key:'remove',name:'Remove'}
+            {key:'create', name:'Create Bill'},
+            {key:'cancelled', name:'Cancelled'},
+            {key:'remove',name:'Remove'}
           ]
       }
     },
@@ -76,6 +76,24 @@ export default {
     methods: {
       change(status) {
           this.contract.create(status);
+          if(status == 'pending') {
+            this.actions = [
+                {key:'create', name:'Create Bill'},
+                {key:'cancelled', name:'Cancelled'},
+                {key:'remove',name:'Remove'}
+            ]
+          }else {
+            this.actions = [
+                {key:'terminated', name:'Terminated'},
+                {key:'renew', name:'Renew'}
+            ]
+          }
+      },
+      doAction(a,id) {
+        if(a.key == 'create') {
+           var redirectobill = this.contract.bill + "/" + id;
+           AjaxRequest.route(redirectobill);
+       }
       }
     },
     computed: {

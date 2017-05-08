@@ -37,26 +37,22 @@
     import GridView from '../GridView.vue';
 
     export default {
-        name: 'app',
+        name: 'list',
         components: {
             'searchbox' : SearchBox,
             'gridview'  : GridView
         },
-        props: {
-            url: {required: true}
-        },
         methods: {
             search(field) {
-
+                
             },
             doAction(a,id) {
                  if(a.key == 'edit') {
-                    var redirectToEdit = this.url + "/" + id;
-                    AjaxRequest.route(redirectToEdit);
+                    AjaxRequest.redirect("villa","register",id);
                 }
             },
             addNew() {
-                AjaxRequest.route(this.url);
+                AjaxRequest.redirect("villa","register");
             },
             sorted(sortKey) {
                     this.filterKey = sortKey;
@@ -88,7 +84,6 @@
                     {key:'remove',name:'Remove'}
                 ],
                 statusCounts: []
-
             }
         },
         mounted() {

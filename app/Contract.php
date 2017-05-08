@@ -83,7 +83,7 @@ class Contract extends BaseModel
           $contracts = \DB::table('contracts')
                         ->join('tenants', 'contracts.tenant_id', '=','tenants.id')
                         ->join('villas', 'contracts.villa_id','=','villas.id')
-                        ->select('contracts.created_at', 
+                        ->select('contracts.id', 'contracts.created_at', 
                             'contract_no',
                             \DB::raw('(SELECT name FROM selections WHERE code=contracts.contract_type) AS contract_type'),
                             'period_start','period_end',

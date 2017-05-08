@@ -165,9 +165,11 @@ class ContractController extends Controller
 
     public function apiCancel(Request $request) {
         try {
+            
             $this->contracts
                 ->find($request->input('id'))
-                ->cancel()->save();
+                ->delete();
+                
         }
         catch(Exception $e) {
             Result::badRequest(['message' => $e->getMessage()]);

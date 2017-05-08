@@ -70,12 +70,11 @@ class AxiosRequest {
         return this;
     }
 
-    redirect(controller,action,data) {
+    redirect(controller,action,data = null) {
 
         var baseUrl = window.Laravel.baseUrl;
 
         var url = baseUrl + "/" + controller + "/" + (action !== null ? action : "") + (data !== null ? "/" + data : "");
-        console.log(url);
         window.location.href = url;
 
     }

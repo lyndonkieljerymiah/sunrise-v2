@@ -4,7 +4,7 @@
 
 <div id="mainApp">
     <app-main page-title="Villa">
-        <villa-list url="{!! url('villa/register')!!}"></villa-list>
+        <villa-list></villa-list>
     </app-main>
 </div>
 

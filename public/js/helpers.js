@@ -164,12 +164,13 @@ var AxiosRequest = function () {
         }
     }, {
         key: 'redirect',
-        value: function redirect(controller, action, data) {
+        value: function redirect(controller, action) {
+            var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
 
             var baseUrl = window.Laravel.baseUrl;
 
             var url = baseUrl + "/" + controller + "/" + (action !== null ? action : "") + (data !== null ? "/" + data : "");
-            console.log(url);
             window.location.href = url;
         }
     }, {

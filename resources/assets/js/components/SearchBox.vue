@@ -18,12 +18,11 @@
 <script>
     export default {
         props: {
-            fieldList: []
+            fieldList: {}
         },
         data() {
             return {
                 searchField: ''
-                
             }
         },
         methods: {
