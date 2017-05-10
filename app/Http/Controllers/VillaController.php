@@ -78,7 +78,7 @@ class VillaController extends Controller
 
     public function apiVacant() {
 
-        return $this->villa->hasStatusOf("vacant")->get();
+        return $this->villa->vacantOnly()->get();
     }
 
     public function apiCreate() {

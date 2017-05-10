@@ -5,6 +5,7 @@ import ContractVilla from './components/contract/ContractVilla.vue';
 import ContractCreate from './components/contract/ContractCreate.vue';
 import ContractActive from './components/contract/ContractActive.vue';
 import ContractPending from './components/contract/ContractPending.vue';
+import ContractModal from './components/contract/ContractModal.vue';
 
 Vue.component('contract-view',ContractView);
 Vue.component('contract-tenantregister',ContractTenantRegister);
@@ -12,6 +13,7 @@ Vue.component('contract-villa', ContractVilla);
 Vue.component('contract-create', ContractCreate);
 Vue.component('contract-active', ContractActive);
 Vue.component('contract-pending', ContractPending);
+Vue.component('contract-modal', ContractModal);
 
 // END CONTRACT
 

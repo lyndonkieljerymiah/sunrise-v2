@@ -4,8 +4,7 @@ namespace App\Listeners;
 
 use \App\Events\Contract\NotifyUpdate;
 use App\Villa;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
+
 
 class UpdateVillaStatus
 {
@@ -25,16 +24,16 @@ class UpdateVillaStatus
      */
     public function handle(NotifyUpdate $event)
     {
-        $args = $event->getArguments('villa');
+        $args = $event->bundle->get('villa');
 
-        //make villa occupied
-        $villaModel = Villa::find($args["id"]);
-        
-        if($args["status"] == 'occupied')
-            $villaModel->setToOccupied();
-        else 
-            $villaModel->setToVacant();
-
-        $villaModel->save();
+        if($args !== null) {
+            //make villa occupied
+            $villaModel = Villa::find($args["id"]);
+            if($args["status"] == 'occupied')
+                $villaModel->setToOccupied();
+            else
+                $villaModel->setToVacant();
+            $villaModel->save();
+        }
     }
 }

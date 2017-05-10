@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ff46d37b1a8e0acf10fd24a24f604239",
+    "content-hash": "57a27aeba930f603f9b154e60a625299",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1034,6 +1034,49 @@
                 "uuid"
             ],
             "time": "2017-03-26T20:37:53+00:00"
+        },
+        {
+            "name": "reportico/laravel-reportico",
+            "version": "5.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reportico-web/laravel-reportico.git",
+                "reference": "38b80d51875caf4dcc40f87d3be3a3a991b47a47"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/reportico-web/laravel-reportico/zipball/38b80d51875caf4dcc40f87d3be3a3a991b47a47",
+                "reference": "38b80d51875caf4dcc40f87d3be3a3a991b47a47",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "~5.2",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/migrations",
+                    "src/controllers"
+                ],
+                "files": [
+                    "src/Reportico/Reportico/reportico.php"
+                ],
+                "psr-0": {
+                    "Reportico\\Reportico\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Reportico",
+                    "email": "info@reportico.org"
+                }
+            ],
+            "time": "2017-04-10T17:00:17+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -2070,12 +2113,12 @@
             "version": "0.9.9",
             "source": {
                 "type": "git",
-                "url": "https://github.com/padraic/mockery.git",
+                "url": "https://github.com/mockery/mockery.git",
                 "reference": "6fdb61243844dc924071d3404bb23994ea0b6856"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/6fdb61243844dc924071d3404bb23994ea0b6856",
+                "url": "https://api.github.com/repos/mockery/mockery/zipball/6fdb61243844dc924071d3404bb23994ea0b6856",
                 "reference": "6fdb61243844dc924071d3404bb23994ea0b6856",
                 "shasum": ""
             },

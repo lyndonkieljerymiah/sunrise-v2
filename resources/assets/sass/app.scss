@@ -1,9 +1,15 @@
-
 // Fonts
-@import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,500');
 
-// Variables
-@import "parts/variables";
+
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+}
+
+table {
+  font-size: 14px;
+}
 
 [v-cloak] {
     display:none;
@@ -15,4 +21,7 @@
 
 
 
+@import "node_modules/font-awesome/scss/font-awesome.scss";
+
+@import "node_modules/toastr/toastr.scss";
 

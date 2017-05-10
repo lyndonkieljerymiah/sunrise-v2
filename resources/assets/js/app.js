@@ -49,6 +49,7 @@ import VillaForm from './components/villa/VillaForm.vue';
 import App from './components/App.vue';
 import BillReadable from './components/bill/BillReadable.vue';
 import BillForm from './components/bill/BillForm.vue';
+import BillUpdateForm from './components/bill/BillUpdateForm.vue';
 
 
 new Vue({
@@ -58,7 +59,8 @@ new Vue({
         'contractBill': BillForm,
         'billReadable': BillReadable,
         'villaList': VillaList,
-        'villaForm': VillaForm
+        'villaForm': VillaForm,
+        'billUpdateForm': BillUpdateForm
     }
 });
 

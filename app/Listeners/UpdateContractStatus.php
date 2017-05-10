@@ -27,11 +27,10 @@ class UpdateContractStatus
      */
     public function handle(NotifyUpdate $event)
     {
-
-        $contractId = $event->getArgument('contract');
-        //
-        $contractModel = Contract::find($contractId);
-        $contractModel->active()->save();
-
+        $contractId = $event->bundle->get('contract');
+        if($contractId != null) {
+            $contractModel = Contract::find($contractId);
+            $contractModel->active()->save();
+        }
     }
 }

@@ -39,15 +39,15 @@ class BaseModel extends Model {
         return $this->custSelectionValues;
     }
 
-    public function hasStatusOf($status) {
-        $this->status = $status;
+    protected function hasStatusOf($status) {
+        return $this->status == $status;
     }
 
     public function toMap($fields = array()) {
         if(sizeof($fields) > 0) {
             foreach ($fields as $key => $value) {
                 //do not include custom attribute
-                if(!in_array($key,$this->appends)) {
+                if(!in_array($key,$this->appends) && !in_array($key,$this->guarded)) {
                     $this->setField($key,$value);
                 }
             }

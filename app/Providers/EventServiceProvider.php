@@ -15,6 +15,7 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         'App\Events\Contract\NotifyUpdate' => [
             'App\Listeners\UpdateVillaStatus',
+            'App\Listeners\RemoveTenant'
         ],
         'App\Events\Contract\OnCreating' => [
             'App\Listeners\CreateTenant',
@@ -25,7 +26,8 @@ class EventServiceProvider extends ServiceProvider
         ],
         'App\Events\Bill\NotifyUpdate' => [
             'App\Listeners\UpdateContractStatus'
-        ]
+        ],
+
     ];
 
     /**

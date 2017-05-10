@@ -1,20 +1,4 @@
 
-window._ = require('lodash');
-
-try {
-    window.$ = window.jQuery = require('jquery');
-
-    require('bootstrap-sass');
-} catch (e) {}
-
-window.bbox = require('bootbox');
-
-
-/**
- * Moment Js
- ****************/
-window.moment = require('moment');
-
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the

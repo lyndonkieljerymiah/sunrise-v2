@@ -2,9 +2,9 @@
   <div id="app">
       <div class="container-fluid">
         <div class="col-lg-12">
-        <div class="panel panel-green">
-            <div class="panel-heading ">Contracts List</div>
-            <div class="panel-body">
+
+
+
               <ul class="nav nav-tabs">
                 <li class="active" @click="change('pending')"><a data-toggle="tab" href="#pending">Pending</a></li>
                 <li><a data-toggle="tab" href="#active" @click="change('active')">Active</a></li>
@@ -23,10 +23,15 @@
                       @action="doAction">
                   </gridview>
                 </div>
+
+                <modal size="" dialog-title="Contract Renewal" @dismiss="onDismissal">
+                    <contract-modal :renewal="renewal"></contract-modal>
+                </modal>
+
               </div>
               </div>
-          </div>
-        </div>
+
+
       </div>
   </div>
 
@@ -37,6 +42,8 @@
 import GridView from '../GridView.vue';
 import ContractActive from './ContractActive.vue';
 import ContractPending from './ContractPending.vue';
+import ContractModal from './ContractModal.vue';
+import Modal from '../Modal.vue';
 
 let model = require('./ContractListModel.js');
 
@@ -45,8 +52,9 @@ export default {
     data() {
       return {
          contract: model.default.newInstance(),
+         renewal: model.default.newInstanceRenewal(),
           gridColumns: [
-          {name: 'created_at', column: 'Date'},
+          {name: 'created_at', column: 'Date', default: true},
           {name: 'contract_no', column: 'Contract No'},
           {name: 'contract_type', column: 'Contract Type'},
           {name: 'period_start', column: 'Period Start'},
@@ -67,10 +75,10 @@ export default {
     name: "app",
     props: ['url'],
     components: {
-        'gridview'  : GridView
+        'gridview'  : GridView,
+        'modal' : Modal
     },
     created(){
-
         this.contract.create();
     },
     methods: {
@@ -91,10 +99,24 @@ export default {
       },
       doAction(a,id) {
         if(a.key == 'create') {
-           var redirectobill = this.contract.bill + "/" + id;
-           AjaxRequest.route(redirectobill);
+          this.contract.createBill(id);
+
+       } else if (a.key == 'renew') {
+         this.renewal.create(id, function() {
+          VueEvent.$emit('onModalActive');
+         });
+
+       } else if (a.key == 'cancelled') {
+         this.contract.cancel(id);
        }
-      }
+     },
+     onDismissal(result, fn) {
+       var that = this;
+       if(result) {
+         this.renewal.save();
+        fn(false)
+       }
+     }
     },
     computed: {
       contractData() {

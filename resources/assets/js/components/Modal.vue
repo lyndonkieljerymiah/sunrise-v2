@@ -10,7 +10,7 @@
                     <slot></slot>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default"  @click="dismiss(false)">Close</button>
+                    <button type="button" class="btn btn-default"  data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" @click="dismiss(true)">Save changes</button>
                 </div>
             </div>
@@ -25,12 +25,16 @@
             dialogTitle: '',
             size: '',
             modalType: 'custom',
-            isClose: false
+            isClose: false,
+
         },
         methods: {
             dismiss(result) {
-                $("#modalComponent").modal('hide');
-                this.$emit("dismiss",result);
+                this.$emit("dismiss",result,function(ishide) {
+                    if(ishide) {
+                        $("#modalComponent").modal('hide');
+                    }
+                });
             }
         },
         mounted() {

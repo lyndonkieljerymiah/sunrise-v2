@@ -2,8 +2,8 @@
 <form id="ConTenantForm" class="form-horizontal" @submit.prevent="contract.save()" @keydown="contract.errors.clear($event.target.name)">
     <div class="col-md-6">
         <div class="panel panel-info">
-            <div class="panel-heading ">
-                <center><i class="fa fa-address-book-o fa-lg" aria-hidden="true"></i> TENANT REGISTRATION </center>
+            <div class="panel-heading">
+                <i class="fa fa-address-book-o fa-lg" aria-hidden="true"></i> TENANT REGISTRATION
             </div>
             <div class="panel-body">
                 <div class='form-group'>
@@ -43,11 +43,9 @@
                 <!-- Birthday / Validity Date -->
                 <div class="form-group">
                     <label class="col-md-3" >{{contract.label.regDate}}</label>
+
                     <div class="col-md-9">
-                        <div class='input-group date' id='datetimepicker1'>
-                            <input type='text' name="register_tenant.reg_date" class="form-control" v-model="contract.data.register_tenant.reg_date" />
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                        </div>
+                        <dtpicker dp-name="register_tenant.reg_date" @pick="changeDate" :value="contract.data.register_tenant.reg_date"></dtpicker>
                         <error :errorDisplay="contract.errors.get('register_tenant.reg_date')">{{contract.errors.get('register_tenant.reg_date')}}</error>
                     </div>
                 </div>
@@ -143,7 +141,9 @@
 import ContractCreate from './ContractCreate.vue';
 import ContractVilla from './ContractVilla.vue';
 
+//import widget
 import ErrorLabel from '../ErrorLabel.vue';
+import DateTimePicker from '../DateTimePicker.vue';
 
 let contractRegister = require('./ContractRegisterModel.js');
 
@@ -152,36 +152,45 @@ export default {
     components: {
         'contractvilla': ContractVilla,
         'contractcreate': ContractCreate,
-        'error': ErrorLabel
+        'error': ErrorLabel,
+        'dtpicker': DateTimePicker
     },
 
     data()  {
         return {
             btnSave: false,
-            contract: contractRegister.default.createInstance()
+            contract: contractRegister.default.createInstance(),
+            birthday: moment().format('l')
         }
     },
- methods: {
-   onSave() {
-        var $this = this;
-        var formData = new FormData();
-   },
-   selectTenant() {
-      this.contract.onTenantTypeChange();
-   }
- },
- created: function () {
-   this.contract.create()
- },
- computed: {
-   isIndividual(){
-     return this.contract.isIndividual()
-   },
-   isCompany(){
-     return this.contract.isCompany()
-   }
- }
-
+    methods: {
+        onSave() {
+            var $this = this;
+            var formData = new FormData();
+        },
+        selectTenant() {
+          this.contract.onTenantTypeChange();
+        },
+        changeDate(name,d) {
+            this.contract.changeDate(name,d);
+        }
+     },
+    created() {
+        this.contract.create()
+     },
+     computed: {
+       isIndividual(){
+         return this.contract.isIndividual()
+       },
+       isCompany(){
+         return this.contract.isCompany()
+       }
+     },
+    watch: {
+        birthday() {
+            alert(this.birthday);
+        }
+    }
 }
 
 </script>

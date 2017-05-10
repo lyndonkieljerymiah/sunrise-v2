@@ -1,5 +1,5 @@
 <template>
-  <div id="ConCreate">
+  <div id="ConCreate" class="row">
 
 
     <div class="panel panel-primary">
@@ -9,11 +9,10 @@
       <div class='form-group'>
         <label for='tenant_type' class='col-md-3'>Contract Type:</label>
         <div class='col-md-9'>
-          <select class="form-control">
+          <select class="form-control" v-model="contract.data.contract_type">
               <option v-for="lookup in contract.lookups.contract_type"
-                  v-model:value="lookup.code" >{{lookup.name}}</option>
+                  :value="lookup.code" >{{lookup.name}}</option>
           </select>
-
         </div>
       </div>
 
@@ -21,12 +20,7 @@
       <div class='form-group'>
         <label for='tenant_type' class='col-md-3'>Period Start:</label>
         <div class='col-md-9'>
-          <div class='input-group date' id='datetimepicker3'>
-            <input type='text' class="form-control" name="period_start" v-model:value='contract.data.period_start'>
-            <span class="input-group-addon">
-              <span class="glyphicon glyphicon-calendar"></span>
-            </span>
-          </div>
+          <dtpicker dp-name="period_start" @pick="changeDate" :value="contract.data.period_start"></dtpicker>
             <error :errorDisplay="contract.errors.get('period_start')">{{ contract.errors.get('period_start') }}</error>
         </div>
       </div>
@@ -36,12 +30,7 @@
       <div class='form-group'>
         <label for='tenant_type' class='col-md-3'>Periord End:</label>
         <div class='col-md-9'>
-          <div class='input-group date' id='datetimepicker3'>
-            <input type='text' class="form-control" name="period_end" v-model:value='contract.data.period_end'>
-            <span class="input-group-addon">
-              <span class="glyphicon glyphicon-calendar"></span>
-            </span>
-          </div>
+            <dtpicker dp-name="period_end" @pick="changeDate" :value="contract.data.period_end"></dtpicker>
           <error :errorDisplay="contract.errors.get('period_end')">{{ contract.errors.get('period_end') }}</error>
         </div>
       </div>
@@ -60,14 +49,11 @@
       </div>
 
 
-        <div class="col-md-12">
-
-        </div>
       </div>
     </div>
 
   <div class="panel panel-primary">
-    <div class="panel-body" style="padding-left:0px; padding-right:0px;">
+    <div class="panel-body">
       <div class="col-md-12">
         <div class="col-md-12">
           <button type="submit" class="btn-sm btn-primary pull-right">SAVE</button>
@@ -78,18 +64,20 @@
 
 
 </div>
-</div>
+
 </template>
 <script>
 
 import ErrorLabel from '../ErrorLabel.vue';
+import DateTimePicker from '../DateTimePicker.vue';
 
 export default {
   name: "ConCreate",
   props:["contract"],
 
   components: {
-    'error': ErrorLabel
+    'error': ErrorLabel,
+    'dtpicker': DateTimePicker
   },
 
   methods: {
@@ -97,6 +85,9 @@ export default {
        this.contract.recal()
 
 
+     },
+     changeDate(name, d) {
+       this.contract.changeDate(name, d);
      }
   }
 

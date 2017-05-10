@@ -2,6 +2,7 @@
 
 namespace App\Events\Contract;
 
+use App\Services\Bundle;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -14,25 +15,13 @@ class OnCreating
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $bundle;
     
-    protected $models = array();
-
-    protected $expectedOutput;
-    
-    public function __construct($models = array(), &$expectedOutput = array())
+    public function __construct(Bundle &$bundle)
     {
-        $this->models = $models;
-
-        $this->expectedOutput = &$expectedOutput;
+        $this->bundle = &$bundle;
     }
 
-    public function getArguments($name) {
 
-        return $this->models[$name];
-    }
-
-    public function setOutput($name,$value) {
-        $this->expectedOutput[$name] = $value;
-    }
     
 }

@@ -14,7 +14,7 @@ class Contract extends BaseModel
 
     protected $table = "contracts";
 
-    protected $appends = ['full_status','full_contract_type','payable_per_month'];
+    protected $appends = ['full_status','full_contract_type','payable_per_month','full_period_start','full_period_end'];
 
     //factory method
     public static function createInstance($defaultMonths) {
@@ -27,17 +27,18 @@ class Contract extends BaseModel
 
         $contract->villa_id = 0;
 
-        $contract->toDefaultPeriod(Carbon::now()->toDateTimeString(),$defaultMonths);
+        $contract->setDefaultPeriod(Carbon::now(),$defaultMonths);
 
         $contract->amount = 0;
 
         $contract->register_tenant = Tenant::createInstance();
 
-        $contract->villa_list = Villa::with('villaGalleries')->where('status','vacant')->get();
+        $contract->villa_list = Villa::with('villaGalleries')
+            ->where('status','vacant')
+            ->get();
 
         return $contract;
     }
-
 
     protected function getFullStatusAttribute() {
         return $this->attributes['full_status'] = Selection::convertCode($this->status);
@@ -58,6 +59,16 @@ class Contract extends BaseModel
         }
         return 0;
     }
+
+    protected function getFullPeriodStartAttribute() {
+        return $this->attributes['full_period_start'] = Carbon::parse($this->period_start)->toDateTimeString();
+    }
+
+    protected function getFullPeriodEndAttribute() {
+        return $this->attributes['full_period_end'] = Carbon::parse($this->period_end)->toDateTimeString();
+    }
+
+
 
     public function contractTermination() {
         
@@ -83,10 +94,11 @@ class Contract extends BaseModel
           $contracts = \DB::table('contracts')
                         ->join('tenants', 'contracts.tenant_id', '=','tenants.id')
                         ->join('villas', 'contracts.villa_id','=','villas.id')
-                        ->select('contracts.id', 'contracts.created_at', 
+                        ->select('contracts.id', 'contracts.created_at',
                             'contract_no',
                             \DB::raw('(SELECT name FROM selections WHERE code=contracts.contract_type) AS contract_type'),
-                            'period_start','period_end',
+                            \DB::raw('DATE_FORMAT(period_start,"%m/%d/%Y") AS period_start'),
+                            \DB::raw('DATE_FORMAT(period_end,"%m/%d/%Y") AS period_end'),
                             'tenants.full_name',
                             'villas.villa_no',
                             'amount',
@@ -105,11 +117,12 @@ class Contract extends BaseModel
 
     }
    
-    public function toDefaultPeriod($startPeriod,$default) {
+    public function setDefaultPeriod(Carbon $startPeriod, $default,$extraPeriod = 0) {
 
-        $this->period_start = $startPeriod;
+        $this->period_start = $startPeriod->addDays($extraPeriod)->toDateTimeString();
+        $this->period_end = Carbon::parse($this->period_start);
+        $this->period_end = $this->period_end->addMonth($default)->toDateTimeString();
 
-        $this->period_end = Carbon::now()->addMonths($default)->toDateTimeString();
 
     }
 
@@ -172,6 +185,25 @@ class Contract extends BaseModel
         return $this;
     }
 
-    
+    public function isActive() {
+        return $this->hasStatusOf('active');
+    }
+
+    public function isPending() {
+        return $this->hasStatusOf('pending');
+    }
+
+    public function hasNoBalance() {
+
+        //got to bill
+
+    }
+
+    public function getRemainingPeriod() {
+        $endPeriod = Carbon::parse($this->period_end);
+        $remaining = $endPeriod->diffInDays(Carbon::now());
+
+        return $remaining;
+    }
 
 }

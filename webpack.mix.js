@@ -18,6 +18,8 @@ mix.js('resources/assets/js/app.js', 'public/js')
 
 mix.js('resources/assets/js/helpers.js','public/js');
 
+mix.js('resources/assets/js/vendor.js', 'public/js');
+
 
 
 

@@ -108,6 +108,10 @@ Route::post("/api/contract/recal/",
     [
         "uses"  =>  "ContractController@apiRecalculate"
     ]);
+Route::post("/api/contract/cancel",
+    [
+        "uses"  =>  "ContractController@apiCancel"
+    ]);
 /*****************************************/
 
 Route::get("/contract",
@@ -116,41 +120,37 @@ Route::get("/contract",
         "as"    =>  "contract.index"
     ]);
 
-
 Route::get("contract/create/",
     [
         "uses"  =>  "ContractController@create",
         "as"    =>  "contract.create"
     ]);
 
-
-
 /*************************
  *BILL API End Point
 **********************************/
-Route::get('api/bill/create/{contractNo}',
-    [
-        'uses'  =>  'ContractBillController@apiCreate'
-    ]);
-
-Route::get('api/bill/show/{billNo}',
-    [
-        'uses'  =>  'ContractBillController@apiShow'
-    ]);
-
-Route::post('api/bill/store',
-    [
-        'uses' =>   'ContractBillController@apiStore'
-    ]);
-
-
 Route::get("bill/create/{contractNo}",
     [
         "uses"  =>  "ContractBillController@create"
     ]);
 
-Route::get("bill/show/{billNo}",
+Route::get('api/bill/create/{contractNo}',
     [
-        "uses"  =>  "ContractBillController@show" ,
-        "as"    =>  "bill.show"
-    ])->name('bill.show');
+        'uses'  =>  'ContractBillController@apiCreate'
+    ]);
+
+Route::post('api/bill/store',
+    [
+        'uses' =>   'ContractBillController@apiStore'
+]);
+
+
+Route::get("bill/show/{billNo}", ["uses"  =>  "ContractBillController@show"]);
+Route::get('api/bill/show/{billNo}',
+    [
+        'uses'  =>  'ContractBillController@apiShow'
+    ]);
+
+
+Route::get("/bill/edit", ["uses"  =>  "ContractBillController@edit"]);
+Route::get("/api/bill/edit/{billNo}",[ "uses" => "ContractBillController@apiEdit"]);

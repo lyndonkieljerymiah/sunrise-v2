@@ -19,9 +19,14 @@ class ErrorValidations {
     }
 
     get(field) {
-
         if(this.errors[field]) {
-            return this.errors[field][0];
+            if(this.errors[field] instanceof Array) {
+                return this.errors[field][0];
+            }
+            else {
+                return this.errors[field];
+            }
+
         }
         return "";
     }

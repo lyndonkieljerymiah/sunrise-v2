@@ -12,14 +12,11 @@
 
     <title>{{ config("app.name")}}</title>
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.1.3/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('vendor/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="{{asset('vendor/bootstrap/dist/css/bootstrap.min.css')}}">
-
+    <link rel="stylesheet" href="{{asset('vendor/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css')}}"/>
     <link href="{{ asset('css/sb-admin.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{asset('css/sidebar.css') }}" />
     <link rel="stylesheet" href="{{asset('css/app.css') }}" />
-    <link rel="stylesheet" href="{{asset('css/toastr.css')}}">
 
      <script>
         window.Laravel = {!! json_encode([
@@ -44,13 +41,16 @@
             <div class="container-fluid">
                 @yield('content')
             </div>
+
         </div>
     </div>
 
     <!-- /#wrapper -->
     <script src="{{asset('js/sidebar.js')}}"></script>
+    <script src="{{asset('js/vendor.js')}}"></script>
+    <script src="{{asset('vendor/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js')}}"></script>
     <script src="{{asset('js/app.js')}}"></script>
-    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.1.3/js/bootstrap-datetimepicker.min.js"></script> -->
+
     @yield('scripts')
 </body>
 

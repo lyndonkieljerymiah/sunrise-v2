@@ -2,6 +2,7 @@
 
 namespace App\Events\Contract;
 
+use App\Services\Bundle;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -14,17 +15,11 @@ class NotifyUpdate
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-   protected $arguments;
+   public $bundle;
 
-    public function __construct($arguments = array())
+    public function __construct(Bundle &$bundle)
     {
-        $this->arguments = $arguments;
-    }
-
-    public function getArguments($key) {
-
-        return isset($this->arguments[$key]) ? $this->arguments[$key] : [];
-        
+        $this->bundle = &$bundle;
     }
 
 }

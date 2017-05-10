@@ -18,11 +18,10 @@ class GetVilla
 
     public function handle(OnCreating $event)
     {
-        $villaId = $event->getArguments('villaId');
-
-        $villa = Villa::find($villaId);
-
-        $event->setOutput('villa',$villa);
-
+        $villaId = $event->bundle->get('villaId');
+        if($villaId != null) {
+            $villa = Villa::find($villaId);
+            $event->bundle->addOutput('villa',$villa);
+        }
     }
 }

@@ -84,6 +84,17 @@ class ContractRegisterModel {
     isShowBirthday() {
         return this.data.register_tenant.type == "individual" ? true : false;
     }
+    changeDate(name,d) {
+        var dot = name.split(".");
+        if(dot.length > 1) {
+            var tenant = this.data[dot[0]];
+            tenant[dot[1]] = d;
+        }
+        else {
+            this.data[name] = d;
+        }
+
+    }
 
     save(cbSuccess,cbError) {
 
@@ -91,7 +102,7 @@ class ContractRegisterModel {
             .then((r) => {
                 if(cbSuccess) cbSuccess(r.data);
 
-                AjaxRequest.redirect("bill","create",r.data.id);
+                AjaxRequest.redirect("bill","create",r.data.data.id);
 
             })
             .catch((error) => {

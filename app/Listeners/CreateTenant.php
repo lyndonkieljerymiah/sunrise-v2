@@ -15,11 +15,11 @@ class CreateTenant
      *
      * @return void
      */
-    private $repository;
 
-    public function __construct(\App\Repositories\TenantRepository $repository) 
+
+    public function __construct()
     {
-        $this->repository = $repository;
+
     }
 
     /**
@@ -30,13 +30,12 @@ class CreateTenant
      */
     public function handle(OnCreating $event)
     {
-        $entity = $event->getArguments('tenant');
-
-        $tenantModel = new Tenant();
-
-        $tenant = $tenantModel->saveTenant($entity);
-
-        $event->setOutput("tenant",$tenant);
-        
+        $entity = $event->bundle->get('tenant');
+        if($entity != null) {
+            $tenantModel = new Tenant();
+            $entity['code'] = $entity['reg_id'];
+            $tenant = $tenantModel->saveTenant($entity);
+            $event->bundle->addOutput("tenant",$tenant);
+        }
     }
 }

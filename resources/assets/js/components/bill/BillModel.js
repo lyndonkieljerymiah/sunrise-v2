@@ -2,7 +2,6 @@
 class BillModel {
 
     constructor() {
-
         this.data = {
             payments: []
         };
@@ -14,7 +13,6 @@ class BillModel {
         this.lookups = {};
         this.cloneOfInstance = {};
         this.errors = new window.ErrorValidations.newInstance();
-
     }
 
     create(contractId) {
@@ -28,9 +26,9 @@ class BillModel {
                 this.contract = r.data.contract;
                 this.lookups = r.data.lookups;
 
-                this.data.instance.effectivity_date = moment(r.data.bill.instance.effectivity_date).format('l');
-                this.data.instance.period_start = moment(r.data.bill.instance.period_start).format('l');
-                this.data.instance.period_end = moment(r.data.bill.instance.period_end).format('l');
+                this.data.instance.effectivity_date = moment(r.data.bill.instance.effectivity_date).format('L');
+                this.data.instance.period_start = moment(r.data.bill.instance.period_start).format('L');
+                this.data.instance.period_end = moment(r.data.bill.instance.period_end).format('L');
 
                 this.createInstance();
             })
@@ -38,6 +36,20 @@ class BillModel {
                 this.errors.register(e.data)
             });
     }
+
+    show(billNo) {
+
+        AjaxRequest.get('bill','show',billNo).then(r => {
+            this.data = r.data.bill;
+            this.contract = r.data.contract;
+        });
+
+    }
+
+    edit(billNo) {
+
+    }
+
 
     changePaymentType() {
         if(this.cloneOfInstance.payment_type == "cash") {
@@ -55,11 +67,13 @@ class BillModel {
     }
 
     createInstance() {
-
         this.cloneOfInstance = objectClone(this.data.instance);
     }
 
+
+
     insert() {
+
         //check first if the instance change its type
         this.lookups.payment_mode.forEach(item => {
             if(item.code === this.cloneOfInstance.payment_mode) {
@@ -99,17 +113,22 @@ class BillModel {
         return sum;
     }
 
-    saveChanges(cbSuccess,cbError) {
+    saveChanges() {
 
         AjaxRequest.post('bill','store',this.data)
             .then(r => {
-                //success saving
-                cbSuccess(r.data);
+                AjaxRequest.redirect('bill','show',r.data.data.billNo);
             })
             .catch(e => {
-                this.errors = e.data;
-                cbError();
+                this.errors.register(e.response.data);
+                toastr.error(this.errors.get('payments'));
             });
+    }
+
+    changeDate(name,d) {
+
+        this.cloneOfInstance[name] = d;
+
     }
 }
 
@@ -146,3 +165,4 @@ export default {
         return new BillReadableModel()
     }
 }
+

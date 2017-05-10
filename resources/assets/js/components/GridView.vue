@@ -1,92 +1,150 @@
 <template>
-    <table id="grid" class="table table-condensed table-bordered">
+    <table id="grid" class="table table-condensed table-hover">
         <thead>
-            <tr>    
-                <th v-for="key in columns"  
-                    :style="key.style"
-                    @click="sortBy(key)"
-                    class="text-center active"
-                    :class="{info:sortKey == key.name}">
-                    {{ key.column }}
-                    <span v-if="key.static == false || key.static === undefined" class="fa fa-fw" :class="sortOrders[key.name] > 0 ? 'fa-sort-asc' : 'fa-sort-desc'"></span>
-                </th>
-            </tr>
+        <tr class="active">
+            <th v-for="key in columns"
+                :style="key.style"
+                @click="sortBy(key)"
+                class="text-center active"
+                :class="{info:sortKey == key.name}">
+                {{ key.column }}
+                <span
+                        v-if="isArrowVisible(key.name)"
+                        class="fa fa-fw" :class="sortOrders[key.name] > 0 ?
+                            'fa-long-arrow-down' : 'fa-long-arrow-up'">
+                    </span>
+            </th>
+        </tr>
         </thead>
         <tbody>
-            <tr v-for="entry in filteredData">
-                <td v-for="key in columns" :class="key.class" :style="key.style">
-                    {{render(entry,key)}}
+        <tr v-for="entry in filteredData">
+            <td v-for="key in columns" :class="key.class" :style="key.style">
+                <span v-if="isIncludeEdit(key) ? false : true">{{render(entry,key)}}</span>
+                <!-- whole input -->
+                <div v-if="isIncludeEdit(key)">
 
-                    <div v-if="key.name=='action'" class="btn-group">
-                        <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Action <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" >
-                            <li v-for="action in actionButtons"><a href="#" @click='actionTrigger(action,entry["id"])'>{{action.name}}</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div v-if="key.name=='$markDelete'" class='text-center' @click='actionTrigger("delete",entry["id"])'>
-                        <button class="btn btn-danger btn-xs"><i class="fa fa-close"></i></button>
-                    </div>
-                </td>
-            </tr>
+                    <!-- plain text -->
+                    <input type="text" class="form-control"
+                           v-if="key.itype == 'text'"
+                           v-model="entry[key.bind]">
+
+                    <!-- dropdown -->
+                    <select v-model="entry[key.bind]" v-if="key.itype == 'dropdown'" class="form-control" >
+                        <option value="">--SELECT--</option>
+                        <option v-for="lookup in lookups[key.selection]" :value="lookup.code">{{lookup.name}}</option>
+                    </select>
+
+                    <!--  -->
+
+
+                </div>
+
+                <div v-if="key.name=='action'" class="btn-group">
+                    <button type="button"
+                            class="btn btn-primary dropdown-toggle btn-sm"
+                            data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        Action <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" >
+                        <li v-for="action in actionButtons"><a href="#" @click='actionTrigger(action,entry["id"])'>{{action.name}}</a></li>
+                    </ul>
+                </div>
+                <div v-if="key.name=='$markDelete'" class='text-center' @click='actionTrigger("delete",entry["id"])'>
+                    <button class="btn btn-danger btn-xs"><i class="fa fa-close"></i></button>
+                </div>
+            </td>
+        </tr>
         </tbody>
+        <tfoot>
+        <tr  class="active">
+            <th :colspan="totalColumn">
+                <span class="label label-primary">Total Item: {{totalRows}}</span>
+            </th>
+        </tr>
+        </tfoot>
     </table>
 </template>
 
 <script>
-export default {
-    name: "grid",
-    props: ['data','columns','filterKey','actions'],
-    data() {
-        var sortOrders = {};
-        this.columns.forEach(function(key) {
-            sortOrders[key.name] = 1;
-        });
+    export default {
+        name: "grid",
+        props: ['data','columns','filterKey','actions','default','lookups'],
+        data() {
+            var sortOrders = {};
+            var sortKey = "";
+            var that = this;
 
-        return {
-            sortKey: '',
-            sortOrders: sortOrders
-        }
-    },
-    computed: {
-        filteredData() {
-            var sortKey = this.sortKey;
-            var data = this.data;
-           
-            var order = this.sortOrders[sortKey] || 1
-            if(sortKey) {
-                data = data.slice().sort(function(a,b) {
-                    a = a[sortKey]
-                    b = b[sortKey]
-                    return (a === b ? 0 : a > b ? 1 : -1) * order
-                });
+            this.columns.forEach((key) => {
+                sortOrders[key.name] = 1;
+                if(key.default !== undefined && key.default == true) {
+                    sortKey = key.name;
+                }
+            });
+
+            return {
+                sortKey: sortKey,
+                editVisible: false,
+                sortOrders: sortOrders
             }
-            this.$emit('sorted',sortKey);
+        },
+        mounted() {
 
-            return data;
         },
-        actionButtons: function() {
-            return this.actions;
-        }
-    },
-    methods: {
-        sortBy: function(key) {
-            
-            if(key.static) 
-                return false;
-            
-            this.sortKey = key.name;
-            this.sortOrders[key.name] = this.sortOrders[key.name] * -1;
-            
+        computed: {
+            filteredData() {
+                var sortKey = this.sortKey;
+                var data = this.data;
+
+                var order = this.sortOrders[sortKey] || 1
+                if(sortKey) {
+                    data = data.slice().sort(function(a,b) {
+                        a = a[sortKey]
+                        b = b[sortKey]
+                        return (a === b ? 0 : a > b ? 1 : -1) * order
+                    });
+                }
+                this.$emit('sorted',sortKey);
+
+                return data;
+            },
+            actionButtons() {
+                return this.actions;
+            },
+            totalColumn() {
+                return this.columns.length;
+            },
+            totalRows() {
+                return this.data.length;
+            },
+            editEnabled() {
+
+            }
         },
-        render: function(entry,key) {
-            return entry[key.name];
-        },
-        actionTrigger: function(action,id) {
-            this.$emit('action',action,id);
+        methods: {
+            sortBy: function(key) {
+                if(key.static) return false;
+                this.sortKey = key.name;
+                this.sortOrders[key.name] = this.sortOrders[key.name] * -1;
+            },
+            render: function(entry,key) {
+                return entry[key.name];
+            },
+            actionTrigger: function(action,id) {
+                this.$emit('action',action,id);
+            },
+            isArrowVisible(name) {
+                return this.sortKey === name;
+            },
+            isIncludeEdit(key) {
+                return (key.editable && !key.static);
+            },
+            inputTypeIs(type) {
+                return this.inputType == type;
+            },
+            enableEdit(e) {
+                console.log(this.$refs[e]);
+            }
         }
     }
-}
 </script>

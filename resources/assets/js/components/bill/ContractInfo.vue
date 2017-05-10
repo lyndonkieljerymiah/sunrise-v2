@@ -1,8 +1,5 @@
 <template>
     <div class="panel panel-info">
-        <div class="panel-heading">
-            <strong>Contract</strong>
-        </div>
         <div class="panel-body">
             <p class="row">
                 <strong class="col-md-3">Contract No:</strong>

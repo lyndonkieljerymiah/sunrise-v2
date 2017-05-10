@@ -1,72 +1,82 @@
 <template>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="payment_type" class="col-md-3">Payment Type</label>
+            <div class="col-md-9">
+                <select id="payment_type" name="payment_type"
+                        class="form-control" @change="onChangePaymentType">
+                    <option></option>
+                </select>
+            </div>
+        </div>
 
-  <div id="app">
-    <br/>
-    <gridview
-    :data="contractData"
-    :columns="gridColumns"
-    :actions="actions"
-    @action="doAction">
-  </gridview>
-  <div v-for="d in contractData"> 
-  {{d.amount}}
-  </div>
-</div>
+        <div class="form-group">
+            <label for="payment_type" class="col-md-3">Payment Mode</label>
+            <div class="col-md-9">
+                <select id="payment_mode" name="payment_mode"
+                        class="form-control">
+                    <option ></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="effectivity_date" class="col-md-3">Date of Effectivity</label>
+            <div class="col-md-9">
+                <input type="text"  class="form-control" name="effectivity_date"
+                       id="effectivity_date" autofocus>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="bank"  class="col-md-3">Bank</label>
+            <div class="col-md-9">
+                <input type="text" class="form-control" name="bank">
+                <error :errorDisplay="errors.has('bank')">{{ errors.first('bank') }}</error>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="payment_no" class="col-md-3">Payment No</label>
+            <div class="col-md-9">
+                <input type="text" v-validate data-vv-rules="required"
+                       class="form-control" name="payment_no"
+                       required>
+                <error></error>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="period_start" class="col-md-3">Period Start</label>
+            <div class="col-md-9">
+                <input type="text"
+                       class="form-control" name="period_start"  required>
+                <error></error>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="period_end" class="col-md-3">Period End</label>
+            <div class="col-md-9">
+                <input type="text" class="form-control" name="period_end" id="period_end" required>
+                <error></error>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="amount" class="col-md-3">Amount</label>
+            <div class="col-md-9">
+                <input type="text" class="form-control" name="amount" id="amount" required>
+            </div>
+        </div>
+    </form>
 </template>
 
 <script>
+    import ErrorLabel from '../ErrorLabel.vue';
 
-import GridView from '../GridView.vue';
-let model = require('./ContractListModel.js');
-
-export default {
-
-  name: "active",
-  props: ['url'],
-  components: {
-    'gridview': GridView
-  },
-  data() {
-    return {
-      contract: model.default.newInstance(),
-      gridColumns: [
-        {name: 'created_at', column: 'Date'},
-        {name: 'contract_no', column: 'Contract No'},
-        {name: 'contract_type', column: 'Contract Type'},
-        {name: 'period_start', column: 'Period Start'},
-        {name: 'period_end', column: 'Period End'},
-        {name: 'amount', column: 'Amount'},
-        {name: 'full_name', column: 'Tenant Id'},
-        {name: 'villa_no', column: 'Villa No'},
-        {name: 'status', column: 'Status'},
-        {name: 'action', column: '',static:true, class: 'text-center'}],
-        actions: [
-            {key:'terminated', name:'Terminate'},
-            {key:'renew', name:'Renew'},
-            {key:'remove',name:'Remove'}
-        ],
+    export default {
+        props: {
+            contract: {}
+        },
+        components: {
+            'error' : ErrorLabel
+        }
     }
-  },
-  methods: {
-      doAction(a, contract_no) {
-           if(a.key == 'renew') {
-              var redirectToEdit = this.url + "/" + contract_no;
-              AjaxRequest.route(redirectToEdit);
-          }
-      },
-      addNew() {
-          AjaxRequest.route(this.url);
-      }
-  },
-  created() {
-    this.contract.create();
-    
-  },
-  computed: {
-    contractData() {
-      return this.contract.data;
-    }
-  }
-}
-
 </script>

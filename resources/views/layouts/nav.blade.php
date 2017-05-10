@@ -60,7 +60,7 @@
                 <a href="/">SUNRISE HOME</a>
             <li class="dropdown">
               <!-- <a href="{!! url('contract') !!}"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true" ></i>  CONTRACTS</a> -->
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true" ></i> CONTRACT <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-pencil-square-o fa-lg" style="color:#007db7" aria-hidden="true" ></i> &nbsp; CONTRACT <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                   <a href="{!! url('contract') !!}"><i class="fa fa-caret-right fa-lg" aria-hidden="true"></i>  List of Contract</a>
                 <a href="{!! url('contract/create') !!}"><i class="fa fa-caret-right fa-lg" aria-hidden="true"></i> Add Contract</a>
@@ -77,28 +77,28 @@
 <!-- {!!url('villa')!!} -->
 
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-users fa-lg" aria-hidden="true"></i>  ACCOUNTS <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-users fa-lg" style="color:#007db7" aria-hidden="true"></i> &nbsp; ACCOUNTS <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                   <a href="#"><i class="fa fa-caret-right fa-lg" aria-hidden="true"></i>  Receivable</a>
               </ul>
             </li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-folder-open-o fa-lg" aria-hidden="true"></i>  MASTER FILE <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-folder-open-o fa-lg" style="color:#007db7" aria-hidden="true"></i> &nbsp; MASTER FILE <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                   <a href="{!!url('villa')!!}"><i class="fa fa-caret-right fa-lg" aria-hidden="true"></i>  Villa</a>
                   <a href="#"><i class="fa fa-caret-right fa-lg" aria-hidden="true"></i>  Tenant</a>
               </ul>
             </li>
-            <li><a href="#"><i class="fa fa-user fa-lg" aria-hidden="true"></i>  ORDER</a></li>
+            <li><a href="#"><i class="fa fa-file-text-o fa-lg" style="color:#007db7" aria-hidden="true"></i> &nbsp; ORDER</a></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user fa-lg" aria-hidden="true"></i>  SETTINGS <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog fa-lg" style="color:#007db7" aria-hidden="true"></i> &nbsp; SETTINGS <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                   <a href="{!!url('users')!!}"><i class="fa fa-caret-right fa-lg" aria-hidden="true"></i>  User</a>
               </ul>
             </li>
         </ul>
     </div>
-    <div id="page-content-wrapper">
+    <!-- <div id="page-content-wrapper">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12">
@@ -106,5 +106,5 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 </div>
