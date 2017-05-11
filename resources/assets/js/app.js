@@ -51,8 +51,20 @@ import BillReadable from './components/bill/BillReadable.vue';
 import BillForm from './components/bill/BillForm.vue';
 import BillUpdateForm from './components/bill/BillUpdateForm.vue';
 
-Vue.filter('toDateFormat', (value) => {return moment(value).format('L');});
+Vue.filter('toDateFormat', (value) => {
+    if(isNaN(Date.parse(value))) {
+        value = moment().format('L');
+    }
+    return moment(value).format('L');
+});
+Vue.filter('toCurrencyFormat', (value) => {
 
+    if(isNaN(Number.parseFloat(value))) {
+
+        value = 0;
+    }
+    return accounting.formatNumber(value)
+});
 
 new Vue({
     el: "#mainApp",

@@ -1072,7 +1072,7 @@ var AxiosRequest = function () {
             }
 
             qs = qs.substring(0, qs.length - 1);
-
+            console.log(qs);
             var url = '/api/' + controller + '/' + action + (qs !== "" ? "/" + qs : qs);
 
             return axios.get(url);
@@ -2151,19 +2151,30 @@ __webpack_require__(188);
 
 
 Vue.filter('toDateFormat', function (value) {
-  return moment(value).format('L');
+    if (isNaN(Date.parse(value))) {
+        value = moment().format('L');
+    }
+    return moment(value).format('L');
+});
+Vue.filter('toCurrencyFormat', function (value) {
+
+    if (isNaN(Number.parseFloat(value))) {
+
+        value = 0;
+    }
+    return accounting.formatNumber(value);
 });
 
 new Vue({
-  el: "#mainApp",
-  components: {
-    'appMain': __WEBPACK_IMPORTED_MODULE_4__components_App_vue___default.a,
-    'contractBill': __WEBPACK_IMPORTED_MODULE_6__components_bill_BillForm_vue___default.a,
-    'billReadable': __WEBPACK_IMPORTED_MODULE_5__components_bill_BillReadable_vue___default.a,
-    'villaList': __WEBPACK_IMPORTED_MODULE_2__components_villa_VillaList_vue___default.a,
-    'villaForm': __WEBPACK_IMPORTED_MODULE_3__components_villa_VillaForm_vue___default.a,
-    'billUpdateForm': __WEBPACK_IMPORTED_MODULE_7__components_bill_BillUpdateForm_vue___default.a
-  }
+    el: "#mainApp",
+    components: {
+        'appMain': __WEBPACK_IMPORTED_MODULE_4__components_App_vue___default.a,
+        'contractBill': __WEBPACK_IMPORTED_MODULE_6__components_bill_BillForm_vue___default.a,
+        'billReadable': __WEBPACK_IMPORTED_MODULE_5__components_bill_BillReadable_vue___default.a,
+        'villaList': __WEBPACK_IMPORTED_MODULE_2__components_villa_VillaList_vue___default.a,
+        'villaForm': __WEBPACK_IMPORTED_MODULE_3__components_villa_VillaForm_vue___default.a,
+        'billUpdateForm': __WEBPACK_IMPORTED_MODULE_7__components_bill_BillUpdateForm_vue___default.a
+    }
 });
 
 /***/ }),
@@ -3189,6 +3200,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: "grid",
@@ -3959,6 +3974,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 var BillUpdateViewModel = function () {
@@ -3966,7 +3988,8 @@ var BillUpdateViewModel = function () {
         _classCallCheck(this, BillUpdateViewModel);
 
         this.billNo = "";
-        this.isLoading = false;
+        this.currentTabIndex = 'pending';
+        this.loading = { search: false, save: false };
         this.data = {
             contract: { tenant: {}, villa: {} },
             bill: {
@@ -3982,29 +4005,80 @@ var BillUpdateViewModel = function () {
         value: function create() {
             var _this = this;
 
-            this.isLoading = true;
+            this.loading.search = true;
             AjaxRequest.get('bill', 'edit', this.billNo).then(function (res) {
                 _this.data.bill = res.data.bill;
                 _this.data.contract = res.data.contract;
                 _this.lookups = res.data.lookups;
                 _this.billNo = "";
-                _this.isLoading = false;
+                _this.loading.search = false;
             }).catch(function (err) {
-                _this.isLoading = false;
+                _this.loading.search = false;
             });
+        }
+    }, {
+        key: 'save',
+        value: function save() {
+            var _this2 = this;
+
+            this.loading.save = true;
+            AjaxRequest.post('bill', 'update', this.data).then(function (res) {
+                toastr.success(res.data.message);
+                _this2.loading.save = false;
+            }).catch(function (err) {
+
+                _this2.loading.save = false;
+            });
+        }
+    }, {
+        key: 'getPayment',
+        value: function getPayment(status) {
+            var _this3 = this;
+
+            this.data.bill.payments = [];
+            AjaxRequest.get('bill', 'payment', this.data.bill.id, status).then(function (res) {
+                _this3.data.bill.payments = res.data.bill.payments;
+            });
+        }
+    }, {
+        key: 'removePayment',
+        value: function removePayment(id) {
+
+            var p = _.find(this.bill.payments, function (p) {
+                return p.id == id;
+            });
+            var indexOf = this.bills.payments.indexOf(p);
+            this.bills.payments.splice(indexOf, 1);
+        }
+    }, {
+        key: 'loadingIs',
+        value: function loadingIs(name) {
+            return this.loading[name];
         }
     }]);
 
     return BillUpdateViewModel;
 }();
 
+function columnFactory(value) {
+    switch (value) {
+        case 'adjust':
+            return [{ name: 'effectivity_date', column: 'Date', style: 'width:10%', class: 'text-center', default: true, dtype: 'date' }, { name: 'payment_no', column: 'No', style: 'width:10%', class: 'text-center' }, { name: 'bank', column: 'Bank', style: 'width:10%', class: 'text-center' }, { name: 'period_start', column: 'Start', class: 'text-center', dtype: 'date' }, { name: 'period_end', column: 'End', class: 'text-center', dtype: 'date' }, { name: 'amount', column: 'Amount', style: "width:10%", class: 'text-right', dtype: 'currency' }, { name: 'full_status', column: 'Status', style: "width:10%", class: 'text-center', editable: true, bind: 'status', itype: 'dropdown', selection: 'payment_status' }, { name: 'remarks', column: 'Remarks', style: 'width:20%', class: 'text-center', editable: true, bind: 'remarks', itype: 'textarea' }, { name: '$custom', column: '', static: true }];
+        case 'completed':
+            return [{ name: 'effectivity_date', column: 'Date', style: 'width:10%', class: 'text-center', default: true, dtype: 'date' }, { name: 'payment_no', column: 'No', style: 'width:10%', class: 'text-center' }, { name: 'bank', column: 'Bank', style: 'width:10%', class: 'text-center' }, { name: 'period_start', column: 'Start', class: 'text-center', dtype: 'date' }, { name: 'period_end', column: 'End', class: 'text-center', dtype: 'date' }, { name: 'amount', column: 'Amount', style: "width:10%", class: 'text-right', dtype: 'currency' }, { name: 'full_status', column: 'Status', style: "width:10%", class: 'text-center' }, { name: 'remarks', column: 'Remarks', style: 'width:20%', class: 'text-center' }];
+        default:
+            return [{ name: 'effectivity_date', column: 'Date', style: 'width:10%', class: 'text-center', default: true, dtype: 'date' }, { name: 'payment_no', column: 'No', style: 'width:10%', class: 'text-center' }, { name: 'bank', column: 'Bank', style: 'width:10%', class: 'text-center' }, { name: 'period_start', column: 'Start', class: 'text-center', dtype: 'date' }, { name: 'period_end', column: 'End', class: 'text-center', dtype: 'date' }, { name: 'amount', column: 'Amount', style: "width:10%", class: 'text-right', dtype: 'currency' }, { name: 'full_status', column: 'Status', style: "width:10%", class: 'text-center', editable: true, bind: 'status', itype: 'dropdown', selection: 'payment_status' }, { name: 'remarks', column: 'Remarks', style: 'width:20%', class: 'text-center', editable: true, bind: 'remarks', itype: 'textarea' }, { name: '$custom', column: '', static: true }];
+    }
+}
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
+        var gridColumn = columnFactory();
         return {
             viewModel: new BillUpdateViewModel(),
-            gridColumn: [{ name: 'effectivity_date', column: 'Date', class: 'text-center', default: true, dtype: 'date' }, { name: 'payment_no', column: 'No', style: 'width:10%', class: 'text-center' }, { name: 'period_start', column: 'Start', class: 'text-center', dtype: 'date' }, { name: 'period_end', column: 'End', class: 'text-center', dtype: 'date' }, { name: 'amount', column: 'Amount', style: "width:10%", class: 'text-right', dtype: 'currency' }, { name: 'full_status', column: 'Status', style: "width:10%", class: 'text-center', editable: true, bind: 'status', itype: 'dropdown', selection: 'payment_status' }, { name: '$custom', column: '', static: true }]
+            gridColumn: gridColumn
         };
     },
 
@@ -4028,14 +4102,28 @@ var BillUpdateViewModel = function () {
         },
         payments: function payments() {
             return this.viewModel.bill.payments;
+        },
+        busySearch: function busySearch() {
+            return this.viewModel.loadingIs('search');
+        },
+        busySave: function busySave() {
+            return this.viewModel.loadingIs('save');
+        },
+        tabIndex: function tabIndex() {
+            return this.viewModel.currentTabIndex;
         }
     },
     methods: {
         search: function search() {
             this.viewModel.create();
         },
-        viewIcon: function viewIcon() {
-            return this.viewModel.isLoading ? "fa-refresh fa-spin" : "fa-search";
+        save: function save() {
+            this.viewModel.save();
+        },
+        changeTab: function changeTab(tabIndex, status) {
+            this.viewModel.getPayment(status);
+            this.viewModel.currentTabIndex = tabIndex;
+            this.gridColumn = columnFactory(tabIndex);
         }
     }
 
@@ -4262,9 +4350,9 @@ var model = __webpack_require__(191);
     return {
       contract: model.default.newInstance(),
       renewal: model.default.newInstanceRenewal(),
-      gridColumns: [{ name: 'created_at', column: 'Date', default: true, dtype: 'date' }, { name: 'contract_no', column: 'Contract No' }, { name: 'contract_type', column: 'Contract Type' }, { name: 'period_start', column: 'Period Start', dtype: 'date' }, { name: 'period_end', column: 'Period End', dtype: 'date' }, { name: 'amount', column: 'Amount', dtype: 'currency' }, { name: 'full_name', column: 'Tenant Id' }, { name: 'villa_no', column: 'Villa No' }, { name: 'status', column: 'Status' }, { name: 'action', column: '', static: true, class: 'text-center' }],
+      gridColumns: [{ name: 'created_at', column: 'Date', default: true, dtype: 'date', class: 'text-center' }, { name: 'contract_no', column: 'Contract No', class: 'text-center' }, { name: 'contract_type', column: 'Contract Type', class: 'text-center' }, { name: 'period_start', column: 'Period Start', dtype: 'date', class: 'text-center' }, { name: 'period_end', column: 'Period End', dtype: 'date', class: 'text-center' }, { name: 'amount', column: 'Amount', dtype: 'currency', class: 'text-center' }, { name: 'full_name', column: 'Tenant Id', class: 'text-center' }, { name: 'villa_no', column: 'Villa No', class: 'text-center' }, { name: 'status', column: 'Status', class: 'text-center' }, { name: 'action', column: '', static: true, class: 'text-center' }],
 
-      actions: [{ key: 'create', name: 'Create Bill' }, { key: 'cancelled', name: 'Cancelled' }, { key: 'remove', name: 'Remove' }]
+      actions: [{ key: 'create', name: 'Create Bill' }, { key: 'cancelled', name: 'Cancelled' }]
     };
   },
 
@@ -4282,7 +4370,7 @@ var model = __webpack_require__(191);
     change: function change(status) {
       this.contract.create(status);
       if (status == 'pending') {
-        this.actions = [{ key: 'create', name: 'Create Bill' }, { key: 'cancelled', name: 'Cancelled' }, { key: 'remove', name: 'Remove' }];
+        this.actions = [{ key: 'create', name: 'Create Bill' }, { key: 'cancelled', name: 'Cancelled' }];
       } else {
         this.actions = [{ key: 'terminated', name: 'Terminated' }, { key: 'renew', name: 'Renew' }];
       }
@@ -5803,7 +5891,7 @@ var ContractRegisterModel = function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(5)();
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 /***/ }),
 /* 196 */
@@ -9843,7 +9931,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('div', [_c('div', {
     staticClass: "row"
   }, [_c('div', {
-    staticClass: "col-md-4",
+    staticClass: "col-md-4 col-md-offset-8",
     staticStyle: {
       "margin-bottom": "10px"
     }
@@ -9880,8 +9968,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('i', {
     staticClass: "fa ",
-    class: _vm.viewIcon()
-  })])])]), _vm._v(" "), _c('div', {
+    class: _vm.busySearch ? 'fa-refresh fa-spin' : 'fa-search'
+  })])])]), _vm._v(" "), (_vm.bill.id) ? _c('div', {
     staticClass: "col-md-12"
   }, [_c('div', [_c('div', [_c('div', {
     staticClass: "row"
@@ -9945,13 +10033,13 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "col-md-3"
   }, [_vm._v("Period:")]), _vm._v(" "), _c('span', {
     staticClass: "col-md-9"
-  }, [_vm._v(_vm._s(_vm.contract.period_start) + " - " + _vm._s(_vm.contract.period_end))])]), _vm._v(" "), _c('p', {
+  }, [_vm._v(_vm._s(_vm._f("toDateFormat")(_vm.contract.period_start)) + " - " + _vm._s(_vm._f("toDateFormat")(_vm.contract.period_end)))])]), _vm._v(" "), _c('p', {
     staticClass: "row"
   }, [_c('strong', {
     staticClass: "col-md-3"
   }, [_vm._v("Amount:")]), _vm._v(" "), _c('span', {
     staticClass: "col-md-9"
-  }, [_vm._v(_vm._s(_vm.contract.amount))])]), _vm._v(" "), _c('p', {
+  }, [_vm._v(_vm._s(_vm._f("toCurrencyFormat")(_vm.contract.amount)))])]), _vm._v(" "), _c('p', {
     staticClass: "row"
   }, [_c('strong', {
     staticClass: "col-md-3"
@@ -9959,8 +10047,58 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "col-md-9"
   }, [_vm._v(_vm._s(_vm.contract.full_status))])])])])])]), _vm._v(" "), _c('div', {
     staticClass: "row"
-  }, [_vm._m(0), _vm._v(" "), _c('div', {
+  }, [_c('div', {
     staticClass: "col-md-12"
+  }, [_c('ul', {
+    staticClass: "nav nav-tabs"
+  }, [_c('li', {
+    class: {
+      active: _vm.tabIndex == 'pending'
+    }
+  }, [_c('a', {
+    attrs: {
+      "href": "#"
+    },
+    on: {
+      "click": function($event) {
+        _vm.changeTab('pending', 'received')
+      }
+    }
+  }, [_vm._v("Pending")])]), _vm._v(" "), _c('li', {
+    class: {
+      active: _vm.tabIndex == 'adjust'
+    }
+  }, [_c('a', {
+    attrs: {
+      "href": "#"
+    },
+    on: {
+      "click": function($event) {
+        _vm.changeTab('adjust', 'bounce')
+      }
+    }
+  }, [_vm._v("Adjustment")])]), _vm._v(" "), _c('li', {
+    class: {
+      active: _vm.tabIndex == 'completed'
+    }
+  }, [_c('a', {
+    attrs: {
+      "href": "#"
+    },
+    on: {
+      "click": function($event) {
+        _vm.changeTab('completed', 'clear')
+      }
+    }
+  }, [_vm._v("Completed")])])])]), _vm._v(" "), _c('div', {
+    staticClass: "tab-content"
+  }, [_c('div', {
+    staticClass: "tab-pane active"
+  }, [_c('div', {
+    staticClass: "col-md-12",
+    attrs: {
+      "id": "main"
+    }
   }, [_c('gridview', {
     attrs: {
       "data": _vm.bill.payments,
@@ -9971,60 +10109,22 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "btn btn-primary btn-xs"
   }, [_c('i', {
     staticClass: "fa fa-pencil"
-  })])])], 1), _vm._v(" "), _vm._m(1), _vm._v(" "), _c('hr'), _vm._v(" "), _vm._m(2)])]), _vm._v(" "), _vm._m(3)])])])])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "col-md-12"
-  }, [_c('ul', {
-    staticClass: "nav nav-tabs",
-    attrs: {
-      "role": "tablist"
-    }
-  }, [_c('li', {
-    staticClass: "active",
-    attrs: {
-      "role": "presentation"
-    }
-  }, [_c('a', {
-    attrs: {
-      "href": "#home",
-      "aria-controls": "home",
-      "role": "tab",
-      "data-toggle": "tab"
-    }
-  }, [_vm._v("Pending")])]), _vm._v(" "), _c('li', {
-    attrs: {
-      "role": "presentation"
-    }
-  }, [_c('a', {
-    attrs: {
-      "href": "#profile",
-      "aria-controls": "profile",
-      "role": "tab",
-      "data-toggle": "tab"
-    }
-  }, [_vm._v("Dishonored")])]), _vm._v(" "), _c('li', {
-    attrs: {
-      "role": "presentation"
-    }
-  }, [_c('a', {
-    attrs: {
-      "href": "#profile",
-      "aria-controls": "profile",
-      "role": "tab",
-      "data-toggle": "tab"
-    }
-  }, [_vm._v("Completed")])])])])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "col-md-2 col-md-offset-10 "
-  }, [_c('button', {
+  })])])], 1), _vm._v(" "), _c('hr'), _vm._v(" "), _vm._m(0)])])])]), _vm._v(" "), _c('div', {
+    staticClass: "panel-footer"
+  }, [_c('div', {
+    staticClass: "row"
+  }, [_c('div', {
+    staticClass: "col-md-2 pull-right"
+  }, [(_vm.tabIndex == 'pending') ? _c('button', {
     staticClass: "btn btn-info btn-block",
-    staticStyle: {
-      "margin-bottom": "10px"
+    on: {
+      "click": _vm.save
     }
-  }, [_vm._v("Add New")])])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  }, [_c('i', {
+    staticClass: "fa fa-fw fa-lg",
+    class: _vm.busySave ? 'fa-refresh fa-spin' : 'fa-save'
+  }), _vm._v(" Save")]) : _vm._e()])])])])]) : _vm._e()])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "col-md-4 col-md-offset-8"
   }, [_c('strong', {
@@ -10032,16 +10132,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_vm._v("Payment Total:")]), _vm._v(" "), _c('strong', {
     staticClass: "col-md-3 text-right text-warning"
   })])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "panel-footer"
-  }, [_c('div', {
-    staticClass: "row"
-  }, [_c('div', {
-    staticClass: "col-md-2 pull-right"
-  }, [_c('button', {
-    staticClass: "btn btn-info btn-block"
-  }, [_vm._v("Save")])])])])
 }]}
 module.exports.render._withStripped = true
 if (false) {
@@ -10282,6 +10372,29 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         attrs: {
           "type": "text"
         },
+        domProps: {
+          "value": (entry[key.bind])
+        },
+        on: {
+          "input": function($event) {
+            if ($event.target.composing) { return; }
+            var $$exp = entry,
+              $$idx = key.bind;
+            if (!Array.isArray($$exp)) {
+              entry[key.bind] = $event.target.value
+            } else {
+              $$exp.splice($$idx, 1, $event.target.value)
+            }
+          }
+        }
+      }) : _vm._e(), _vm._v(" "), (key.itype == 'textarea') ? _c('textarea', {
+        directives: [{
+          name: "model",
+          rawName: "v-model",
+          value: (entry[key.bind]),
+          expression: "entry[key.bind]"
+        }],
+        staticClass: "form-control",
         domProps: {
           "value": (entry[key.bind])
         },

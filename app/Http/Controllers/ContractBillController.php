@@ -11,6 +11,7 @@ use App\Selection;
 use App\Services\Bundle;
 use App\Services\Result;
 use Dotenv\Validator;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
 
@@ -28,7 +29,8 @@ class ContractBillController extends Controller
     public function create($contractNo)
     {
         $contract = $this->bills->getExistingContract($contractNo);
-        if(!empty($contract)) {
+
+       if(!empty($contract)) {
            return redirect()
                ->action("ContractBillController@show",['billNo' => $contract->bill_no]);
        }
@@ -40,6 +42,7 @@ class ContractBillController extends Controller
 
         //get the contract
         $contractModel = new Contract();
+
         $contract = $contractModel
             ->withAssociates()
             ->where('contract_no',$contractNo)
@@ -57,7 +60,7 @@ class ContractBillController extends Controller
         return compact("bill","contract","lookups");
     }
 
-    public function apiStore(BillForm $request) {
+    public function apiPostStore(BillForm $request) {
 
         $inputs = $request->filterInput();
         $inputs['user_id'] = 1;
@@ -90,7 +93,8 @@ class ContractBillController extends Controller
 
     public function apiEdit($billNo) {
 
-        $bill = $this->bills->withPaymentLine()->where('bill_no',$billNo)->first();
+        $bill = $this->bills->withPaymentStatusOf('received')->where('bill_no',$billNo)->first();
+
         $contractModel = new Contract();
         $contract = $contractModel->withAssociates()->find($bill->contract_id);
 
@@ -102,11 +106,28 @@ class ContractBillController extends Controller
 
     }
 
-    public function apiUpdate($billNo) {
+    public function apiPaymentByStatus($id,$status) {
 
-        $bill = $this->bills->withPending($billNo);
+        //check pipe (bounce|hold)
 
+        $bill = $this->bills->withPaymentStatusOf($status)->find($id);
 
+        //set bill payment to rate per month
+        $selection = new Selection();
+        $lookups = $selection->getSelections(array("payment_status"));
+
+        return compact('bill','lookups');
+
+    }
+
+    public function apiPostUpdate(Request $request) {
+
+        $currentBill = $this->bills
+                        ->updatePayment($request->input('bill'))
+                        ->withPaymentStatusOf('received')
+                        ->first();
+
+        return Result::ok('update successfully',$currentBill);
 
     }
 
@@ -114,7 +135,6 @@ class ContractBillController extends Controller
 
         return view('bill.display',compact('billNo'));
     }
-
 
     public function apiShow($billNo) {
 

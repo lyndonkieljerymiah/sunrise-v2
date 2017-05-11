@@ -54,21 +54,20 @@ export default {
          contract: model.default.newInstance(),
          renewal: model.default.newInstanceRenewal(),
           gridColumns: [
-          {name: 'created_at', column: 'Date', default: true, dtype: 'date'},
-          {name: 'contract_no', column: 'Contract No'},
-          {name: 'contract_type', column: 'Contract Type'},
-          {name: 'period_start', column: 'Period Start', dtype: 'date'},
-          {name: 'period_end', column: 'Period End', dtype: 'date'},
-          {name: 'amount', column: 'Amount', dtype: 'currency'},
-          {name: 'full_name', column: 'Tenant Id'},
-          {name: 'villa_no', column: 'Villa No'},
-          {name: 'status', column: 'Status'},
+          {name: 'created_at', column: 'Date', default: true, dtype: 'date', class: 'text-center'},
+          {name: 'contract_no', column: 'Contract No', class: 'text-center'},
+          {name: 'contract_type', column: 'Contract Type', class: 'text-center'},
+          {name: 'period_start', column: 'Period Start', dtype: 'date', class: 'text-center'},
+          {name: 'period_end', column: 'Period End', dtype: 'date', class: 'text-center'},
+          {name: 'amount', column: 'Amount', dtype: 'currency', class: 'text-center'},
+          {name: 'full_name', column: 'Tenant Id', class: 'text-center'},
+          {name: 'villa_no', column: 'Villa No', class: 'text-center'},
+          {name: 'status', column: 'Status', class: 'text-center'},
           {name: 'action', column: '',static:true, class: 'text-center'}],
 
           actions: [
             {key:'create', name:'Create Bill'},
-            {key:'cancelled', name:'Cancelled'},
-            {key:'remove',name:'Remove'}
+            {key:'cancelled', name:'Cancelled'}
           ]
       }
     },
@@ -87,8 +86,7 @@ export default {
           if(status == 'pending') {
             this.actions = [
                 {key:'create', name:'Create Bill'},
-                {key:'cancelled', name:'Cancelled'},
-                {key:'remove',name:'Remove'}
+                {key:'cancelled', name:'Cancelled'}
             ]
           }else {
             this.actions = [

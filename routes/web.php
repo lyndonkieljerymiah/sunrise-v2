@@ -141,11 +141,11 @@ Route::get('api/bill/create/{contractNo}',
 
 Route::post('api/bill/store',
     [
-        'uses' =>   'ContractBillController@apiStore'
+        'uses' =>   'ContractBillController@apiPostStore'
 ]);
 
-
 Route::get("bill/show/{billNo}", ["uses"  =>  "ContractBillController@show"]);
+
 Route::get('api/bill/show/{billNo}',
     [
         'uses'  =>  'ContractBillController@apiShow'
@@ -153,4 +153,10 @@ Route::get('api/bill/show/{billNo}',
 
 
 Route::get("/bill/edit", ["uses"  =>  "ContractBillController@edit"]);
+
+
 Route::get("/api/bill/edit/{billNo}",[ "uses" => "ContractBillController@apiEdit"]);
+
+Route::get("/api/bill/payment/{id}/{status}",[ "uses" => "ContractBillController@apiPaymentByStatus"]);
+
+Route::post('/api/bill/update', ["uses" => "ContractBillController@apiPostUpdate"]);

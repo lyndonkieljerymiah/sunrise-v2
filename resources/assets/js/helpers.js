@@ -61,7 +61,7 @@ class AxiosRequest {
         }
         
         qs = qs.substring(0,qs.length-1);
-
+        console.log(qs);
         var url = '/api/'+controller+'/'+ action + (qs!=="" ? "/" + qs : qs);
         
         return axios.get(url);

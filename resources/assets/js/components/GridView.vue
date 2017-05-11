@@ -24,17 +24,21 @@
 
                 <!-- whole input -->
                 <div v-if="isIncludeEdit(key)">
-
                     <!-- plain text -->
                     <input type="text" class="form-control"
                            v-if="key.itype == 'text'"
                            v-model="entry[key.bind]">
+
+                    <textarea class="form-control"
+                           v-if="key.itype == 'textarea'"
+                              v-model="entry[key.bind]"></textarea>
 
                     <!-- dropdown -->
                     <select v-model="entry[key.bind]" v-if="key.itype == 'dropdown'" class="form-control" >
                         <option value="">--SELECT--</option>
                         <option v-for="lookup in lookups[key.selection]" :value="lookup.code">{{lookup.name}}</option>
                     </select>
+
                     <!-- date -->
                 </div>
 

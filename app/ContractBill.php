@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Services\Result;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
@@ -44,6 +45,14 @@ class ContractBill extends BaseModel
         return $this;
     }
 
+    public function withPaymentStatusOf($status) {
+
+        return $this->with(array('payments' => function($query) use($status) {
+
+            $query->where('status',$status);
+        }));
+    }
+
     public function withPaymentLine() {
         return $this->with('Payments');
     }
@@ -77,25 +86,36 @@ class ContractBill extends BaseModel
 
     public function updatePayment($entity) {
 
-        //get the current bill
-        $currentBill = $this->find($entity['id']);
+        try {
 
-        //update its payment
-        $payments = isset($entity['payments']) ? $entity['payments'] : [];
-        if(sizeof($payments) > 0) {
-            foreach($payments as $payment) {
-                //update only without received
-                if($payment['status'] != 'received') {
-                    $payment = $currentBill->Payments()->find($payment['id']);
-                    if($payment != null) {
-                        $payment->status = $payment['status'];
-                    }
-                    else {
+            //get the current bill
+            $currentBill = $this->find($entity['id']);
 
+            //update its payment
+            $entityPayments = isset($entity['payments']) ? $entity['payments'] : [];
+            if (sizeof($entityPayments) > 0) {
+                foreach ($entityPayments as $entityPayment) {
+                    //update only without received
+                    if ($entityPayment['status'] != 'received') {
+                        $paymentModel = $currentBill->Payments()->find($entityPayment['id']);
+                        if ($paymentModel != null) {
+                            $paymentModel->status = $entityPayment['status'];
+                            $paymentModel->remarks = $entityPayment['remarks'];
+                            $paymentModel->save();
+                        }
+                        else {
+
+                        }
                     }
                 }
             }
+            return $currentBill;
         }
+        catch(Exception $e) {
+            Result::badRequest(['exception' => $e->getMessage()]);
+        }
+
+        return false;
     }
 
     public function isBalance($entity,$contractAmount) {
