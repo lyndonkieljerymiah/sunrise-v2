@@ -45,7 +45,7 @@
                     <label class="col-md-3" >{{contract.label.regDate}}</label>
 
                     <div class="col-md-9">
-                        <dtpicker dp-name="register_tenant.reg_date" @pick="changeDate" :value="contract.data.register_tenant.reg_date"></dtpicker>
+                        <dtpicker dp-name="register_tenant.reg_date" @pick="contract.data.register_tenant.reg_date = $event" :value="contract.data.register_tenant.reg_date"></dtpicker>
                         <error :errorDisplay="contract.errors.get('register_tenant.reg_date')">{{contract.errors.get('register_tenant.reg_date')}}</error>
                     </div>
                 </div>

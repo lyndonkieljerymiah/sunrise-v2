@@ -10,8 +10,8 @@
                 </div>
             </div>
             <div class="col-md-12">
-                <div class="panel panel-info">
-                    <div class="panel-body">
+                <div>
+                    <div>
                         <div class="row">
                             <div class="col-md-8">
                                 <p class="row">
@@ -46,34 +46,42 @@
                                     <div class="panel-body">
                                         <p class="row">
                                             <strong class="col-md-3">Contract No:</strong>
-                                            <span class="col-md-9"></span>
+                                            <span class="col-md-9">{{contract.contract_no}}</span>
                                         </p>
                                         <p class="row">
                                             <strong class="col-md-3">Type:</strong>
-                                            <span class="col-md-9"></span>
+                                            <span class="col-md-9">{{contract.full_contract_type}}</span>
                                         </p>
                                         <p class="row">
                                             <strong class="col-md-3">Period:</strong>
-                                            <span class="col-md-9"></span>
+                                            <span class="col-md-9">{{contract.period_start}} - {{contract.period_end}}</span>
                                         </p>
                                         <p class="row">
                                             <strong class="col-md-3">Amount:</strong>
-                                            <span class="col-md-9"></span>
+                                            <span class="col-md-9">{{contract.amount}}</span>
                                         </p>
                                         <p class="row">
                                             <strong class="col-md-3">Status:</strong>
-                                            <span class="col-md-9"></span>
+                                            <span class="col-md-9">{{contract.full_status}}</span>
                                         </p>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
+                                <!-- Nav tabs -->
+                                <ul class="nav nav-tabs" role="tablist">
+                                    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Pending</a></li>
+                                    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Dishonored</a></li>
+                                    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Completed</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-12">
                                 <gridview
                                     :data="bill.payments"
-                                    :columns="gridColumn">
+                                    :columns="gridColumn"
+                                    :lookups="viewModel.lookups">
                                     <button class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></button>
                                 </gridview>
                             </div>
@@ -82,7 +90,7 @@
                             </div>
                             <hr/>
                             <div class="col-md-4 col-md-offset-8">
-                                    <strong class="col-md-6">Payment Total:</strong> <strong class="col-md-3 text-right text-warning"></strong>
+                                <strong class="col-md-6">Payment Total:</strong> <strong class="col-md-3 text-right text-warning"></strong>
                             </div>
                         </div>
                     </div>
@@ -111,6 +119,7 @@
                     payments:[]
                 }
             };
+            this.lookups = [];
             this.errors = new ErrorValidations.newInstance();
         }
         create() {
@@ -119,6 +128,7 @@
                 .then(res => {
                     this.data.bill = res.data.bill;
                     this.data.contract = res.data.contract;
+                    this.lookups = res.data.lookups;
                     this.billNo = "";
                     this.isLoading = false;
                 })
@@ -135,15 +145,12 @@
             return {
                 viewModel: new BillUpdateViewModel(),
                 gridColumn: [
-                    {name: 'effectivity_date', column: 'Date', style:'width:10%',class:'text-center', default:true},
-                    {name: 'payment_no', column: 'Payment No',style:'width:10%',class:'text-center'},
-                    {name: 'bank', column: 'Bank'},
-                    {name: 'full_payment_mode', column: 'Payment Mode',class:'text-center'},
-                    {name: 'full_payment_type', column: 'Payment Type',class:'text-center'},
-                    {name: 'period_start', column: 'Start',class:'text-center'},
-                    {name: 'period_end', column: 'End',class:'text-center'},
-                    {name: 'amount', column: 'Amount', style:"width:10%",class:'text-right'},
-                    {name: 'full_status', column: 'Status',style:"width:10%", class:'text-center'},
+                    {name: 'effectivity_date', column: 'Date', class:'text-center', default:true, dtype:'date'},
+                    {name: 'payment_no', column: 'No',style:'width:10%',class:'text-center'},
+                    {name: 'period_start', column: 'Start',class:'text-center',dtype:'date'},
+                    {name: 'period_end', column: 'End',class:'text-center',dtype:'date'},
+                    {name: 'amount', column: 'Amount', style:"width:10%",class:'text-right', dtype:'currency'},
+                    {name: 'full_status', column: 'Status',style:"width:10%", class:'text-center', editable:true,bind:'status',itype:'dropdown',selection:'payment_status'},
                     {name: '$custom',column: '',static:true}
                 ]
             }
@@ -170,6 +177,7 @@
             payments() {
                 return this.viewModel.bill.payments;
             }
+
         },
         methods: {
             search() {

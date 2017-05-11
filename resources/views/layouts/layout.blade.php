@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{{asset('vendor/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css')}}"/>
     <link href="{{ asset('css/sb-admin.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{asset('css/sidebar.css') }}" />
+    <link rel="stylesheet" href="{{asset('vendor/font-awesome/css/font-awesome.min.css') }}" />
     <link rel="stylesheet" href="{{asset('css/app.css') }}" />
 
      <script>

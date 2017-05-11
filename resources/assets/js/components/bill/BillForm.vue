@@ -80,7 +80,7 @@
                     <div class="panel-footer">
                         <div class="row">
                         <div class="col-md-2 pull-right">
-                            <button class="btn btn-info btn-block" @click="save">Save</button>
+                            <button class="btn btn-info btn-block" @click="save"><i class="fa " :class="viewIcon"></i> Save</button>
                         </div>
                         </div>
                     </div>
@@ -117,8 +117,9 @@
 
             return {
                 bill: billModel.default.createInstance(),
+                isLoading: false,
                 gridColumn: [
-                    {name: 'effectivity_date', column: 'Date', style:'width:10%', class:'text-center'},
+                    {name: 'effectivity_date', column: 'Date', style:'width:10%', class:'text-center', dtype: 'date'},
                     {name: 'payment_no', column: 'Payment No',style:'width:10%',class:'text-center',editable:true, bind:'payment_no', itype:'text'},
                     {name: 'bank', column: 'Bank', editable:true,bind:'bank',editable:true, bind:'bank', itype:'text'},
                     {name: 'full_payment_mode', column: 'Payment Mode',class:'text-center',
@@ -155,6 +156,9 @@
             },
             totalPayment() {
                 return this.bill.totalAmount();
+            },
+            viewIcon() {
+                return this.isLoading ? "fa-refresh fa-spin" : "fa-save";
             }
         },
         methods: {
@@ -185,8 +189,11 @@
                 });
             },
             save() {
-                this.bill.saveChanges();
+                this.isLoading = true;
+                this.bill.saveChanges((r) => this.isLoading = false);
+
             }
+
 
         }
     }

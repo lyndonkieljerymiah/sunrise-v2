@@ -20,7 +20,7 @@
       <div class='form-group'>
         <label for='tenant_type' class='col-md-3'>Period Start:</label>
         <div class='col-md-9'>
-          <dtpicker dp-name="period_start" @pick="changeDate" :value="contract.data.period_start"></dtpicker>
+          <dtpicker dp-name="period_start" @pick="contract.data.period_start = $event" :value="contract.data.period_start"></dtpicker>
             <error :errorDisplay="contract.errors.get('period_start')">{{ contract.errors.get('period_start') }}</error>
         </div>
       </div>
@@ -30,7 +30,7 @@
       <div class='form-group'>
         <label for='tenant_type' class='col-md-3'>Periord End:</label>
         <div class='col-md-9'>
-            <dtpicker dp-name="period_end" @pick="changeDate" :value="contract.data.period_end"></dtpicker>
+            <dtpicker dp-name="period_end" @pick="contract.data.period_end = $event" :value="contract.data.period_end"></dtpicker>
           <error :errorDisplay="contract.errors.get('period_end')">{{ contract.errors.get('period_end') }}</error>
         </div>
       </div>

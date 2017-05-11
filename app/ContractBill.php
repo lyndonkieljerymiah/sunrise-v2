@@ -48,8 +48,6 @@ class ContractBill extends BaseModel
         return $this->with('Payments');
     }
 
-
-
     public function saveBill($entity) {
         try {
 
@@ -75,7 +73,29 @@ class ContractBill extends BaseModel
         catch (Exception $e) {
             abort(500,$e->getMessage());
         }
+    }
 
+    public function updatePayment($entity) {
+
+        //get the current bill
+        $currentBill = $this->find($entity['id']);
+
+        //update its payment
+        $payments = isset($entity['payments']) ? $entity['payments'] : [];
+        if(sizeof($payments) > 0) {
+            foreach($payments as $payment) {
+                //update only without received
+                if($payment['status'] != 'received') {
+                    $payment = $currentBill->Payments()->find($payment['id']);
+                    if($payment != null) {
+                        $payment->status = $payment['status'];
+                    }
+                    else {
+
+                    }
+                }
+            }
+        }
     }
 
     public function isBalance($entity,$contractAmount) {

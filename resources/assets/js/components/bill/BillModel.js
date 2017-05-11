@@ -113,15 +113,17 @@ class BillModel {
         return sum;
     }
 
-    saveChanges() {
+    saveChanges(callback) {
 
         AjaxRequest.post('bill','store',this.data)
             .then(r => {
                 AjaxRequest.redirect('bill','show',r.data.data.billNo);
+                callback('success');
             })
             .catch(e => {
                 this.errors.register(e.response.data);
                 toastr.error(this.errors.get('payments'));
+                callback('error')
             });
     }
 

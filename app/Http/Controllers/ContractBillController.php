@@ -93,7 +93,20 @@ class ContractBillController extends Controller
         $bill = $this->bills->withPaymentLine()->where('bill_no',$billNo)->first();
         $contractModel = new Contract();
         $contract = $contractModel->withAssociates()->find($bill->contract_id);
-        return compact('bill','contract');
+
+        //set bill payment to rate per month
+        $selection = new Selection();
+        $lookups = $selection->getSelections(array("payment_status"));
+
+        return compact('bill','contract','lookups');
+
+    }
+
+    public function apiUpdate($billNo) {
+
+        $bill = $this->bills->withPending($billNo);
+
+
 
     }
 

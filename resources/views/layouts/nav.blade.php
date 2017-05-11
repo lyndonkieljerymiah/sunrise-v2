@@ -74,12 +74,12 @@
      <li><a href="#">Add Contract</a></li>
    </ul>
  </li> -->
-<!-- {!!url('villa')!!} -->
+
 
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-users fa-lg" style="color:#007db7" aria-hidden="true"></i> &nbsp; ACCOUNTS <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
-                  <a href="#"><i class="fa fa-caret-right fa-lg" aria-hidden="true"></i>  Receivable</a>
+                  <a href="{!! url('bill/edit') !!}"><i class="fa fa-caret-right fa-lg" aria-hidden="true"></i>  Receivable</a>
               </ul>
             </li>
             <li class="dropdown">

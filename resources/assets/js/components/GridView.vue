@@ -19,7 +19,9 @@
         <tbody>
         <tr v-for="entry in filteredData">
             <td v-for="key in columns" :class="key.class" :style="key.style">
+
                 <span v-if="isIncludeEdit(key) ? false : true">{{render(entry,key)}}</span>
+
                 <!-- whole input -->
                 <div v-if="isIncludeEdit(key)">
 
@@ -33,10 +35,7 @@
                         <option value="">--SELECT--</option>
                         <option v-for="lookup in lookups[key.selection]" :value="lookup.code">{{lookup.name}}</option>
                     </select>
-
-                    <!--  -->
-
-
+                    <!-- date -->
                 </div>
 
                 <div v-if="key.name=='action'" class="btn-group">
@@ -91,6 +90,11 @@
         mounted() {
 
         },
+        filters: {
+            dynamicFilter() {
+
+            }
+        },
         computed: {
             filteredData() {
                 var sortKey = this.sortKey;
@@ -128,7 +132,17 @@
                 this.sortOrders[key.name] = this.sortOrders[key.name] * -1;
             },
             render: function(entry,key) {
-                return entry[key.name];
+
+                let value = entry[key.name];
+                if(key.dtype == 'date') {
+                    return moment(value).format('L');
+                }
+                else if(key.dtype == 'currency') {
+                    return accounting.formatNumber(value) + " QR";
+                }
+                else {
+                    return value;
+                }
             },
             actionTrigger: function(action,id) {
                 this.$emit('action',action,id);

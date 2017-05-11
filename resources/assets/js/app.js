@@ -51,6 +51,8 @@ import BillReadable from './components/bill/BillReadable.vue';
 import BillForm from './components/bill/BillForm.vue';
 import BillUpdateForm from './components/bill/BillUpdateForm.vue';
 
+Vue.filter('toDateFormat', (value) => {return moment(value).format('L');});
+
 
 new Vue({
     el: "#mainApp",

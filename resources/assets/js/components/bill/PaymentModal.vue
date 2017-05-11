@@ -22,7 +22,7 @@
         <div class="form-group">
             <label for="effectivity_date" class="col-md-3">Date of Effectivity</label>
             <div class="col-md-9">
-                <dtpicker dp-name="effectivity_date"  :value="bill.cloneOfInstance.effectivity_date" @pick="changeDate"></dtpicker>
+                <dtpicker dp-name="effectivity_date"  :value="bill.cloneOfInstance.effectivity_date" @pick="bill.cloneOfInstance.effectivity_date = $event"></dtpicker>
                 <error :errorDisplay="errors.has('effectivity_date')">{{errors.first('effectivity_date')}}</error>
             </div>
         </div>
@@ -46,14 +46,14 @@
         <div class="form-group">
             <label for="period_start" class="col-md-3">Period Start</label>
             <div class="col-md-9">
-                <dtpicker dp-name="period_start" :value="bill.cloneOfInstance.period_start" @pick="changeDate"></dtpicker>
+                <dtpicker dp-name="period_start" :value="bill.cloneOfInstance.period_start" @pick="bill.cloneOfInstance.period_start = $event"></dtpicker>
                 <error :errorDisplay="errors.has('period_start')">{{ errors.first('period_start') }}</error>
             </div>
         </div>
         <div class="form-group">
             <label for="period_end" class="col-md-3">Period End</label>
             <div class="col-md-9">
-                <dtpicker dp-name="period_end" :value="bill.cloneOfInstance.period_end" @pick="changeDate"></dtpicker>
+                <dtpicker dp-name="period_end" :value="bill.cloneOfInstance.period_end" @pick="bill.cloneOfInstance.period_end = $event"></dtpicker>
                 <error :errorDisplay="errors.has('period_end')">{{ errors.first('period_end') }}</error>
             </div>
         </div>
