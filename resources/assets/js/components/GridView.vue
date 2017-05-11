@@ -74,9 +74,10 @@
         name: "grid",
         props: ['data','columns','filterKey','actions','default','lookups'],
         data() {
-            var sortOrders = {};
-            var sortKey = "";
-            var that = this;
+
+            let sortOrders = {};
+            let sortKey = "";
+            let that = this;
 
             this.columns.forEach((key) => {
                 sortOrders[key.name] = 1;
@@ -101,10 +102,10 @@
         },
         computed: {
             filteredData() {
-                var sortKey = this.sortKey;
-                var data = this.data;
+                let sortKey = this.sortKey;
+                let data = this.data;
 
-                var order = this.sortOrders[sortKey] || 1
+                let order = this.sortOrders[sortKey] || 1
                 if(sortKey) {
                     data = data.slice().sort(function(a,b) {
                         a = a[sortKey]

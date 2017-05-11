@@ -3209,6 +3209,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     name: "grid",
     props: ['data', 'columns', 'filterKey', 'actions', 'default', 'lookups'],
     data: function data() {
+
         var sortOrders = {};
         var sortKey = "";
         var that = this;

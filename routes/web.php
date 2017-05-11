@@ -4,11 +4,32 @@
 use App\Villa;
 
 
+function routeMapping($routeConfig) {
+    foreach($routeConfig as $key => $route) {
+        if($key == 'post') {
+            foreach ($route as $routeKey => $routeValue) {
+                Route::post($routeKey,$routeValue);
+            }
+        }
+        else if($key == 'delete') {
+            foreach ($route as $routeKey => $routeValue) {
+                Route::delete($routeKey,$routeValue);
+            }
+        }
+        else {
+            foreach ($route as $routeKey => $routeValue) {
+                Route::get($routeKey,$routeValue);
+            }
+        }
+    }
+}
+
+
+
 /*
  * Authentication
  * */
 Auth::routes();
-
 
 
 /********************************
@@ -22,42 +43,39 @@ Route::get('/', function() {
 /**********************
 *    Villa API End Point
 ***********************/
-Route::get('/api/villa/list/{status?}',[
-    'uses'  =>  "VillaController@apiList",
-    'as'    =>  "villa.list"
-    ]);
+$villaRoutes = [
+    'get' =>
+    [
+        '/api/villa/list/{status?}' => ['uses' => 'VillaController@apiList'],
+        '/api/villa/search/{filterKey}/{filterValue?}' => ['uses' => 'VillaController@apiSearch'],
+        '/api/villa/vacant' => ['uses' => 'VillaController@apiVacant'],
+        '/api/villa/create' => ['uses' => 'VillaController@apiCreate'],
+        '/api/villa/edit/{id}' => ['uses' => 'VillaController@apiEdit']
+    ],
+    'post' => [
+        '/api/villa/store' => ['uses' => 'VillaController@apiCreate'],
+        '/api/villa/update' => ['uses' => 'VillaController@apiUpdate']
+    ],
+    'delete' => [
+        '/api/villa/destroy/' => ['uses' => 'VillaController@apiDestroy']
+    ],
+    'template' => [
+        '/villa' => [
+            'uses'  =>  'VillaController@index',
+            'as'    =>  'villa.index'
+        ],
+        '/villa/register/{id?}' => [
+            'uses'  =>  'VillaController@register',
+            'as'    =>  'villa.register'
+        ]
+    ]
+];
 
-Route::get('/api/villa/search/{filterKey}/{filterValue?}',[
-    "uses"  => "VillaController@apiSearch"
-]);
+routeMapping($villaRoutes);
 
-Route::get('/api/villa/vacant',[
-    "uses"  =>  "VillaController@apiVacant"
-]);
+//**************************************///
 
-Route::get("/api/villa/create",
-[
-    "uses"  =>  "VillaController@apiCreate"
-]);
 
-Route::get("/api/villa/edit/{id}","VillaController@apiEdit");
-
-Route::post("/api/villa/store","VillaController@apiStore");
-
-Route::delete("/api/villa/destroy/","VillaController@apiDestroy");
-
-Route::post("/api/villa/update","VillaController@apiUpdate");
-/***************************************/
-
-Route::get('villa',[
-        'uses'  =>  'VillaController@index',
-        'as'    =>  'villa.index'
-    ]);
-
-Route::get('villa/register/{id?}',[
-    'uses'  =>  'VillaController@register',
-    'as'    =>  'villa.register'
-]);
 
 
 // *********************** USER ACCOUNT *************************
@@ -75,9 +93,42 @@ Route::get('users/profile',function() {
 
 
 // ****************  END OF USERS ACCOUNT *********************
+
+
 /************************
  *    Contract API End Point
 **************************************/
+
+/************Contract***********************/
+$contractRoutes = [
+    'get' =>
+        [
+            '/api/contract/list/{status?}' => ['uses' => 'ContractController@apiList'],
+            '/api/contract/create/' => ['uses' => 'ContractController@apiCreate'],
+            '/api/contract/renew/{contract_no}' => ['uses' => 'ContractController@apiRenew']
+        ],
+    'post' => [
+        '/api/contract/update' => ['uses' => 'ContractController@apiUpdate'],
+        '/api/contract/store' => ['uses' => 'VillaController@apiStore'],
+        '/api/contract/recalc' => ['uses' => 'ContractController@apiRecalculate'],
+        '/api/contract/cancel' => ['uses' => 'ContractController@apiCancel']
+    ],
+    'delete' => [
+        '/api/villa/destroy/' => ['uses' => 'VillaController@apiDestroy']
+    ],
+    'template' => [
+        '/villa' => [
+            'uses'  =>  'VillaController@index',
+            'as'    =>  'villa.index'
+        ],
+        '/villa/register/{id?}' => [
+            'uses'  =>  'VillaController@register',
+            'as'    =>  'villa.register'
+        ]
+    ]
+];
+
+
 
 Route::get("/api/contract/list/{status?}",
     [
