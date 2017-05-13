@@ -94,8 +94,8 @@
                                         </gridview>
                                     </div>
                                     <hr/>
-                                    <div class="col-md-4 col-md-offset-8">
-                                        <strong class="col-md-6">Payment Total:</strong> <strong class="col-md-3 text-right text-warning"></strong>
+                                    <div class="col-md-3 col-md-offset-9">
+                                        <total-payment :payment="totalPayment"></total-payment>
                                     </div>
                                 </div>
                             </div>
@@ -124,7 +124,8 @@
             this.data = {
                 contract: { tenant:{},villa:{}},
                 bill:{
-                    payments:[]
+                    payments:[],
+                    paymentSummary: {}
                 }
             };
             this.lookups = [];
@@ -135,6 +136,7 @@
             AjaxRequest.get('bill','edit',this.billNo)
                 .then(res => {
                     this.data.bill = res.data.bill;
+                    this.data.bill.paymentSummary = res.data.paymentSummary;
                     this.data.contract = res.data.contract;
                     this.lookups = res.data.lookups;
                     this.billNo = "";
@@ -219,17 +221,21 @@
     }
 
     import GridView from '../GridView.vue';
+    import TotalPayment from './TotalPayment.vue';
 
     export default {
         data() {
+
             let gridColumn = columnFactory();
+
             return {
                 viewModel: new BillUpdateViewModel(),
                 gridColumn: gridColumn
             }
         },
         components: {
-            "gridview": GridView
+            "gridview": GridView,
+            'totalPayment': TotalPayment
         },
         mounted() {
 
@@ -258,6 +264,9 @@
             },
             tabIndex() {
                 return this.viewModel.currentTabIndex;
+            },
+            totalPayment() {
+                return this.viewModel.data.bill.paymentSummary ;
             }
 
         },
@@ -269,6 +278,7 @@
                 this.viewModel.save();
             },
             changeTab(tabIndex,status) {
+
                 this.viewModel.getPayment(status);
                 this.viewModel.currentTabIndex = tabIndex;
                 this.gridColumn = columnFactory(tabIndex);

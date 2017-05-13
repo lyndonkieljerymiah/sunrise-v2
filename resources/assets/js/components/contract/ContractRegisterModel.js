@@ -101,9 +101,7 @@ class ContractRegisterModel {
         AjaxRequest.post("contract","store",this.data)
             .then((r) => {
                 if(cbSuccess) cbSuccess(r.data);
-
                 AjaxRequest.redirect("bill","create",r.data.data.id);
-
             })
             .catch((error) => {
                 if(error.response.status == 422)

@@ -1585,39 +1585,44 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var BillModel = function () {
-    function BillModel() {
-        _classCallCheck(this, BillModel);
+var BillCreateViewModel = function () {
+    function BillCreateViewModel() {
+        _classCallCheck(this, BillCreateViewModel);
 
         this.data = {
-            payments: []
+            bill: {
+                payments: [],
+                paymentSummary: {
+                    total_payment: 0,
+                    total_cost: 0
+                }
+            },
+            contract: {
+                tenant: {},
+                villa: {}
+            }
         };
-        this.contract = {
-            tenant: {},
-            villa: {}
-        };
-
         this.lookups = {};
         this.cloneOfInstance = {};
         this.errors = new window.ErrorValidations.newInstance();
     }
 
-    _createClass(BillModel, [{
+    _createClass(BillCreateViewModel, [{
         key: 'create',
         value: function create(contractId) {
             var _this = this;
 
-            var that = this;
-
             AjaxRequest.get('bill', 'create', contractId).then(function (r) {
 
-                _this.data = r.data.bill;
-                _this.contract = r.data.contract;
+                _this.data.bill = r.data.bill;
+                _this.data.bill.paymentSummary = r.data.paymentSummary;
+
+                _this.data.contract = r.data.contract;
                 _this.lookups = r.data.lookups;
 
-                _this.data.instance.effectivity_date = moment(r.data.bill.instance.effectivity_date).format('L');
-                _this.data.instance.period_start = moment(r.data.bill.instance.period_start).format('L');
-                _this.data.instance.period_end = moment(r.data.bill.instance.period_end).format('L');
+                _this.data.bill.instance.effectivity_date = moment(r.data.bill.instance.effectivity_date).format('L');
+                _this.data.bill.instance.period_start = moment(r.data.bill.instance.period_start).format('L');
+                _this.data.bill.instance.period_end = moment(r.data.bill.instance.period_end).format('L');
 
                 _this.createInstance();
             }).catch(function (e) {
@@ -1634,9 +1639,6 @@ var BillModel = function () {
                 _this2.contract = r.data.contract;
             });
         }
-    }, {
-        key: 'edit',
-        value: function edit(billNo) {}
     }, {
         key: 'changePaymentType',
         value: function changePaymentType() {
@@ -1656,7 +1658,8 @@ var BillModel = function () {
     }, {
         key: 'createInstance',
         value: function createInstance() {
-            this.cloneOfInstance = objectClone(this.data.instance);
+
+            this.cloneOfInstance = objectClone(this.data.bill.instance);
         }
     }, {
         key: 'insert',
@@ -1676,38 +1679,39 @@ var BillModel = function () {
                 }
             });
 
-            this.data.payments.push(this.cloneOfInstance);
+            this.data.bill.payments.push(this.cloneOfInstance);
             this.reindexing();
         }
     }, {
         key: 'reindexing',
         value: function reindexing() {
             //create index
-            for (var i = 0; i < this.data.payments.length; i++) {
-                this.data.payments[i].id = i;
+            for (var i = 0; i < this.data.bill.payments.length; i++) {
+                this.data.bill.payments[i].id = i;
             }
         }
     }, {
         key: 'removePayment',
         value: function removePayment(id) {
-            this.data.payments.splice(id, 1);
+            this.data.bill.payments.splice(id, 1);
             this.reindexing();
         }
     }, {
         key: 'totalAmount',
         value: function totalAmount() {
             var sum = 0;
-            for (var i = 0; i < this.data.payments.length; i++) {
-                sum += parseInt(this.data.payments[i].amount);
+            for (var i = 0; i < this.data.bill.payments.length; i++) {
+                sum += parseInt(this.data.bill.payments[i].amount);
             }
-            return sum;
+            console.log(sum);
+            this.data.bill.paymentSummary.total_payment = sum;
         }
     }, {
         key: 'saveChanges',
         value: function saveChanges(callback) {
             var _this4 = this;
 
-            AjaxRequest.post('bill', 'store', this.data).then(function (r) {
+            AjaxRequest.post('bill', 'store', this.data.bill).then(function (r) {
                 AjaxRequest.redirect('bill', 'show', r.data.data.billNo);
                 callback('success');
             }).catch(function (e) {
@@ -1719,41 +1723,98 @@ var BillModel = function () {
     }, {
         key: 'changeDate',
         value: function changeDate(name, d) {
-
             this.cloneOfInstance[name] = d;
         }
     }]);
 
-    return BillModel;
+    return BillCreateViewModel;
 }();
 
-var BillReadableModel = function () {
-    function BillReadableModel() {
-        _classCallCheck(this, BillReadableModel);
+var BillUpdateViewModel = function () {
+    function BillUpdateViewModel() {
+        _classCallCheck(this, BillUpdateViewModel);
 
+        this.billNo = "";
+        this.currentTabIndex = 'pending';
+        this.loading = { search: false, save: false };
         this.data = {
-            payments: []
+            contract: { tenant: {}, villa: {} },
+            bill: {
+                payments: [],
+                paymentSummary: {}
+            }
         };
-
-        this.contract = {};
+        this.lookups = [];
+        this.errors = new ErrorValidations.newInstance();
     }
 
-    _createClass(BillReadableModel, [{
+    _createClass(BillUpdateViewModel, [{
         key: 'create',
-        value: function create(id) {
-            AjaxRequest.get('bill', 'show', id).then(function (r) {}).catch(function (e) {});
+        value: function create() {
+            var _this5 = this;
+
+            this.loading.search = true;
+            AjaxRequest.get('bill', 'edit', this.billNo).then(function (res) {
+                _this5.data.bill = res.data.bill;
+                _this5.data.bill.paymentSummary = res.data.paymentSummary;
+                _this5.data.contract = res.data.contract;
+                _this5.lookups = res.data.lookups;
+                _this5.billNo = "";
+                _this5.loading.search = false;
+            }).catch(function (err) {
+                _this5.loading.search = false;
+            });
+        }
+    }, {
+        key: 'save',
+        value: function save() {
+            var _this6 = this;
+
+            this.loading.save = true;
+            AjaxRequest.post('bill', 'update', this.data).then(function (res) {
+                toastr.success(res.data.message);
+                _this6.loading.save = false;
+            }).catch(function (err) {
+
+                _this6.loading.save = false;
+            });
+        }
+    }, {
+        key: 'getPayment',
+        value: function getPayment(status) {
+            var _this7 = this;
+
+            this.data.bill.payments = [];
+            AjaxRequest.get('bill', 'payment', this.data.bill.id, status).then(function (res) {
+                _this7.data.bill.payments = res.data.bill.payments;
+            });
+        }
+    }, {
+        key: 'removePayment',
+        value: function removePayment(id) {
+
+            var p = _.find(this.bill.payments, function (p) {
+                return p.id == id;
+            });
+            var indexOf = this.bills.payments.indexOf(p);
+            this.bills.payments.splice(indexOf, 1);
+        }
+    }, {
+        key: 'loadingIs',
+        value: function loadingIs(name) {
+            return this.loading[name];
         }
     }]);
 
-    return BillReadableModel;
+    return BillUpdateViewModel;
 }();
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     createInstance: function createInstance() {
-        return new BillModel();
+        return new BillCreateViewModel();
     },
-    createReadbleInstance: function createReadbleInstance() {
-        return new BillReadableModel();
+    createBillViewModelInstance: function createBillViewModelInstance() {
+        return new BillUpdateViewModel();
     }
 });
 
@@ -3536,6 +3597,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PaymentModal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__PaymentModal_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ContractInfo_vue__ = __webpack_require__(209);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ContractInfo_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__ContractInfo_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__TotalPayment_vue__ = __webpack_require__(255);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__TotalPayment_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__TotalPayment_vue__);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 //
@@ -3639,6 +3702,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
 var billModel = __webpack_require__(19);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -3650,39 +3714,39 @@ var billModel = __webpack_require__(19);
         "contractInfo": __WEBPACK_IMPORTED_MODULE_4__ContractInfo_vue___default.a,
         "gridview": __WEBPACK_IMPORTED_MODULE_1__GridView_vue___default.a,
         "modal": __WEBPACK_IMPORTED_MODULE_2__Modal_vue___default.a,
-        "paymentModal": __WEBPACK_IMPORTED_MODULE_3__PaymentModal_vue___default.a
+        "paymentModal": __WEBPACK_IMPORTED_MODULE_3__PaymentModal_vue___default.a,
+        "totalPayment": __WEBPACK_IMPORTED_MODULE_5__TotalPayment_vue___default.a
     },
     data: function data() {
         var _ref;
 
+        var bill = billModel.default.createInstance();
+        bill.create(this.contractId);
         return {
-            bill: billModel.default.createInstance(),
+            bill: bill,
             isLoading: false,
             gridColumn: [{ name: 'effectivity_date', column: 'Date', style: 'width:10%', class: 'text-center', dtype: 'date' }, { name: 'payment_no', column: 'Payment No', style: 'width:10%', class: 'text-center', editable: true, bind: 'payment_no', itype: 'text' }, (_ref = { name: 'bank', column: 'Bank', editable: true, bind: 'bank' }, _defineProperty(_ref, 'editable', true), _defineProperty(_ref, 'bind', 'bank'), _defineProperty(_ref, 'itype', 'text'), _ref), { name: 'full_payment_mode', column: 'Payment Mode', class: 'text-center',
                 editable: true, bind: 'payment_mode', itype: 'dropdown', selection: 'payment_mode' }, { name: 'full_payment_type', column: 'Payment Type', class: 'text-center' }, { name: 'period_start', column: 'Start', class: 'text-center' }, { name: 'period_end', column: 'End', class: 'text-center' }, { name: 'amount', column: 'Amount', style: "width:10%", class: 'text-right', editable: true, bind: 'amount', itype: 'text' }, { name: 'full_status', column: 'Status', style: "width:10%", class: 'text-center' }, { name: '$markDelete', column: '', static: true }]
 
         };
     },
-    mounted: function mounted() {
-        var that = this;
-        this.bill.create(this.contractId);
-    },
 
     computed: {
         tenant: function tenant() {
-            if (this.bill.contract.tenant !== undefined) return this.bill.contract.tenant;
+            if (this.bill.data.contract.tenant !== undefined) return this.bill.data.contract.tenant;
         },
         villa: function villa() {
-            if (this.bill.contract.villa !== undefined) return this.bill.contract.villa;
+            if (this.bill.data.contract.villa !== undefined) return this.bill.data.contract.villa;
         },
         contract: function contract() {
-            if (this.bill.contract !== undefined) return this.bill.contract;
+            if (this.bill.data.contract !== undefined) return this.bill.data.contract;
         },
         lookups: function lookups() {
             return this.bill.lookups;
         },
         totalPayment: function totalPayment() {
-            return this.bill.totalAmount();
+            this.bill.totalAmount();
+            return { total_payment: this.bill.data.bill.paymentSummary.total_payment, total_cost: this.bill.data.bill.paymentSummary.total_cost };
         },
         viewIcon: function viewIcon() {
             return this.isLoading ? "fa-refresh fa-spin" : "fa-save";
@@ -3862,6 +3926,8 @@ var billModel = __webpack_require__(19);
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__GridView_vue__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__GridView_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__GridView_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TotalPayment_vue__ = __webpack_require__(255);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TotalPayment_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__TotalPayment_vue__);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -3994,7 +4060,8 @@ var BillUpdateViewModel = function () {
         this.data = {
             contract: { tenant: {}, villa: {} },
             bill: {
-                payments: []
+                payments: [],
+                paymentSummary: {}
             }
         };
         this.lookups = [];
@@ -4009,6 +4076,7 @@ var BillUpdateViewModel = function () {
             this.loading.search = true;
             AjaxRequest.get('bill', 'edit', this.billNo).then(function (res) {
                 _this.data.bill = res.data.bill;
+                _this.data.bill.paymentSummary = res.data.paymentSummary;
                 _this.data.contract = res.data.contract;
                 _this.lookups = res.data.lookups;
                 _this.billNo = "";
@@ -4074,9 +4142,12 @@ function columnFactory(value) {
 
 
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
+
         var gridColumn = columnFactory();
+
         return {
             viewModel: new BillUpdateViewModel(),
             gridColumn: gridColumn
@@ -4084,7 +4155,8 @@ function columnFactory(value) {
     },
 
     components: {
-        "gridview": __WEBPACK_IMPORTED_MODULE_0__GridView_vue___default.a
+        "gridview": __WEBPACK_IMPORTED_MODULE_0__GridView_vue___default.a,
+        'totalPayment': __WEBPACK_IMPORTED_MODULE_1__TotalPayment_vue___default.a
     },
     mounted: function mounted() {},
 
@@ -4112,6 +4184,9 @@ function columnFactory(value) {
         },
         tabIndex: function tabIndex() {
             return this.viewModel.currentTabIndex;
+        },
+        totalPayment: function totalPayment() {
+            return this.viewModel.data.bill.paymentSummary;
         }
     },
     methods: {
@@ -4122,6 +4197,7 @@ function columnFactory(value) {
             this.viewModel.save();
         },
         changeTab: function changeTab(tabIndex, status) {
+
             this.viewModel.getPayment(status);
             this.viewModel.currentTabIndex = tabIndex;
             this.gridColumn = columnFactory(tabIndex);
@@ -5867,7 +5943,6 @@ var ContractRegisterModel = function () {
 
             AjaxRequest.post("contract", "store", this.data).then(function (r) {
                 if (cbSuccess) cbSuccess(r.data);
-
                 AjaxRequest.redirect("bill", "create", r.data.data.id);
             }).catch(function (error) {
                 if (error.response.status == 422) _this2.errors.register(error.response.data);
@@ -5892,7 +5967,7 @@ var ContractRegisterModel = function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(5)();
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 /***/ }),
 /* 196 */
@@ -10110,7 +10185,13 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "btn btn-primary btn-xs"
   }, [_c('i', {
     staticClass: "fa fa-pencil"
-  })])])], 1), _vm._v(" "), _c('hr'), _vm._v(" "), _vm._m(0)])])])]), _vm._v(" "), _c('div', {
+  })])])], 1), _vm._v(" "), _c('hr'), _vm._v(" "), _c('div', {
+    staticClass: "col-md-3 col-md-offset-9"
+  }, [_c('total-payment', {
+    attrs: {
+      "payment": _vm.totalPayment
+    }
+  })], 1)])])])]), _vm._v(" "), _c('div', {
     staticClass: "panel-footer"
   }, [_c('div', {
     staticClass: "row"
@@ -10125,15 +10206,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "fa fa-fw fa-lg",
     class: _vm.busySave ? 'fa-refresh fa-spin' : 'fa-save'
   }), _vm._v(" Save")]) : _vm._e()])])])])]) : _vm._e()])])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "col-md-4 col-md-offset-8"
-  }, [_c('strong', {
-    staticClass: "col-md-6"
-  }, [_vm._v("Payment Total:")]), _vm._v(" "), _c('strong', {
-    staticClass: "col-md-3 text-right text-warning"
-  })])
-}]}
+},staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
@@ -10708,7 +10781,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   })], 1), _vm._v(" "), _c('gridview', {
     attrs: {
-      "data": _vm.bill.data.payments,
+      "data": _vm.bill.data.bill.payments,
       "columns": _vm.gridColumn,
       "lookups": _vm.lookups
     },
@@ -10717,11 +10790,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }), _vm._v(" "), _c('div', {
     staticClass: "col-md-4 pull-right"
-  }, [_c('strong', {
-    staticClass: "col-md-6"
-  }, [_vm._v("Payment Total:")]), _vm._v(" "), _c('strong', {
-    staticClass: "col-md-3 text-right text-warning"
-  }, [_vm._v(_vm._s(_vm.totalPayment))])])], 1)])]), _vm._v(" "), _c('div', {
+  }, [_c('total-payment', {
+    attrs: {
+      "payment": _vm.totalPayment
+    }
+  })], 1)], 1)])]), _vm._v(" "), _c('div', {
     staticClass: "panel-footer"
   }, [_c('div', {
     staticClass: "row"
@@ -24860,6 +24933,95 @@ module.exports = Vue$3;
 __webpack_require__(142);
 module.exports = __webpack_require__(144);
 
+
+/***/ }),
+/* 251 */,
+/* 252 */,
+/* 253 */,
+/* 254 */,
+/* 255 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Component = __webpack_require__(1)(
+  /* script */
+  __webpack_require__(257),
+  /* template */
+  __webpack_require__(256),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+Component.options.__file = "C:\\xampp\\htdocs\\sunrise\\resources\\assets\\js\\components\\bill\\TotalPayment.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] TotalPayment.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5d93ac06", Component.options)
+  } else {
+    hotAPI.reload("data-v-5d93ac06", Component.options)
+  }
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 256 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "well well-lg"
+  }, [_c('div', {
+    staticClass: "container"
+  }, [_c('h4', [_vm._v("Total Payment: "), _c('span', [_vm._v(_vm._s(_vm._f("toCurrencyFormat")(_vm.totalPayment)))])]), _vm._v(" "), _c('h4', [_vm._v("Total Cost: "), _c('span', [_vm._v(_vm._s(_vm._f("toCurrencyFormat")(_vm.totalCost)))])]), _vm._v(" "), _c('h4', [_vm._v("Balance: "), _c('span', [_vm._v(_vm._s(_vm._f("toCurrencyFormat")(_vm.balance)))])])])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-5d93ac06", module.exports)
+  }
+}
+
+/***/ }),
+/* 257 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['payment'],
+    computed: {
+        totalPayment: function totalPayment() {
+            return this.payment.total_payment !== undefined ? this.payment.total_payment : 0;
+        },
+        totalCost: function totalCost() {
+            return this.payment.total_cost !== undefined ? this.payment.total_cost : 0;
+        },
+        balance: function balance() {
+            return this.totalCost - this.totalPayment;
+        }
+    }
+});
 
 /***/ })
 /******/ ]);

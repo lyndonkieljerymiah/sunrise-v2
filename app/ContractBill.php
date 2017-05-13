@@ -53,6 +53,12 @@ class ContractBill extends BaseModel
         }));
     }
 
+    public function getSummary() {
+        $billId = $this->getId();
+        return $this->Payments()->select('status',DB::raw('SUM(amount) AS sumAmount'))->groupBy('status')->where('bill_id',$billId)->get();
+
+    }
+
     public function withPaymentLine() {
         return $this->with('Payments');
     }
@@ -149,6 +155,7 @@ class ContractBill extends BaseModel
         return $raw;
 
     }
+
 
 
 

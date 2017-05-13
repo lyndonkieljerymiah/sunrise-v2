@@ -2,7 +2,7 @@
 class ErrorValidations {
 
     constructor() {
-        var that = this;
+        let that = this;
         this.errors = {};
 
         this.exceptions = {

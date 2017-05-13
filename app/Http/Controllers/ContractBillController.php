@@ -42,28 +42,33 @@ class ContractBillController extends Controller
 
         //get the contract
         $contractModel = new Contract();
-
         $contract = $contractModel
             ->withAssociates()
             ->where('contract_no',$contractNo)
             ->first();
 
         $bill = $this->bills->createInstance($contract->id);
-
         $bill->instance->amount = $contract->payable_per_month;
 
         //set bill payment to rate per month
         $selection = new Selection();
         $lookups = $selection->getSelections(array("payment_mode","payment_term","payment_status"));
 
-        //get villa
-        return compact("bill","contract","lookups");
+        //create payment summary
+        $paymentSummary = [
+            "total_payment" => 0,
+            "total_cost" => $contract->amount
+        ];
+
+        return compact("bill","paymentSummary","contract","lookups");
     }
 
     public function apiPostStore(BillForm $request) {
 
         $inputs = $request->filterInput();
         $inputs['user_id'] = 1;
+
+
 
         //get contract and validate payment
         $contract = Contract::find($inputs['contract_id']);
@@ -93,16 +98,29 @@ class ContractBillController extends Controller
 
     public function apiEdit($billNo) {
 
-        $bill = $this->bills->withPaymentStatusOf('received')->where('bill_no',$billNo)->first();
 
+        $bill = $this->bills->withPaymentStatusOf('received')->where('bill_no',$billNo)->first();
+        $summary = $bill->getSummary();
+        $paymentSummary = [];
+        if(sizeof($summary) > 0) {
+            foreach($summary as $value) {
+                if($value->isClear()) {
+                    $paymentSummary['total_payment'] = $value->sumAmount;
+                }
+                else {
+
+                }
+            }
+        }
         $contractModel = new Contract();
         $contract = $contractModel->withAssociates()->find($bill->contract_id);
+        $paymentSummary['total_cost'] = $contract->amount;
 
         //set bill payment to rate per month
         $selection = new Selection();
         $lookups = $selection->getSelections(array("payment_status"));
 
-        return compact('bill','contract','lookups');
+        return compact('bill','paymentSummary','contract','lookups');
 
     }
 

@@ -47,6 +47,17 @@ class Payment extends BaseModel
 
     }
 
+    public function isClear() {
+        return $this->hasStatusOf('clear');
+    }
+    public function isCancel() {
+        return $this->hasStatusOf('bounce');
+    }
+
+    public function isPending() {
+        return $this->hasStatusOf('received');
+    }
+
     public static function createInstance() {
 
         $p = new Payment([

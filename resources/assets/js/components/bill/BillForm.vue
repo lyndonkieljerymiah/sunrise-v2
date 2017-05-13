@@ -66,13 +66,13 @@
                                     <payment-modal  :bill="bill"></payment-modal>
                                 </modal>
 
-                                <gridview :data="bill.data.payments"
+                                <gridview :data="bill.data.bill.payments"
                                           :columns="gridColumn"
                                           :lookups="lookups"
                                           @action="onDelete">
                                 </gridview>
                                 <div class="col-md-4 pull-right">
-                                    <strong class="col-md-6">Payment Total:</strong> <strong class="col-md-3 text-right text-warning">{{totalPayment}}</strong>
+                                    <total-payment :payment="totalPayment"></total-payment>
                                 </div>
                             </div>
                         </div>
@@ -99,6 +99,7 @@
 
     import PaymentModal from './PaymentModal.vue';
     import ContractInfo from './ContractInfo.vue';
+    import TotalPayment from './TotalPayment.vue';
 
     let billModel = require('./BillModel.js');
     
@@ -111,12 +112,14 @@
             "contractInfo": ContractInfo,
             "gridview": GridView,
             "modal":    Modal,
-            "paymentModal": PaymentModal
+            "paymentModal": PaymentModal,
+            "totalPayment": TotalPayment
         },
         data() {
-
+            let bill = billModel.default.createInstance();
+            bill.create(this.contractId);
             return {
-                bill: billModel.default.createInstance(),
+                bill: bill,
                 isLoading: false,
                 gridColumn: [
                     {name: 'effectivity_date', column: 'Date', style:'width:10%', class:'text-center', dtype: 'date'},
@@ -134,28 +137,25 @@
 
             }
         },
-        mounted() {
-            let that = this;
-            this.bill.create(this.contractId);
-        },
         computed: {
             tenant() {
-                if(this.bill.contract.tenant !== undefined)
-                    return this.bill.contract.tenant;
+                if(this.bill.data.contract.tenant !== undefined)
+                    return this.bill.data.contract.tenant;
             },
             villa() {
-                if(this.bill.contract.villa !== undefined)
-                    return this.bill.contract.villa;
+                if(this.bill.data.contract.villa !== undefined)
+                    return this.bill.data.contract.villa;
             },
             contract() {
-                if(this.bill.contract !== undefined)
-                    return this.bill.contract;
+                if(this.bill.data.contract !== undefined)
+                    return this.bill.data.contract;
             },
             lookups() {
               return this.bill.lookups;
             },
             totalPayment() {
-                return this.bill.totalAmount();
+                this.bill.totalAmount();
+                return {total_payment: this.bill.data.bill.paymentSummary.total_payment,total_cost: this.bill.data.bill.paymentSummary.total_cost};
             },
             viewIcon() {
                 return this.isLoading ? "fa-refresh fa-spin" : "fa-save";
