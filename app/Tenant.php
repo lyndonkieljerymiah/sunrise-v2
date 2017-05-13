@@ -49,4 +49,10 @@ class Tenant extends BaseModel
         return $this;
     }
 
+    public function fullAddress() {
+        $address = $this->TenantAddress()->first()->getFullAddress();
+
+        return $address;
+    }
+
 }

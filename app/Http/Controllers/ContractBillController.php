@@ -10,9 +10,9 @@ use App\Http\Requests\BillForm;
 use App\Selection;
 use App\Services\Bundle;
 use App\Services\Result;
-use Dotenv\Validator;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
+use PDF;
+
 
 
 class ContractBillController extends Controller
@@ -67,8 +67,6 @@ class ContractBillController extends Controller
 
         $inputs = $request->filterInput();
         $inputs['user_id'] = 1;
-
-
 
         //get contract and validate payment
         $contract = Contract::find($inputs['contract_id']);
@@ -151,7 +149,14 @@ class ContractBillController extends Controller
 
     public function show($billNo) {
 
-        return view('bill.display',compact('billNo'));
+        //show
+        $bill = $this->bills->withPaymentLine()->where('bill_no',$billNo)->first();
+        $contractModel = new Contract();
+        $contract =$contractModel->withAssociates()->find($bill->contract_id);
+
+        $pdf = PDF::loadView('bill.display',compact('bill','contract'));
+        return $pdf->stream();
+        //return view('bill.display',compact('bill','contract'));
     }
 
     public function apiShow($billNo) {

@@ -2,11 +2,13 @@
     <table id="grid" class="table table-condensed table-hover">
         <thead>
         <tr class="active">
+
             <th v-for="key in columns"
                 :style="key.style"
                 @click="sortBy(key)"
                 class="text-center active"
                 :class="{info:sortKey == key.name}">
+
                 {{ key.column }}
                 <span
                         v-if="isArrowVisible(key.name)"
@@ -125,9 +127,6 @@
             },
             totalRows() {
                 return this.data.length;
-            },
-            editEnabled() {
-
             }
         },
         methods: {
@@ -137,6 +136,9 @@
                 this.sortOrders[key.name] = this.sortOrders[key.name] * -1;
             },
             render: function(entry,key) {
+
+                //check pipe period_start|period_end
+
 
                 let value = entry[key.name];
                 if(key.dtype == 'date') {

@@ -74,10 +74,10 @@
                                 <!-- Nav tabs -->
                                 <ul class="nav nav-tabs" >
                                     <li :class="{active:tabIndex == 'pending'}">
-                                        <a href="#" @click="changeTab('pending', 'received')">Pending</a>
+                                        <a href="#" @click="changeTab('pending', 'received')">For Clearing</a>
                                     </li>
                                     <li :class="{active:tabIndex == 'adjust'}">
-                                        <a href="#" @click="changeTab('adjust','bounce')">Adjustment</a></li>
+                                        <a href="#" @click="changeTab('adjust','bounce')">Cancelled</a></li>
                                     <li :class="{active:tabIndex == 'completed'}">
                                         <a href="#" @click="changeTab('completed','clear')">Completed</a>
                                     </li>
@@ -93,6 +93,12 @@
                                             <button class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></button>
                                         </gridview>
                                     </div>
+                                    <div class="col-md-2 col-md-offset-10" style="margin-bottom:10px;">
+                                        <button class="btn btn-default btn-block" @click="showModal">New Cheque</button>
+                                    </div>
+                                    <modal size="" dialog-title="Payment Entry" @dismiss="onDismissal">
+
+                                    </modal>
                                     <hr/>
                                     <div class="col-md-3 col-md-offset-9">
                                         <total-payment :payment="totalPayment"></total-payment>
@@ -116,71 +122,7 @@
 
 <script>
 
-    class BillUpdateViewModel {
-        constructor() {
-            this.billNo = "";
-            this.currentTabIndex = 'pending';
-            this.loading = {search: false,save: false};
-            this.data = {
-                contract: { tenant:{},villa:{}},
-                bill:{
-                    payments:[],
-                    paymentSummary: {}
-                }
-            };
-            this.lookups = [];
-            this.errors = new ErrorValidations.newInstance();
-        }
-        create() {
-            this.loading.search = true;
-            AjaxRequest.get('bill','edit',this.billNo)
-                .then(res => {
-                    this.data.bill = res.data.bill;
-                    this.data.bill.paymentSummary = res.data.paymentSummary;
-                    this.data.contract = res.data.contract;
-                    this.lookups = res.data.lookups;
-                    this.billNo = "";
-                    this.loading.search = false;
-                })
-                .catch(err => {
-                    this.loading.search  = false;
-                });
-        }
-        save() {
-            this.loading.save = true;
-            AjaxRequest.post('bill','update',this.data)
-                .then(res => {
-                    toastr.success(res.data.message);
-                    this.loading.save = false;
 
-                })
-                .catch(err => {
-
-                    this.loading.save = false;
-
-                });
-        }
-
-        getPayment(status) {
-            this.data.bill.payments = [];
-            AjaxRequest.get('bill','payment',this.data.bill.id,status)
-                .then(res=> {
-                    this.data.bill.payments = res.data.bill.payments;
-
-                })
-        }
-
-        removePayment(id) {
-
-            let p = _.find(this.bill.payments, (p) => { return p.id == id});
-            let indexOf = this.bills.payments.indexOf(p);
-            this.bills.payments.splice(indexOf,1);
-        }
-
-        loadingIs(name) {
-            return this.loading[name];
-        }
-    }
 
     function columnFactory(value) {
         switch(value) {
@@ -221,21 +163,26 @@
     }
 
     import GridView from '../GridView.vue';
+    import Modal from '../Modal.vue';
+
     import TotalPayment from './TotalPayment.vue';
+
+    let modelInstance = require('./BillModel.js');
 
     export default {
         data() {
 
             let gridColumn = columnFactory();
-
+            let viewModel = modelInstance.default.createBillViewModelInstance();
             return {
-                viewModel: new BillUpdateViewModel(),
+                viewModel: viewModel,
                 gridColumn: gridColumn
             }
         },
         components: {
             "gridview": GridView,
-            'totalPayment': TotalPayment
+            'totalPayment': TotalPayment,
+            "modal": Modal
         },
         mounted() {
 
@@ -271,6 +218,9 @@
 
         },
         methods: {
+            showModal() {
+                VueEvent.$emit('onModalActive');
+            },
             search() {
                 this.viewModel.create();
             },
@@ -282,6 +232,9 @@
                 this.viewModel.getPayment(status);
                 this.viewModel.currentTabIndex = tabIndex;
                 this.gridColumn = columnFactory(tabIndex);
+            },
+            onDismissal(result) {
+
             }
         }
 

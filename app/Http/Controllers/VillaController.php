@@ -116,11 +116,11 @@ class VillaController extends Controller
     public function apiUpdate(VillaForm $request) {
 
         $inputs = $request->filterInput();
+
         try {
             //get gallery files
             $files =   isset($inputs['galleries']) ? $inputs['galleries'] : [];
             $inputs['galleries'] = $this->storeImages($files,$inputs['villa_no']);
-
             $this->villa->saveVilla($inputs);
         }
         catch(Exception $e) {

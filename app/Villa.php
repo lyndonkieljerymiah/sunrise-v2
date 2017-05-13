@@ -105,30 +105,22 @@ class Villa extends BaseModel
             unset($entity['galleries']);
             unset($entity['villa_galleries']);
 
-            if($entity['id'] == 0) {
-
-                $this->find($entity['id']);
-
-                $this->toMap($entity)->save();
-
+            if($entity['id'] === 0) {
+                $villa = new Villa();
+                $entity['status'] = 'vacant';
+                $villa->toMap($entity)->save();
             }
             else {
                 //default status
-                $entity['status'] = 'vacant';
-
-                $this->find($entity['id']);
-                $this->toMap($entity)->save();
+                $villa = $this->find($entity['id']);
+                $villa->toMap($entity)->save();
             }
 
             //save collection
             if(sizeof($collectionGallery) > 0) {
-
-                $this->VillaGalleries()->saveMany(array_map(function($item) {
-
+                $villa->VillaGalleries()->saveMany(array_map(function($item) {
                     return new VillaGallery($item);
-
                 },$collectionGallery));
-
             }
 
             if(sizeof($villaGalleries) > 0) {
@@ -139,7 +131,6 @@ class Villa extends BaseModel
                     }
                 }
             }
-
         }
         catch(Exception $e) {
             abort(500,$e->getMessage());

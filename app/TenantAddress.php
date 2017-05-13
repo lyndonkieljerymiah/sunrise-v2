@@ -22,4 +22,9 @@ class TenantAddress extends BaseModel
         return new TenantAddress();
 
     }
+
+    public function getFullAddress() {
+
+        return $this->address_1 . " " . $this->address_2 . " " . $this->city . " " . $this->postal_code;
+    }
 }

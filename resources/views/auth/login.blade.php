@@ -1,12 +1,14 @@
 @extends('layouts.login')
 
 @section('content')
-
-<div class="container">
-    <div class="row">
-        <div class="col-md-4 col-md-offset-4">
-            <div class="login">
-                <div class="login-title">Login</div>
+<!-- Modal -->
+<div id="loginAdminModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="inner-container">
+            <div class="box-vid">
+                <button type="button"  class="close" style="width:5px;margin-right:20px;margin-top:-10px;" data-dismiss="modal">&times;</button>
+                <h1>Admin Login</h1>
                 <form method="POST" action="{{ route('login') }}">
                     <div class="login-fields">
                         {{ csrf_field() }}
@@ -31,4 +33,5 @@
         </div>
     </div>
 </div>
+
 @endsection

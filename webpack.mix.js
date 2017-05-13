@@ -23,4 +23,4 @@ mix.js('resources/assets/js/vendor.js', 'public/js');
 
 
 
-
+mix.sass('resources/assets/sass/login.scss','public/css');

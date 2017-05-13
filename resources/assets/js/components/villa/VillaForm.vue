@@ -142,7 +142,6 @@
         },
         methods: {
             onSave() {
-
                 var $this = this;
                 var formData = new FormData();
                 //append to formdata
