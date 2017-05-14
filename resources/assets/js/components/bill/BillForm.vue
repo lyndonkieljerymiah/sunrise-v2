@@ -65,7 +65,6 @@
                                 <modal size="" dialog-title="Payment Entry" @dismiss="onDismissal">
                                     <payment-modal  :bill="bill"></payment-modal>
                                 </modal>
-
                                 <gridview :data="bill.data.bill.payments"
                                           :columns="gridColumn"
                                           :lookups="lookups"
@@ -91,7 +90,6 @@
 </template>
 
 <script>
-
 
     import Toastr from 'vue-toastr';
     import GridView from '../GridView.vue';
@@ -122,19 +120,18 @@
                 bill: bill,
                 isLoading: false,
                 gridColumn: [
+                    {name: 'id', editable:true,bind:'id',itype:'selector'},
                     {name: 'effectivity_date', column: 'Date', style:'width:10%', class:'text-center', dtype: 'date'},
                     {name: 'payment_no', column: 'Payment No',style:'width:10%',class:'text-center',editable:true, bind:'payment_no', itype:'text'},
                     {name: 'bank', column: 'Bank', editable:true,bind:'bank',editable:true, bind:'bank', itype:'text'},
                     {name: 'full_payment_mode', column: 'Payment Mode',class:'text-center',
                         editable:true,bind:'payment_mode', itype:'dropdown',selection:'payment_mode'},
                     {name: 'full_payment_type', column: 'Payment Type',class:'text-center'},
-                    {name: 'period_start', column: 'Start',class:'text-center'},
-                    {name: 'period_end', column: 'End',class:'text-center'},
+                    {name: 'period_start|period_end', column: 'Period',class:'text-center', dtype: 'date'},
                     {name: 'amount', column: 'Amount', style:"width:10%",class:'text-right',editable:true, bind:'amount', itype:'text'},
                     {name: 'full_status', column: 'Status',style:"width:10%", class:'text-center'},
                     {name: '$markDelete',column: '',static:true}
                 ]
-
             }
         },
         computed: {

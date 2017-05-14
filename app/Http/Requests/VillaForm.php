@@ -53,11 +53,7 @@ class VillaForm extends FormRequest
         return $validate;
     }
 
-    public function filterInput() {
 
-        return $this->except("full_villa_class","full_rate_per_month","full_location","full_status");
-        
-    }
 
     
 

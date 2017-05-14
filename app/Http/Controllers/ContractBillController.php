@@ -99,9 +99,11 @@ class ContractBillController extends Controller
 
         $bill = $this->bills->withPaymentStatusOf('received')->where('bill_no',$billNo)->first();
         $summary = $bill->getSummary();
+
         $paymentSummary = [];
         if(sizeof($summary) > 0) {
             foreach($summary as $value) {
+
                 if($value->isClear()) {
                     $paymentSummary['total_payment'] = $value->sumAmount;
                 }
@@ -138,12 +140,10 @@ class ContractBillController extends Controller
 
     public function apiPostUpdate(Request $request) {
 
-        $currentBill = $this->bills
-                        ->updatePayment($request->input('bill'))
-                        ->withPaymentStatusOf('received')
-                        ->first();
+        $currentBill = $this->bills->updatePayment($request->input('bill'));
 
-        return Result::ok('update successfully',$currentBill);
+
+        return Result::ok('update successfully');
 
     }
 

@@ -15,15 +15,16 @@ class BillCreateViewModel {
                 villa: {}
             }
         };
+
         this.lookups = {};
         this.cloneOfInstance = {};
         this.errors = new window.ErrorValidations.newInstance();
     }
 
     create(contractId) {
+
         AjaxRequest.get('bill', 'create', contractId)
             .then(r => {
-
                 this.data.bill = r.data.bill;
                 this.data.bill.paymentSummary = r.data.paymentSummary;
 
@@ -108,7 +109,6 @@ class BillCreateViewModel {
         for(var i=0;i < this.data.bill.payments.length; i++) {
             sum +=  parseInt(this.data.bill.payments[i].amount);
         }
-        console.log(sum);
         this.data.bill.paymentSummary.total_payment = sum;
     }
 
@@ -133,8 +133,9 @@ class BillCreateViewModel {
 
 class BillUpdateViewModel {
     constructor() {
+
         this.billNo = "";
-        this.currentTabIndex = 'pending';
+        this.currentTabIndex = 0;
         this.loading = {search: false,save: false};
         this.data = {
             contract: { tenant:{},villa:{}},
@@ -144,29 +145,48 @@ class BillUpdateViewModel {
             }
         };
         this.lookups = [];
+
         this.errors = new ErrorValidations.newInstance();
+
+        this.cachePayment = {
+            cacheIndex: "",
+            received: [],
+            bounce: [],
+            clear: []
+        };
+
     }
     create() {
+
         this.loading.search = true;
+        this.currentTabIndex = 0;
+        this.cachePayment.cacheIndex = 'received';
         AjaxRequest.get('bill','edit',this.billNo)
             .then(res => {
+
                 this.data.bill = res.data.bill;
                 this.data.bill.paymentSummary = res.data.paymentSummary;
+                this.cachePayment.received = res.data.bill.payments;
+
                 this.data.contract = res.data.contract;
                 this.lookups = res.data.lookups;
                 this.billNo = "";
                 this.loading.search = false;
+
             })
             .catch(err => {
                 this.loading.search  = false;
             });
+
     }
     save() {
+
         this.loading.save = true;
         AjaxRequest.post('bill','update',this.data)
             .then(res => {
                 toastr.success(res.data.message);
                 this.loading.save = false;
+                this.currentTabIndex = 0;
 
             })
             .catch(err => {
@@ -176,20 +196,38 @@ class BillUpdateViewModel {
             });
     }
 
-    getPayment(status) {
-        this.data.bill.payments = [];
-        AjaxRequest.get('bill','payment',this.data.bill.id,status)
-            .then(res=> {
-                this.data.bill.payments = res.data.bill.payments;
+    getPayment(paymentStatus) {
 
-            })
+        this.data.bill.payments = [];
+        if(this.cachePayment.cacheIndex.indexOf(paymentStatus) < 0) {
+            AjaxRequest.get('bill','payment',this.data.bill.id,paymentStatus)
+                .then(res=> {
+                    this.cachePayment[paymentStatus] = res.data.bill.payments;
+                    this.data.bill.payments = this.cachePayment[paymentStatus];
+                    this.cachePayment.cacheIndex = this.cachePayment.cacheIndex  + "|" + paymentStatus;
+                })
+        }
+        else {
+            this.data.bill.payments = this.cachePayment[paymentStatus];
+        }
     }
 
-    removePayment(id) {
+    reversePayment() {
 
-        let p = _.find(this.bill.payments, (p) => { return p.id == id});
-        let indexOf = this.bills.payments.indexOf(p);
-        this.bills.payments.splice(indexOf,1);
+        if(this.data.bill.payments.length == 0) return false;
+
+        this.data.bill.payments.forEach(item => {
+            if(item.selected) {
+
+                item.status = 'received';
+                //restore back in received cache;
+                this.cachePayment.received.push(item);
+
+                //remove from payment
+                let indexOf = this.data.bill.payments.indexOf(item);
+                this.data.bill.payments.splice(indexOf,1);
+            }
+        });
     }
 
     loadingIs(name) {

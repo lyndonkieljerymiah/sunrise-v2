@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 255);
+/******/ 	return __webpack_require__(__webpack_require__.s = 256);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -142,9 +142,7 @@ var AxiosRequest = function () {
                     qs += arguments[i] + '/';
                 }
             }
-
             qs = qs.substring(0, qs.length - 1);
-            console.log(qs);
             var url = '/api/' + controller + '/' + action + (qs !== "" ? "/" + qs : qs);
 
             return axios.get(url);
@@ -217,7 +215,7 @@ window.objectClone = function (objInstance) {
 
 /***/ }),
 
-/***/ 255:
+/***/ 256:
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(10);

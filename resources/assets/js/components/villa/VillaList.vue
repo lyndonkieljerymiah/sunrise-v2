@@ -5,14 +5,14 @@
                 <searchbox @trigger="search" :field-list="filterFields"></searchbox>
             </div>
             <div class="col-md-2 col-md-offset-4">
-                <button class="btn btn-info" @click="addNew()">Add</button>
+                <button class="btn btn-info" @click="addNew()"> <i class="fa fa-plus"></i> Add New </button>
             </div>
         </div>
         <hr/>
         <div class="row">
             <div class="col-md-9">
                 <gridview
-                    :data="gridData"
+                    :data="viewModel.data.list"
                     :columns="gridColumns"
                     :actions="actions"
                     @action="doAction"
@@ -21,8 +21,8 @@
             </div>
             <div class="col-md-3">
                 <div class="list-group">
-                    <a href="#" class="list-group-item" v-for="count in statusCounts">
-                        <i class="fa fa-home"></i> {{count.status}}
+                    <a href="#" class="list-group-item" v-for="count in statusCount">
+                        <i class="fa fa-home fa-fw fa-lg"></i> {{count.status}}
                         <span class="badge">{{count.count}}</span>
                     </a>
                 </div>
@@ -36,6 +36,8 @@
     import SearchBox from '../SearchBox.vue';
     import GridView from '../GridView.vue';
 
+    import {VillaListViewModel} from './VillaViewModel';
+
     export default {
         name: 'list',
         components: {
@@ -48,11 +50,11 @@
             },
             doAction(a,id) {
                  if(a.key == 'edit') {
-                    AjaxRequest.redirect("villa","register",id);
+                    this.viewModel.redirectToRegister(id);
                 }
             },
             addNew() {
-                AjaxRequest.redirect("villa","register");
+                this.viewModel.redirectToRegister();
             },
             sorted(sortKey) {
                     this.filterKey = sortKey;
@@ -60,7 +62,7 @@
         },
         data()  {
             return {
-                gridData:[],
+                viewModel: new VillaListViewModel(),
                 filterKey: "",
                 filterFields: [
                     {name: 'villa_no', text: 'Villa No' },
@@ -82,36 +84,16 @@
                 actions: [
                     {key:'edit', name:'Edit'},
                     {key:'remove',name:'Remove'}
-                ],
-                statusCounts: []
+                ]
             }
         },
         mounted() {
-
-            var $this= this;
-            AjaxRequest.get('villa','list')
-            .then(response => {
-                $this.gridData = response.data.data;
-                $this.statusCounts = response.data.counts;
-            });
+            this.viewModel.create();
         },
         computed: {
-            statusVacant() {
-                var status = 0;
-                this.statusCounts.forEach(item => {
-                    status = (item['status'] !== undefined && item['status'] === 'vacant') ? item.count : 0;
-                });
-
-                return status;
-            },
-            statusOccupied() {
-                var status = 0;
-                this.statusCounts.forEach(item => {
-                    status = (item['status'] !== undefined && item['status'] === 'occupied') ? item.count : 0;
-                });
-
-                return status;
-            }
+          statusCount() {
+              return this.viewModel.data.status;
+          }
         }
     }
 </script>

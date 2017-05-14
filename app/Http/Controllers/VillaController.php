@@ -66,12 +66,12 @@ class VillaController extends Controller
 
     public function apiEdit($id) {
 
+
         $villa = [
             "data"      =>  $this->villa->withGalleries()->find($id),
             "lookups"   =>  $this->selection->getSelections(array("villa_type","villa_location"))
         ];
 
-        $villaObject = $villa['data'];
 
         return $villa;
     }
@@ -92,8 +92,9 @@ class VillaController extends Controller
     public function apiStore(VillaForm $request)
     {
         
-        $inputs = $request->filterInput();
-        
+        $inputs = $request->all();
+
+
         try { 
 
             //get gallery files
@@ -115,8 +116,7 @@ class VillaController extends Controller
 
     public function apiUpdate(VillaForm $request) {
 
-        $inputs = $request->filterInput();
-
+        $inputs = $request->all();
         try {
             //get gallery files
             $files =   isset($inputs['galleries']) ? $inputs['galleries'] : [];
@@ -124,10 +124,10 @@ class VillaController extends Controller
             $this->villa->saveVilla($inputs);
         }
         catch(Exception $e) {
-            abort('500',$e);
+            Result::badRequest(["message",$e->getMessage()]);
         }
 
-        return Result::ok();
+        return Result::ok("Successfully Save");
     }
 
     public function apiDestroy($id) {
@@ -143,7 +143,6 @@ class VillaController extends Controller
         if(sizeof($files) > 0) {
 
             foreach($files as $file) {
-
                 $rules = ['file' => 'required|mimes:png,gif,jpeg']; //image only;
                 $validator = Validator::make(array('file' => $file),$rules);
 

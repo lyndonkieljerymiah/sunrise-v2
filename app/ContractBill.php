@@ -102,21 +102,21 @@ class ContractBill extends BaseModel
             if (sizeof($entityPayments) > 0) {
                 foreach ($entityPayments as $entityPayment) {
                     //update only without received
-                    if ($entityPayment['status'] != 'received') {
-                        $paymentModel = $currentBill->Payments()->find($entityPayment['id']);
-                        if ($paymentModel != null) {
-                            $paymentModel->status = $entityPayment['status'];
-                            $paymentModel->remarks = $entityPayment['remarks'];
-                            $paymentModel->save();
-                        }
-                        else {
+                    $paymentModel = $currentBill->Payments()->find($entityPayment['id']);
+                    if ($paymentModel != null) {
+                        $paymentModel->status = $entityPayment['status'];
+                        $paymentModel->remarks = $entityPayment['remarks'];
+                        $paymentModel->save();
+                    }
+                    else {
 
-                        }
                     }
                 }
             }
+
             return $currentBill;
         }
+
         catch(Exception $e) {
             Result::badRequest(['exception' => $e->getMessage()]);
         }
@@ -157,6 +157,15 @@ class ContractBill extends BaseModel
     }
 
 
+    public function isClear() {
+        return $this->hasStatusOf('clear');
+    }
+    public function isCancel() {
+        return $this->hasStatusOf('bounce');
+    }
 
+    public function isPending() {
+        return $this->hasStatusOf('received');
+    }
 
 }

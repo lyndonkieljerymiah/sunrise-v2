@@ -26,8 +26,9 @@ class Villa extends BaseModel
         $this->qtel_no = "";
         $this->description = "";
         $this->capacity = "0";
-        $this->villa_class = "ff";
+        $this->villa_class = "fully_furnished";
         $this->rate_per_month = "0.00";
+        $this->villa_galleries = [];
 
         parent::__construct($attributes);
     }
@@ -96,14 +97,13 @@ class Villa extends BaseModel
     }
 
     public function saveVilla($entity) {
-
         try {
 
             $collectionGallery = isset($entity['galleries']) ? $entity['galleries'] : [];
-            $villaGalleries = isset($entity['villa_galleries']) ?  $entity['villa_galleries'] : [];
+            $deleteMarks = isset($entity['villaGalleriesDeleteMark']) ?  $entity['villaGalleriesDeleteMark'] : [];
 
             unset($entity['galleries']);
-            unset($entity['villa_galleries']);
+            unset($entity['villaGalleriesDeleteMark']);
 
             if($entity['id'] === 0) {
                 $villa = new Villa();
@@ -123,14 +123,13 @@ class Villa extends BaseModel
                 },$collectionGallery));
             }
 
-            if(sizeof($villaGalleries) > 0) {
-                foreach ($villaGalleries as $villaGallery)
+            if(sizeof($deleteMarks) > 0) {
+                foreach ($deleteMarks as $mark)
                 {
-                    if($villaGallery['markDeleted'] == true) {
-                        VillaGallery::deleted($villaGallery['id']);
-                    }
+                    $villa->VillaGalleries()->find($mark)->delete();
                 }
             }
+
         }
         catch(Exception $e) {
             abort(500,$e->getMessage());

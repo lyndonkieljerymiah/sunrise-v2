@@ -26,6 +26,9 @@
 
                 <!-- whole input -->
                 <div v-if="isIncludeEdit(key)">
+                    <!-- checkbox -->
+                    <input v-if="key.itype== 'selector'" type="checkbox" v-model="entry[key.bind]"/>
+
                     <!-- plain text -->
                     <input type="text" class="form-control"
                            v-if="key.itype == 'text'"
@@ -56,7 +59,7 @@
                     </ul>
                 </div>
                 <div v-if="key.name=='$markDelete'" class='text-center' @click='actionTrigger("delete",entry["id"])'>
-                    <button class="btn btn-danger btn-xs"><i class="fa fa-close"></i></button>
+                    <button class="btn btn-danger btn-xs" type="button"><i class="fa fa-close"></i></button>
                 </div>
             </td>
         </tr>
@@ -126,7 +129,8 @@
                 return this.columns.length;
             },
             totalRows() {
-                return this.data.length;
+                let rowData = this.data || [];
+                return rowData.length;
             }
         },
         methods: {
@@ -136,11 +140,26 @@
                 this.sortOrders[key.name] = this.sortOrders[key.name] * -1;
             },
             render: function(entry,key) {
-
                 //check pipe period_start|period_end
+                let keypos = key.name.indexOf("|"),
+                    glue = key.glue || "-",
+                    value = "";
 
+                if(keypos >= 0) {
+                    let names = key.name.split('|');
+                    for(var i=0;i < names.length; i++) {
+                        if(key.dtype == 'date') {
+                            entry[names[i]] = moment(entry[names[i]]).format('L');
+                        }
+                        value += entry[names[i]] + glue;
+                    }
+                    value = value.substring(0,value.length -1);
+                    key.dtype = "";
+                }
+                else {
+                    value = entry[key.name];
+                }
 
-                let value = entry[key.name];
                 if(key.dtype == 'date') {
                     return moment(value).format('L');
                 }

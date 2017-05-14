@@ -19,6 +19,9 @@ table {
     min-height: 1200px;
 }
 
+.has-small-padding {
+  padding: 10px;
+}
 
 @import "node_modules/toastr/toastr.scss";
 

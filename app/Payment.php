@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends BaseModel
 {
-    protected $appends = ['full_status','full_payment_type','full_payment_mode'];
+    protected $appends = ['full_status','full_payment_type','full_payment_mode','selected'];
 
     //
     public function __construct(array $attributes = [])
@@ -20,9 +20,8 @@ class Payment extends BaseModel
 
     }
 
-
-    protected function getFullStatusAttribute() {
-
+    protected function getFullStatusAttribute()
+    {
         return $this->attributes['full_status'] = Selection::convertCode($this->status);
     }
 
@@ -36,6 +35,13 @@ class Payment extends BaseModel
         return $this->attributes['full_payment_mode'] = Selection::convertCode($this->payment_mode);
     }
 
+    protected function getSelectedAttribute() {
+        return $this->attributes['selected'] = isset($this->attributes['selected']) ? $this->attributes['selected'] : false;
+    }
+
+    protected function setSelectedAttribute($value) {
+        $this->attributes['selected'] = $value;
+    }
 
     public function initPeriod($defaultMonth = 12) {
 

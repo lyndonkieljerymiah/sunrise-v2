@@ -59,7 +59,7 @@ $villaRoutes = [
         '/api/villa/edit/{id}' => ['uses' => 'VillaController@apiEdit']
     ],
     'post' => [
-        '/api/villa/store' => ['uses' => 'VillaController@apiCreate'],
+        '/api/villa/store' => ['uses' => 'VillaController@apiStore'],
         '/api/villa/update' => ['uses' => 'VillaController@apiUpdate']
     ],
     'delete' => [
